@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 
 const counter = () => {
   let count = 0;
@@ -12,8 +12,10 @@ const blogsCollection: Array<CreateBlogInputDto & { id: number }> = [];
 @Controller('blogs')
 export class BlogsController {
   @Get()
-  async getBlog() {
-    return blogsCollection;
+  async getBlog(@Query('term') term: string) {
+    return blogsCollection.filter(
+      (el) => !term || el.blogName.indexOf(term) > 1,
+    );
   }
   @Get(':id')
   async getBlogById(@Param() params: { id: string }) {
