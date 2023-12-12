@@ -1,6 +1,4 @@
-// import { withExternalDirection, withExternalNumber, withExternalString, withExternalTerm } from '../../../utils/withExternalQuery';
-import {BlogMongoType, IBlog} from '../types/dto';
-import {toIsoString} from "../../../utils/date";
+import {BlogMongoType} from '../types/dto';
 import {BlogViewModel} from "../types/dto";
 import {BlogDocument} from "../03-domain/blog-db-model";
 
@@ -15,11 +13,11 @@ import {BlogDocument} from "../03-domain/blog-db-model";
 export class BlogsDataMapper {
   constructor() {}
 
-  // static toBlogsView(items: BlogMongoType[]): BlogViewModel[] {
-  //   return items.map((item) => {
-  //     return BlogsDataMapper.toBlogView(item);
-  //   });
-  // }
+  static toBlogsView(items: BlogMongoType[] | BlogDocument[]): BlogViewModel[] {
+    return items.map((item) => {
+      return BlogsDataMapper.toBlogView(item);
+    });
+  }
 
   static toBlogView(blogDoc: BlogMongoType | BlogDocument): BlogViewModel {
     return {
@@ -27,7 +25,7 @@ export class BlogsDataMapper {
       name: blogDoc.name,
       description: blogDoc.description,
       websiteUrl: blogDoc.websiteUrl,
-      createdAt: toIsoString(blogDoc.createdAt),
+      createdAt: blogDoc.createdAt?.toString(),
       isMembership: blogDoc.isMembership,
     };
   }

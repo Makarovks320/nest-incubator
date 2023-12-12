@@ -3,19 +3,20 @@ import { BlogService } from '../02-services/blog-service';
 import {BlogPaginationQueryDto, BlogViewModel, CreateBlogInputDto} from '../types/dto';
 import {HttpStatus, WithPagination} from "../../../common/types";
 import {BlogsQueryRepository} from "../04-repositories/blogs.query.repository";
+import {BlogQueryParams} from "../types/query";
+import {getBlogQueryParams} from "../../../helpers/get-query-params";
 
 @Controller('blogs')
 export class BlogsController {
   constructor(private blogService: BlogService,
               private blogsQueryRepo: BlogsQueryRepository,) {}
 
-  // @Get()
-  // @HttpCode(HttpStatus.OK_200)
-  // async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
-  //   return await this.blogsQueryRepo.getBlogs(BlogsDataMapper.toRepoQuery(query), BlogsDataMapper.toBlogsView);
-    // const queryParams: BlogQueryParams = getBlogQueryParams(req);
-    // return await this.blogsQueryRepository.getBlogs(queryParams);
-  // }
+  @Get()
+  @HttpCode(HttpStatus.OK_200)
+  async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
+    const queryParams: BlogQueryParams = getBlogQueryParams(query);
+    return await this.blogsQueryRepo.getBlogs(queryParams);
+  }
   @Get(':id')
   @HttpCode(HttpStatus.OK_200)
   async getBlogById(@Param('id') blogId: string) {

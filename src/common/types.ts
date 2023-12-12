@@ -39,3 +39,10 @@ export type WithPagination<T> = {
   totalCount: number;
   items: T[];
 };
+
+export interface PaginationQueryModel<T extends object> {
+  sortBy?: Extract<keyof T, string>;
+  sortDirection?: string;
+  pageNumber?: string;
+  pageSize?: string;
+}
