@@ -33,9 +33,9 @@ export class BlogsRepository {
   //     const result = await BlogModel.updateOne({id}, blog);
   //     return result.matchedCount === 1;
   // }
-  // async deleteAllBlogs(): Promise<void> {
-  //     await BlogModel.deleteMany({});
-  // }
+  async clear(): Promise<void> {
+      await this.blogModel.deleteMany({});
+  }
   // async deleteBlogById(id: string): Promise<boolean> {
   //     const result = await BlogModel.deleteOne({id});
   //     return result.deletedCount === 1
