@@ -1,3 +1,5 @@
+import {ObjectId} from "mongoose";
+
 export enum HttpStatus {
   OK_200 = 200,
   CREATED_201 = 201,
@@ -11,6 +13,9 @@ export enum HttpStatus {
   TOO_MANY_REQUESTS_429 = 429,
 
   SERVER_ERROR_500 = 500,
+}
+export type WithId<T> = T & {
+  _id: ObjectId
 }
 
 export type SortingDirection = 'asc' | 'desc';

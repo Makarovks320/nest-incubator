@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-// import { BlogsRepository } from '../repositories/blogs-repository';
+// import { BlogsRepository } from '../04-repositories/blogs-repository';
 // import { BlogViewModel } from '../types/dto';
 import { CreateBlogInputDto } from '../types/dto';
 // import { BlogDBDto } from '../types/dto';
 import {InjectModel} from "@nestjs/mongoose";
-import {Blog, BlogDocument} from "../domain/blog-db-model";
+import {Blog, BlogDocument} from "../03-domain/blog-db-model";
 import {Model} from "mongoose";
 
 @Injectable()

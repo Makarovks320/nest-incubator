@@ -1,10 +1,10 @@
-import { BlogDBDto, CreateBlogInputDto } from '../types/dto';
+import { IBlog, CreateBlogInputDto } from '../types/dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
 export type BlogDocument = HydratedDocument<Blog>;
 @Schema(
-    // {timestamps: true}
+    {timestamps: true}
 )
 export class Blog {
   // constructor(input: CreateBlogInputDto) {

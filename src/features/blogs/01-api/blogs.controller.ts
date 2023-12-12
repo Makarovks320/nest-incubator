@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 // import { HttpStatus } from '../../utils/types';
-import { BlogService } from './services/blog-service';
+import { BlogService } from '../02-services/blog-service';
 // import { Response } from 'express';
-import { CreateBlogInputDto } from './types/dto';
+import { CreateBlogInputDto } from '../types/dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -22,12 +22,8 @@ export class BlogsController {
   @Post()
   async createBlog(
     @Body() inputModel: CreateBlogInputDto,
-    // @Res() res: Response,
   ) {
-    const result =
-      await this.blogService.createNewBlog(inputModel);
-      return result;
-    // res.status(HttpStatus.CREATED_201).send(result);
+      return this.blogService.createNewBlog(inputModel);
   }
   // async updateBlog(req: Request, res: Response) {
   //   const newBlog = await this.blogService.updateBlogById(req.params.id, req.body);
