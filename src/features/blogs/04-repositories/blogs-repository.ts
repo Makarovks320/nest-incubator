@@ -1,8 +1,21 @@
-// import { DEFAULT_MONGOOSE_PROJECTION } from '../db/db';
 import { Injectable } from '@nestjs/common';
+import {Blog, BlogDocument} from "../03-domain/blog-db-model";
+import {InjectModel} from "@nestjs/mongoose";
+import {Model} from "mongoose";
+import {BlogViewModel, CreateBlogInputDto} from "../types/dto";
+import {BlogsDataMapper} from "../01-api/blogs.data-mapper";
 
 @Injectable()
 export class BlogsRepository {
+    constructor(
+        @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    ) {
+    }
+    async save(blog: CreateBlogInputDto): Promise<BlogViewModel> {
+        const createdBlog: BlogDocument = new this.blogModel(blog);
+        await createdBlog.save();
+        return BlogsDataMapper.toBlogView(createdBlog);
+    }
   // async findBlogById(id: string): Promise<BlogDBModel | null> {
   //     return BlogModel.findOne({id}).select(DEFAULT_MONGOOSE_PROJECTION).lean();
   // }

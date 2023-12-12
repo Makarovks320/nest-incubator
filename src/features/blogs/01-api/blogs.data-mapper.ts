@@ -2,6 +2,7 @@
 import { BlogMongoType } from '../types/dto';
 import {toIsoString} from "../../../utils/date";
 import {BlogViewModel} from "../types/dto";
+import {BlogDocument} from "../03-domain/blog-db-model";
 
 // const initialQuery: BlogPaginationRepositoryDto = {
 //   sortBy: 'createdAt',
@@ -20,14 +21,14 @@ export class BlogsDataMapper {
   //   });
   // }
 
-  static toBlogView(item: BlogMongoType): BlogViewModel {
+  static toBlogView(blogDoc: BlogDocument): BlogViewModel {
     return {
-      id: item._id.toString(),
-      name: item.name,
-      description: item.description,
-      websiteUrl: item.websiteUrl,
-      createdAt: toIsoString(item.createdAt),
-      isMembership: item.isMembership,
+      id: blogDoc._id.toString(),
+      name: blogDoc.name,
+      description: blogDoc.description,
+      websiteUrl: blogDoc.websiteUrl,
+      createdAt: toIsoString(blogDoc.createdAt),
+      isMembership: blogDoc.isMembership,
     };
   }
 
