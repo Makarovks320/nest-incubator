@@ -36,8 +36,8 @@ export class BlogsRepository {
   async clear(): Promise<void> {
       await this.blogModel.deleteMany({});
   }
-  // async deleteBlogById(id: string): Promise<boolean> {
-  //     const result = await BlogModel.deleteOne({id});
-  //     return result.deletedCount === 1
-  // }
+  async deleteBlogById(_id: string): Promise<boolean> {
+      const result = await this.blogModel.deleteOne({_id});
+      return result.deletedCount === 1
+  }
 }

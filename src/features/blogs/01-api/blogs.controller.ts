@@ -35,14 +35,18 @@ export class BlogsController {
   //   const newBlog = await this.blogService.updateBlogById(req.params.id, req.body);
   //   newBlog ? res.status(HTTP_STATUSES.NO_CONTENT_204).send(newBlog) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
   // }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT_204)
+  async deleteBlog(@Param('id') blogId: string) {
+    const result: boolean = await this.blogService.deleteBlogById(blogId);
+    if (result) {
+      return result;
+    }
+      throw new NotFoundException();
+  }
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT_204)
   async deleteAllBlogs() {
     return this.blogService.deleteAllBlogs();
   }
-
-  // async deleteBlogById(req: Request, res: Response) {
-  //   const isBlogDeleted = await this.blogService.deleteBlogById(req.params.id);
-  //   isBlogDeleted ? res.status(HTTP_STATUSES.NO_CONTENT_204).send() : res.status(HTTP_STATUSES.NOT_FOUND_404).send();
-  // }
 }

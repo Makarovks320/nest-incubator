@@ -27,7 +27,7 @@ export class BlogService {
   async deleteAllBlogs(): Promise<void> {
       await this.blogsRepository.clear();
   }
-  // async deleteBlogById(id: string): Promise<boolean> {
-  //     return await this.blogsRepository.deleteBlogById(id);
-  // }
+  async deleteBlogById(id: string): Promise<boolean> {
+      return await this.blogsRepository.deleteBlogById(id);
+  }
 }
