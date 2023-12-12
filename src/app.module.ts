@@ -7,6 +7,7 @@ import { BlogService } from './features/blogs/02-services/blog-service';
 import { BlogsRepository } from './features/blogs/04-repositories/blogs-repository';
 import { appConfig } from './utils/config';
 import {Blog, BlogSchema} from './features/blogs/03-domain/blog-db-model';
+import {BlogsQueryRepository} from "./features/blogs/04-repositories/blogs.query.repository";
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import {Blog, BlogSchema} from './features/blogs/03-domain/blog-db-model';
     }]),
   ],
   controllers: [AppController, BlogsController],
-  providers: [AppService, BlogService, BlogsRepository],
+  providers: [AppService, BlogService, BlogsRepository, BlogsQueryRepository],
 })
 export class AppModule {}

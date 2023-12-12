@@ -1,28 +1,33 @@
-import { Body, Controller, Post } from '@nestjs/common';
-// import { HttpStatus } from '../../utils/types';
+import {Body, Controller, Get, HttpCode, NotFoundException, Param, Post, Query} from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
-// import { Response } from 'express';
-import { CreateBlogInputDto } from '../types/dto';
+import {BlogPaginationQueryDto, BlogViewModel, CreateBlogInputDto} from '../types/dto';
+import {HttpStatus, WithPagination} from "../../../common/types";
+import {BlogsQueryRepository} from "../04-repositories/blogs.query.repository";
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private blogService: BlogService) {}
+  constructor(private blogService: BlogService,
+              private blogsQueryRepo: BlogsQueryRepository,) {}
 
   // @Get()
-  // async getBlogs(@Query('term') term: string) {
-  //   const queryParams: BlogQueryParams = getBlogQueryParams(req);
-  //   const blogs = await this.blogsQueryRepository.getBlogs(queryParams);
-  //   res.send(blogs);
+  // @HttpCode(HttpStatus.OK_200)
+  // async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
+  //   return await this.blogsQueryRepo.getBlogs(BlogsDataMapper.toRepoQuery(query), BlogsDataMapper.toBlogsView);
+    // const queryParams: BlogQueryParams = getBlogQueryParams(req);
+    // return await this.blogsQueryRepository.getBlogs(queryParams);
   // }
-  // @Get(':id')
-  // async getBlogById(@Param() params: { id: string }) {
-  //   const blog = await this.blogService.getBlogById(req.params.id);
-  //   blog ? res.send(blog) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-  // }
+  @Get(':id')
+  @HttpCode(HttpStatus.OK_200)
+  async getBlogById(@Param('id') blogId: string) {
+    const blog = await this.blogService.getBlogById(blogId);
+    if (blog) {
+      return blog;
+    }
+    throw new NotFoundException();
+  }
   @Post()
-  async createBlog(
-    @Body() inputModel: CreateBlogInputDto,
-  ) {
+  @HttpCode(HttpStatus.CREATED_201)
+  async createBlog(@Body() inputModel: CreateBlogInputDto): Promise<BlogViewModel> {
       return this.blogService.createNewBlog(inputModel);
   }
   // async updateBlog(req: Request, res: Response) {

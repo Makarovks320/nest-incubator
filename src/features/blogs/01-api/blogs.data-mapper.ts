@@ -1,5 +1,5 @@
 // import { withExternalDirection, withExternalNumber, withExternalString, withExternalTerm } from '../../../utils/withExternalQuery';
-import { BlogMongoType } from '../types/dto';
+import {BlogMongoType, IBlog} from '../types/dto';
 import {toIsoString} from "../../../utils/date";
 import {BlogViewModel} from "../types/dto";
 import {BlogDocument} from "../03-domain/blog-db-model";
@@ -21,7 +21,7 @@ export class BlogsDataMapper {
   //   });
   // }
 
-  static toBlogView(blogDoc: BlogDocument): BlogViewModel {
+  static toBlogView(blogDoc: BlogMongoType | BlogDocument): BlogViewModel {
     return {
       id: blogDoc._id.toString(),
       name: blogDoc.name,
