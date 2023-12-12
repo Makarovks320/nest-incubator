@@ -19,7 +19,7 @@ export class BlogsController {
   @Get(':id')
   @HttpCode(HttpStatus.OK_200)
   async getBlogById(@Param('id') blogId: string) {
-    const blog = await this.blogService.getBlogById(blogId);
+    const blog = await this.blogsQueryRepo.getBlogById(blogId);
     if (blog) {
       return blog;
     }

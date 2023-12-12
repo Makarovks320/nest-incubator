@@ -18,9 +18,9 @@ export class BlogService {
     const createdBlog: IBlog = Blog.createBlog(blog)
     return await this.blogsRepository.save(createdBlog)
   }
-  async getBlogById(id: string): Promise<BlogViewModel | null> {
-    return await this.blogsQueryRepository.getBlogById(id);
-  }
+  // async getBlogById(id: string): Promise<BlogViewModel | null> {
+  //   return await this.blogsQueryRepository.getBlogById(id);
+  // }
   // async updateBlogById(id: string, p: BlogViewModel): Promise<boolean> {
   //     return await this.blogsRepository.updateBlogById(id, p);
   // }
