@@ -9,8 +9,8 @@ export const appConfig: AppConfig = {
   jwtTokenSecret: process.env.JWT_SECRET || 'secret',
   jwtRefreshTokenSecret: process.env.JWT_REFRESH_SECRET || 'secret',
   mongoUrl:
-    process.env.MONGO_CLOUD_URL ||
     process.env.MONGO_LOCAL_URL ||
+    process.env.MONGO_CLOUD_URL ||
     'mongodb://0.0.0.0:27017',
   gmailAdapterUser: process.env.EMAIL_ADDRESS || '',
   gmailAdapterPass: process.env.EMAIL_APP_PASS || '',
