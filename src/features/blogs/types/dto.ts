@@ -1,3 +1,5 @@
+import {WithId} from "../../../common/types";
+
 export type CreateBlogInputDto = {
   name: string;
   description: string;
@@ -11,11 +13,12 @@ export type BlogViewModel = {
   isMembership: boolean;
   createdAt: string;
 };
-export type BlogDBDto = {
-  id: string;
+export type IBlog = {
   name: string;
   description: string;
   websiteUrl: string;
   isMembership: boolean;
-  createdAt: string;
+  createdAt: Date;
 };
+
+export type BlogMongoType = WithId<IBlog>;
