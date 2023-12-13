@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query} from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
 import {BlogPaginationQueryDto, BlogViewModel, CreateBlogInputDto} from '../types/dto';
 import {HttpStatus, WithPagination} from "../../../common/types";
@@ -31,10 +31,15 @@ export class BlogsController {
   async createBlog(@Body() inputModel: CreateBlogInputDto): Promise<BlogViewModel> {
       return this.blogService.createNewBlog(inputModel);
   }
-  // async updateBlog(req: Request, res: Response) {
-  //   const newBlog = await this.blogService.updateBlogById(req.params.id, req.body);
-  //   newBlog ? res.status(HTTP_STATUSES.NO_CONTENT_204).send(newBlog) : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-  // }
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT_204)
+  async updateBlog(@Param('id') blogId: string, @Body() inputModel: CreateBlogInputDto) {
+    const updatedBlog = await this.blogService.updateBlogById(blogId, inputModel);
+    if (updatedBlog) {
+      return updatedBlog;
+    }
+    throw new NotFoundException();
+  }
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT_204)
   async deleteBlog(@Param('id') blogId: string) {

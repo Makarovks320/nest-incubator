@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
-// import { BlogViewModel } from '../types/dto';
 import {BlogViewModel, CreateBlogInputDto, IBlog} from '../types/dto';
-// import { BlogDBDto } from '../types/dto';
-import {InjectModel} from "@nestjs/mongoose";
-import {Blog, BlogDocument} from "../03-domain/blog-db-model";
-import {Model} from "mongoose";
+import {Blog} from "../03-domain/blog-db-model";
 import {BlogsRepository} from "../04-repositories/blogs-repository";
 import {BlogsQueryRepository} from "../04-repositories/blogs.query.repository";
 
@@ -18,12 +14,13 @@ export class BlogService {
     const createdBlog: IBlog = Blog.createBlog(blog)
     return await this.blogsRepository.save(createdBlog)
   }
-  // async getBlogById(id: string): Promise<BlogViewModel | null> {
-  //   return await this.blogsQueryRepository.getBlogById(id);
-  // }
-  // async updateBlogById(id: string, p: BlogViewModel): Promise<boolean> {
-  //     return await this.blogsRepository.updateBlogById(id, p);
-  // }
+  async updateBlogById(blogId: string, blogNewData: CreateBlogInputDto): Promise<boolean> {
+      const blogForUpdating = await this.blogsQueryRepository.getBlogById(blogId);
+      if (!blogForUpdating) return false;
+      blogForUpdating.updateBlog(blogNewData);
+      await this.blogsRepository.update(blogForUpdating)
+      return true;
+  }
   async deleteAllBlogs(): Promise<void> {
       await this.blogsRepository.clear();
   }

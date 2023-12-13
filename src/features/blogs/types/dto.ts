@@ -1,19 +1,5 @@
 import {PaginationQueryModel, WithId, WithPaginationQuery} from "../../../common/types";
-// import {Blog} from "../03-domain/blog-db-model";
 
-export type CreateBlogInputDto = {
-  name: string;
-  description: string;
-  websiteUrl: string;
-};
-export type BlogViewModel = {
-  id: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  isMembership: boolean;
-  createdAt: string;
-};
 export type IBlog = {
   name: string;
   description: string;
@@ -21,6 +7,12 @@ export type IBlog = {
   isMembership: boolean;
   createdAt: Date;
 };
+
+export type CreateBlogInputDto = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
+
+export type UpdateBlogInputDto = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
+
+export type BlogViewModel = Pick<IBlog, 'name' | 'description' | 'websiteUrl' | 'isMembership'> & { id: string; createdAt: string };
 
 export type BlogMongoType = WithId<IBlog>;
 

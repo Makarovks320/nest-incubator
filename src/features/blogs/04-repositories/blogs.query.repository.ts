@@ -38,11 +38,8 @@ export class BlogsQueryRepository {
     }
   }
 
-  async getBlogById(id: string): Promise<BlogViewModel | null> {
-    const blog: BlogMongoType | null = await this.blogModel.findById(id).lean();
-    if (blog) {
-      return BlogsDataMapper.toBlogView(blog);
-    }
-    return null;
+  async getBlogById(id: string): Promise<BlogDocument | null> {
+    const blog = await this.blogModel.findById(id);
+    return blog;
   }
 }

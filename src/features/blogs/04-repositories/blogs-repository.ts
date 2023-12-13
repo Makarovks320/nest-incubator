@@ -12,9 +12,12 @@ export class BlogsRepository {
     ) {
     }
     async save(blog: CreateBlogInputDto): Promise<BlogViewModel> {
-        const createdBlog: BlogDocument = new this.blogModel(blog);
+        const createdBlog: BlogDocument = new this.blogModel(blog);//todo: этот конструктор работал даже когда я его не описал
         await createdBlog.save();
         return BlogsDataMapper.toBlogView(createdBlog);
+    }
+    async update(blog: BlogDocument): Promise<void> {
+        await blog.save();
     }
   // async findBlogById(id: string): Promise<BlogDBModel | null> {
   //     return BlogModel.findOne({id}).select(DEFAULT_MONGOOSE_PROJECTION).lean();
@@ -28,10 +31,6 @@ export class BlogsRepository {
   //     if (e instanceof MongooseError) return e.message;
   //     return 'Mongoose Error';
   //   }
-  // }
-  // async updateBlogById(id: string, blog: BlogDBModel): Promise<boolean> {
-  //     const result = await BlogModel.updateOne({id}, blog);
-  //     return result.matchedCount === 1;
   // }
   async clear(): Promise<void> {
       await this.blogModel.deleteMany({});
