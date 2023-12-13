@@ -1,4 +1,4 @@
-import { CreateBlogInputDto, UpdateBlogInputDto} from '../types/dto';
+import { CreateBlogInputDto} from '../types/dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {HydratedDocument} from 'mongoose';
 
@@ -24,13 +24,16 @@ export class Blog {
   createdAt: Date;
 
   static createBlog(inputBlog: CreateBlogInputDto): Blog {
-    return new this(inputBlog)
+    return new this(inputBlog);
   }
-  updateBlog(blogNewData: UpdateBlogInputDto): void {
-      this.name = blogNewData.name;
-      this.description = blogNewData.description;
-      this.websiteUrl = blogNewData.websiteUrl;
-  }
+    //todo: 1) почему статик метод требует, чтобы все св-ва, к которым он обращается были тоже статик
+    // 2) !!!! почему не дает создать обычный метод экземпляра? !!!
+    // static updateBlog(blogNewData: UpdateBlogInputDto): void {
+    //     this.name = blogNewData.name;
+    //     this.description = blogNewData.description;
+    //     this.websiteUrl = blogNewData.websiteUrl;
+    // }
+
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

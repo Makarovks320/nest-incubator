@@ -17,9 +17,10 @@ export class BlogService {
   async updateBlogById(blogId: string, blogNewData: CreateBlogInputDto): Promise<boolean> {
       const blogForUpdating = await this.blogsQueryRepository.getBlogById(blogId);
       if (!blogForUpdating) return false;
-      blogForUpdating.updateBlog(blogNewData);
-      await this.blogsRepository.update(blogForUpdating)
-      return true;
+      //todo: если уже достали по id сущность, зачем обновлять по id (а значит и искать заново по id)
+      // эту же сущность через БД. Пробовал создать метод экземпляра, но не работает - узнать на уроке
+      const isUpdated = await this.blogsRepository.updateBlogById(blogId, blogNewData);
+      return isUpdated;
   }
   async deleteAllBlogs(): Promise<void> {
       await this.blogsRepository.clear();
