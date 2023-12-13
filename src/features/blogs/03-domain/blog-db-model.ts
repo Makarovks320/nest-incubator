@@ -26,7 +26,7 @@ export class Blog {
   static createBlog(inputBlog: CreateBlogInputDto): Blog {
     return new this(inputBlog);
   }
-    //todo: 1) почему статик метод требует, чтобы все св-ва, к которым он обращается были тоже статик
+    // todo: 1) почему статик метод требует, чтобы все св-ва, к которым он обращается были тоже статик
     // 2) !!!! почему не дает создать обычный метод экземпляра? !!!
     // static updateBlog(blogNewData: UpdateBlogInputDto): void {
     //     this.name = blogNewData.name;

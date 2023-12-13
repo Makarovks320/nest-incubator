@@ -2,14 +2,6 @@ import {BlogMongoType} from '../types/dto';
 import {BlogViewModel} from "../types/dto";
 import {BlogDocument} from "../03-domain/blog-db-model";
 
-// const initialQuery: BlogPaginationRepositoryDto = {
-//   sortBy: 'createdAt',
-//   searchNameTerm: null,
-//   sortDirection: 'desc',
-//   pageNumber: 1,
-//   pageSize: 10,
-// };
-
 export class BlogsDataMapper {
   constructor() {}
 
@@ -29,14 +21,4 @@ export class BlogsDataMapper {
       isMembership: blogDoc.isMembership,
     };
   }
-
-  // static toRepoQuery(query: BlogPaginationQueryDto): BlogPaginationRepositoryDto {
-  //   return {
-  //     sortBy: withExternalString(initialQuery.sortBy, query.sortBy),
-  //     searchNameTerm: withExternalTerm(initialQuery.searchNameTerm, query.searchNameTerm),
-  //     sortDirection: withExternalDirection(initialQuery.sortDirection, query.sortDirection),
-  //     pageNumber: withExternalNumber(initialQuery.pageNumber, query.pageNumber),
-  //     pageSize: withExternalNumber(initialQuery.pageSize, query.pageSize),
-  //   };
-  // }
 }

@@ -19,22 +19,6 @@ export class BlogsRepository {
         return BlogsDataMapper.toBlogView(createdBlog);
     }
 
-    // async update(blog: BlogDocument): Promise<void> {
-    //     await blog.save();
-    // }
-    // async findBlogById(id: string): Promise<BlogDBModel | null> {
-    //     return BlogModel.findOne({id}).select(DEFAULT_MONGOOSE_PROJECTION).lean();
-    // }
-    // async createNewBlog(b: BlogDBDto): Promise<BlogDBDto | string> {
-    //   try {
-    //     await BlogModel.insertMany(b);
-    //     return b;
-    //   } catch (e) {
-    //     console.log(e);
-    //     if (e instanceof MongooseError) return e.message;
-    //     return 'Mongoose Error';
-    //   }
-    // }
     async updateBlogById(id: string, blogNewData: UpdateBlogInputDto): Promise<boolean> {
         const res: UpdateResult = await this.blogModel.updateOne({_id: id}, {$set: blogNewData}).exec();
         return res.modifiedCount > 0;

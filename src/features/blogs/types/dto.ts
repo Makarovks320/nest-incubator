@@ -1,4 +1,4 @@
-import {PaginationQueryModel, WithId, WithPaginationQuery} from "../../../common/types";
+import {PaginationQueryModel, WithId} from "../../../common/types";
 
 export type IBlog = {
   name: string;
@@ -19,5 +19,3 @@ export type BlogMongoType = WithId<IBlog>;
 export type BlogPaginationQueryDto = PaginationQueryModel<IBlog> & {
   searchNameTerm?: string;
 };
-
-export type BlogQueryDto = WithPaginationQuery<IBlog> & { searchNameTerm: string | null };
