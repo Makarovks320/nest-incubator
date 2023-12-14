@@ -55,7 +55,7 @@ export class PostsController {
   @HttpCode(HttpStatus.CREATED_201)
   async createNewPost(@Body() inputModel: CreatePostInputModel): Promise<PostViewModel> {
     const blog = await this.blogsQueryRepository.getBlogById(inputModel.blogId);
-    if (!blog) throw new Error('Incorrect blog id: blog is not found');
+    if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');
 
     const post: CreatePostModel = {
       ...inputModel,

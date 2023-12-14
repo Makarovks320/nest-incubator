@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 // import { InjectModel } from '@nestjs/mongoose';
@@ -10,9 +8,9 @@ import { Injectable } from '@nestjs/common';
 // import {BlogQueryParams} from "../types/query";
 
 
-// @Injectable()
-// export class PostsQueryRepository {
-//   constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+@Injectable()
+export class PostsQueryRepository {
+  constructor() {}
 //
 //   async getBlogs (queryParams: BlogQueryParams): Promise<WithPagination<BlogViewModel>> {
 //     const sort: Record<string, -1 | 1> = {};
@@ -42,4 +40,4 @@ import { Injectable } from '@nestjs/common';
 //     const blog = await this.blogModel.findById(id);
 //     return blog;
 //   }
-// }
+}

@@ -1,16 +1,13 @@
 import {Injectable} from '@nestjs/common';
 import {CreatePostModel} from "../types/create-post-input-type";
 import {PostsRepository} from "../04-repositories/posts-repository";
-import {Post, PostDocument} from "../03-domain/post-db-model";
+import {Post} from "../03-domain/post-db-model";
 import {PostViewModel} from "../types/post-view-model";
 
-class PostsQueryRepository {
-}
 
 @Injectable()
 export class PostService {
-    constructor(private postsRepository: PostsRepository,
-                private postsQueryRepository: PostsQueryRepository
+    constructor(private postsRepository: PostsRepository
     ) {
     }
 
