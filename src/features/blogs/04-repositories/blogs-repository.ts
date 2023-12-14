@@ -14,9 +14,14 @@ export class BlogsRepository {
     }
 
     async save(blog: CreateBlogInputDto): Promise<BlogViewModel> {
-        const createdBlog: BlogDocument = new this.blogModel(blog);//todo: этот конструктор работал даже когда я его не описал
+        const createdBlog: BlogDocument = new this.blogModel(blog);
         await createdBlog.save();
         return BlogsDataMapper.toBlogView(createdBlog);
+    }
+
+    async getBlogById(id: string): Promise<Blog | null> {
+        const blog: Blog | null = await this.blogModel.findById(id).lean();
+        return blog;
     }
 
     async updateBlogById(id: string, blogNewData: UpdateBlogInputDto): Promise<boolean> {

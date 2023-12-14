@@ -1,4 +1,4 @@
-import { CreateBlogInputDto} from '../types/dto';
+import {CreateBlogInputDto, UpdateBlogInputDto} from '../types/dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {HydratedDocument} from 'mongoose';
 
@@ -26,13 +26,6 @@ export class Blog {
   static createBlog(inputBlog: CreateBlogInputDto): Blog {
     return new this(inputBlog);
   }
-    // todo: 1) почему статик метод требует, чтобы все св-ва, к которым он обращается были тоже статик
-    // 2) !!!! почему для обычного метода экземпляра выдает ошибку updateBlog is not a function? !!!
-    // static updateBlog(blogNewData: UpdateBlogInputDto): void {
-    //     this.name = blogNewData.name;
-    //     this.description = blogNewData.description;
-    //     this.websiteUrl = blogNewData.websiteUrl;
-    // }
 
 }
 
