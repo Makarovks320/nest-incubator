@@ -1,6 +1,6 @@
 import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query} from '@nestjs/common';
 import {HttpStatus, WithPagination} from "../../../common/types";
-import {CreatePostInputModel, CreatePostModel} from "../types/create-post-input-type";
+import {CreatePostInputModel, CreatePostModel, UpdatePostInputModel} from "../types/create-post-input-type";
 import {PostService} from "../02-services/post-service";
 import {BlogsQueryRepository} from "../../blogs/04-repositories/blogs-query-repository";
 import {PostViewModel} from "../types/post-view-model";
@@ -8,6 +8,7 @@ import {PostsQueryRepository} from "../04-repositories/posts-query-repository";
 import {PostPaginationQueryDto} from "../types/dto";
 import {PostQueryParams} from "../types/post-query-params-type";
 import {getPostQueryParams} from "../../../helpers/get-query-params";
+import {CreateBlogInputDto} from "../../blogs/types/dto";
 
 @Controller('posts')
 export class PostsController {
@@ -49,20 +50,16 @@ export class PostsController {
         return result;
     }
 
-    // async updatePost(req: Request, res: Response) {
-    //   try {
-    //
-    //     const blog = await this.blogsRepository.findBlogById(req.body.blogId);
-    //     if (!blog) throw new Error('Incorrect blog id: blog is not found');
-    //
-    //     await this.postService.updatePostById(req.params.id, {...req.body, blogName: blog.name}, req.userId);
-    //     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
-    //   } catch (e) {
-    //     console.log(e);
-    //     res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
-    //   }
-    // }
-    //
+    @Put(':id')
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async updatePost(@Param('id') postId: string, @Body() inputModel: UpdatePostInputModel) {
+        const updatedPost = await this.postService.updatePostById(postId, inputModel);
+        if (updatedPost) {
+            return updatedPost;
+        }
+        throw new NotFoundException();
+    }
+
     @Delete()
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAllPosts() {

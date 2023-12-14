@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {CreatePostModel} from "../types/create-post-input-type";
+import {CreatePostModel, UpdatePostInputModel} from "../types/create-post-input-type";
 import {PostsRepository} from "../04-repositories/posts-repository";
-import {Post} from "../03-domain/post-db-model";
+import {Post, PostDocument} from "../03-domain/post-db-model";
 import {PostViewModel} from "../types/post-view-model";
 
 
@@ -66,12 +66,14 @@ export class PostService {
         return await this.postsRepository.save(post);
     }
 
-    // async updatePostById(postId: string, newPostData: InputPost, userId: ObjectId): Promise<void> {
-    //     const post: PostDocument | null = await this.postsRepository.findPostById(postId);
-    //     post.updatePost(newPostData, userId);
-    //     await this.postsRepository.save(post);
-    // }
-    //
+    async updatePostById(postId: string, newPostData: UpdatePostInputModel): Promise<boolean> {
+        const post: PostDocument | null = await this.postsRepository.findPostById(postId);
+        if(!post) return false;
+        post.updatePost(newPostData);
+        await this.postsRepository.save(post);
+        return true;
+    }
+
     async deleteAllPosts(): Promise<void> {
         await this.postsRepository.clear();
     }
