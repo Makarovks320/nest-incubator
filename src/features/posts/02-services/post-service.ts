@@ -76,8 +76,7 @@ export class PostService {
     //     await this.postsRepository.deleteAllPosts();
     // }
 
-    // async deletePostById(id: string): Promise<boolean> {
-    //     const objectId = stringToObjectIdMapper(id);
-    //     return await this.postsRepository.deletePostById(objectId);
-    // }
+    async deletePostById(postId: string): Promise<boolean> {
+        return await this.postsRepository.deletePostById(postId);
+    }
 }

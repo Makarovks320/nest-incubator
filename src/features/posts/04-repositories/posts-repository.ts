@@ -33,10 +33,10 @@ export class PostsRepository {
 //     async deleteAllPosts(): Promise<void> {
 //     await PostModel.deleteMany({});
 // }
-//     async deletePostById(_id: ObjectId): Promise<boolean> {
-//     const result = await PostModel.deleteOne({_id});
-//     return result.deletedCount === 1
-// }
+    async deletePostById(_id: string): Promise<boolean> {
+    const result = await this.postModel.deleteOne({_id});
+    return result.deletedCount === 1
+}
     async save(post: Post): Promise<PostViewModel> {
         const createdPost: PostDocument = new this.postModel(post);
         await createdPost.save();
