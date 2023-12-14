@@ -1,16 +1,18 @@
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import {Blog, BlogDocument} from "../03-domain/blog-db-model";
-// import { BlogViewModel} from '../types/dto';
-// import {BlogsDataMapper} from "../01-api/blogs-data-mapper";
+import {Post, PostDocument} from "../03-domain/post-db-model";
+import {PostMongoType} from "../types/dto";
+import {PostViewModel} from "../types/post-view-model";
+import {PostsDataMapper} from "../01-api/posts-data-mapper";
+import {InjectModel} from "@nestjs/mongoose";
 // import {WithPagination} from "../../../common/types";
-// import {BlogQueryParams} from "../types/query";
 
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor() {}
+  constructor(
+      @InjectModel(Post.name) private postModel: Model<PostDocument>
+  ) {}
 //
 //   async getBlogs (queryParams: BlogQueryParams): Promise<WithPagination<BlogViewModel>> {
 //     const sort: Record<string, -1 | 1> = {};
@@ -36,8 +38,14 @@ export class PostsQueryRepository {
 //     }
 //   }
 //
-//   async getBlogById(id: string): Promise<BlogDocument | null> {
-//     const blog = await this.blogModel.findById(id);
-//     return blog;
-//   }
+  async getPostById(id: string): Promise<PostViewModel | null> {
+    try{
+      const post: PostMongoType | null = await this.postModel.findById(id).lean();
+      if (!post) return null;
+      return PostsDataMapper.toPostView(post);
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
 }

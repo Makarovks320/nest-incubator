@@ -4,11 +4,14 @@ import {CreatePostInputModel, CreatePostModel} from "../types/create-post-input-
 import {PostService} from "../02-services/post-service";
 import {BlogsQueryRepository} from "../../blogs/04-repositories/blogs-query-repository";
 import {PostViewModel} from "../types/post-view-model";
+import {InternalServerErrorException} from "@nestjs/common/exceptions/internal-server-error.exception";
+import {PostsQueryRepository} from "../04-repositories/posts-query-repository";
 
 @Controller('posts')
 export class PostsController {
   constructor(private postService: PostService,
               private blogsQueryRepository: BlogsQueryRepository,
+              private postsQueryRepository: PostsQueryRepository,
               ) {}
 
   // @Get()
@@ -30,26 +33,16 @@ export class PostsController {
   //   }
   // }
   //
-  // @Get(':id')
-  // @HttpCode(HttpStatus.OK_200)
-  // async getBlogById(@Param('id') blogId: string) {
-  //   const blog = await this.blogsQueryRepo.getBlogById(blogId);
-  //   if (blog) {
-  //     return blog;
-  //   }
-  //   throw new NotFoundException();
-  // }
-  //
-  // async getPostById(req: Request, res: Response) {
-  //   try {
-  //     const posts: PostViewModel | null = await this.postService.getPostById(req.params.id, req.userId);
-  //     posts ? res.status(HTTP_STATUSES.OK_200).send(posts)
-  //         : res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-  //   } catch (e) {
-  //     console.log(e);
-  //     res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
-  //   }
-  // }
+
+  @Get(':id')
+  @HttpCode(HttpStatus.OK_200)
+  async getPostById(@Param('id') postId: string) {
+      const post: PostViewModel | null = await this.postsQueryRepository.getPostById(postId);
+      if (!post) {
+          throw new NotFoundException();
+      }
+      return post;
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED_201)
