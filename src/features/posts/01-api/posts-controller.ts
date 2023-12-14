@@ -4,8 +4,10 @@ import {CreatePostInputModel, CreatePostModel} from "../types/create-post-input-
 import {PostService} from "../02-services/post-service";
 import {BlogsQueryRepository} from "../../blogs/04-repositories/blogs-query-repository";
 import {PostViewModel} from "../types/post-view-model";
-import {InternalServerErrorException} from "@nestjs/common/exceptions/internal-server-error.exception";
 import {PostsQueryRepository} from "../04-repositories/posts-query-repository";
+import {PostPaginationQueryDto} from "../types/dto";
+import {PostQueryParams} from "../types/post-query-params-type";
+import {getPostQueryParams} from "../../../helpers/get-query-params";
 
 @Controller('posts')
 export class PostsController {
@@ -14,25 +16,13 @@ export class PostsController {
               private postsQueryRepository: PostsQueryRepository,
               ) {}
 
-  // @Get()
-  // @HttpCode(HttpStatus.OK_200)
-  // async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
-  //   const queryParams: BlogQueryParams = getBlogQueryParams(query);
-  //   return await this.blogsQueryRepo.getBlogs(queryParams);
-  // }
-  // @Get()
-  // @HttpCode(HttpStatus.OK_200)
-  // async getPosts(@Query() query: BlogPaginationQueryDto) {
-  //   try {
-  //     const queryParams: PostQueryParams = getPostQueryParams(req);
-  //     const posts: WithPagination<PostViewModel> = await this.postService.getPosts(req.userId, queryParams, req.params.id);
-  //     res.status(HTTP_STATUSES.OK_200).send(posts);
-  //   } catch (e) {
-  //     console.log(e);
-  //     res.sendStatus(HTTP_STATUSES.SERVER_ERROR_500);
-  //   }
-  // }
-  //
+  @Get()
+  @HttpCode(HttpStatus.OK_200)
+  async getPosts(@Query() query: PostPaginationQueryDto): Promise<WithPagination<PostViewModel>>  {
+      const queryParams: PostQueryParams = getPostQueryParams(query);
+      const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams);
+      return posts;
+  }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK_200)
@@ -58,14 +48,6 @@ export class PostsController {
     return result;
   }
 
-    // if (typeof result === 'string') {
-    //   res.status(HTTP_STATUSES.SERVER_ERROR_500).send(result);
-    //   return;
-    // }
-    // const createdPost: PostViewModel = getPostViewModel(result, null);
-    // res.status(HTTP_STATUSES.CREATED_201).send(createdPost);
-  // }
-  //
   // async updatePost(req: Request, res: Response) {
   //   try {
   //

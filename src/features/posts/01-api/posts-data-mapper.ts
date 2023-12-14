@@ -4,13 +4,6 @@ import {PostViewModel} from "../types/post-view-model";
 
 export class PostsDataMapper {
   constructor() {}
-
-  static toPostsView(items: PostMongoType[] | PostDocument[]): PostViewModel[] {
-    return items.map((item) => {
-      return PostsDataMapper.toPostView(item);
-    });
-  }
-
   static toPostView(postDoc: PostMongoType | PostDocument): PostViewModel {
     return {
       id: postDoc._id.toString(),
