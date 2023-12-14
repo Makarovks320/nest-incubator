@@ -1,10 +1,9 @@
-import 'reflect-metadata';
-
+import 'reflect-metadata';//todo: нужен?
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {Blog, BlogDocument} from "../03-domain/blog-db-model";
-import { BlogViewModel} from '../types/dto';
+import {BlogMongoType, BlogViewModel} from '../types/dto';
 import {BlogsDataMapper} from "../01-api/blogs-data-mapper";
 import {WithPagination} from "../../../common/types";
 import {BlogQueryParams} from "../types/query";
@@ -38,8 +37,9 @@ export class BlogsQueryRepository {
     }
   }
 
-  async getBlogById(id: string): Promise<Blog | null> {
-    const blog: Blog | null = await this.blogModel.findById(id).lean();
-    return blog;
+  async getBlogById(id: string): Promise<BlogViewModel | null> {
+    const blog: BlogMongoType | null = await this.blogModel.findById(id).lean();
+    if (!blog) return null;
+    return BlogsDataMapper.toBlogView(blog);
   }
 }
