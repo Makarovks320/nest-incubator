@@ -63,11 +63,12 @@ export class PostsController {
     //   }
     // }
     //
-    // async deleteAllPosts(req: Request, res: Response) {
-    //   await this.postService.deleteAllPosts();
-    //   res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
-    // }
-    //
+    @Delete()
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async deleteAllPosts() {
+      return await this.postService.deleteAllPosts();
+    }
+
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deletePostById(@Param('id') postId: string) {

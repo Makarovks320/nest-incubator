@@ -72,9 +72,9 @@ export class PostService {
     //     await this.postsRepository.save(post);
     // }
     //
-    // async deleteAllPosts(): Promise<void> {
-    //     await this.postsRepository.deleteAllPosts();
-    // }
+    async deleteAllPosts(): Promise<void> {
+        await this.postsRepository.clear();
+    }
 
     async deletePostById(postId: string): Promise<boolean> {
         return await this.postsRepository.deletePostById(postId);

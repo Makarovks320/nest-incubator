@@ -30,9 +30,9 @@ export class PostsRepository {
 //     return result.matchedCount === 1;
 //
 // }
-//     async deleteAllPosts(): Promise<void> {
-//     await PostModel.deleteMany({});
-// }
+    async clear(): Promise<void> {
+    await this.postModel.deleteMany({});
+}
     async deletePostById(_id: string): Promise<boolean> {
     const result = await this.postModel.deleteOne({_id});
     return result.deletedCount === 1

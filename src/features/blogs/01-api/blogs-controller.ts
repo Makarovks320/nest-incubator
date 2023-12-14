@@ -52,6 +52,6 @@ export class BlogsController {
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT_204)
   async deleteAllBlogs() {
-    return this.blogService.deleteAllBlogs();
+    return await this.blogService.deleteAllBlogs();
   }
 }
