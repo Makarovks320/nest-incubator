@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {BlogViewModel, CreateBlogInputDto, IBlog} from '../types/dto';
 import {Blog} from "../03-domain/blog-db-model";
 import {BlogsRepository} from "../04-repositories/blogs-repository";
-import {BlogsQueryRepository} from "../04-repositories/blogs.query.repository";
+import {BlogsQueryRepository} from "../04-repositories/blogs-query-repository";
 
 @Injectable()
 export class BlogService {

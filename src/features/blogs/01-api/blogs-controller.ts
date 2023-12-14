@@ -2,7 +2,7 @@ import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post,
 import { BlogService } from '../02-services/blog-service';
 import {BlogPaginationQueryDto, BlogViewModel, CreateBlogInputDto} from '../types/dto';
 import {HttpStatus, WithPagination} from "../../../common/types";
-import {BlogsQueryRepository} from "../04-repositories/blogs.query.repository";
+import {BlogsQueryRepository} from "../04-repositories/blogs-query-repository";
 import {BlogQueryParams} from "../types/query";
 import {getBlogQueryParams} from "../../../helpers/get-query-params";
 
