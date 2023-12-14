@@ -38,8 +38,8 @@ export class BlogsQueryRepository {
     }
   }
 
-  async getBlogById(id: string): Promise<BlogDocument | null> {
-    const blog = await this.blogModel.findById(id);
+  async getBlogById(id: string): Promise<Blog | null> {
+    const blog: Blog | null = await this.blogModel.findById(id).lean();
     return blog;
   }
 }
