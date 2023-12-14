@@ -68,7 +68,7 @@ export class PostService {
 
     async updatePostById(postId: string, newPostData: UpdatePostInputModel): Promise<boolean> {
         const post: PostDocument | null = await this.postsRepository.findPostById(postId);
-        if(!post) return false;
+        if (!post) return false;
         post.updatePost(newPostData);
         await this.postsRepository.save(post);
         return true;

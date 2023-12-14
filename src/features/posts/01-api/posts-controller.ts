@@ -8,7 +8,6 @@ import {PostsQueryRepository} from "../04-repositories/posts-query-repository";
 import {PostPaginationQueryDto} from "../types/dto";
 import {PostQueryParams} from "../types/post-query-params-type";
 import {getPostQueryParams} from "../../../helpers/get-query-params";
-import {CreateBlogInputDto} from "../../blogs/types/dto";
 
 @Controller('posts')
 export class PostsController {
@@ -63,7 +62,7 @@ export class PostsController {
     @Delete()
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAllPosts() {
-      return await this.postService.deleteAllPosts();
+        return await this.postService.deleteAllPosts();
     }
 
     @Delete(':id')
@@ -73,29 +72,4 @@ export class PostsController {
         if (!result) throw new NotFoundException();
         return result;
     }
-
-
-    // @Put(':id')
-    // @HttpCode(HttpStatus.NO_CONTENT_204)
-    // async updateBlog(@Param('id') blogId: string, @Body() inputModel: CreateBlogInputDto) {
-    //   const updatedBlog = await this.blogService.updateBlogById(blogId, inputModel);
-    //   if (updatedBlog) {
-    //     return updatedBlog;
-    //   }
-    //   throw new NotFoundException();
-    // }
-    // @Delete(':id')
-    // @HttpCode(HttpStatus.NO_CONTENT_204)
-    // async deleteBlog(@Param('id') blogId: string) {
-    //   const result: boolean = await this.blogService.deleteBlogById(blogId);
-    //   if (result) {
-    //     return result;
-    //   }
-    //     throw new NotFoundException();
-    // }
-    // @Delete()
-    // @HttpCode(HttpStatus.NO_CONTENT_204)
-    // async deleteAllBlogs() {
-    //   return this.blogService.deleteAllBlogs();
-    // }
 }
