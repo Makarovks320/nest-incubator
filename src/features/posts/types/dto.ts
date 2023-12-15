@@ -1,16 +1,8 @@
-import {PaginationQueryModel, WithId} from "../../../common/types";
+import { PaginationQueryModel, WithId } from '../../../common/types';
+import { Post } from '../03-domain/post-db-model';
 
-export type IPost = {
-    title: string;
-    shortDescription: string;
-    content: string;
-    blogId: string;
-    blogName: string;
-    createdAt: string;
-};
+export type PostMongoType = WithId<Post>;
 
-export type PostMongoType = WithId<IPost>;
-
-export type PostPaginationQueryDto = PaginationQueryModel<IPost> & {
+export type PostPaginationQueryDto = PaginationQueryModel<Post> & {
     searchNameTerm?: string;
 };

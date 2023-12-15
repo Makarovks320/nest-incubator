@@ -1,15 +1,15 @@
-import {IPost} from "./dto";
+import { Post } from '../03-domain/post-db-model';
 
-export type CreatePostByBlogsRouterInputModel = Pick<IPost, 'title' | 'shortDescription' | 'content'>;
+export type CreatePostByBlogsRouterInputModel = Pick<Post, 'title' | 'shortDescription' | 'content'>;
 
 export type CreatePostInputModel = CreatePostByBlogsRouterInputModel & {
-    blogId: string
-}
+    blogId: string;
+};
 
 export type UpdatePostInputModel = CreatePostInputModel & {
-    blogName: string
-}
+    blogName: string;
+};
 
 export type CreatePostModel = CreatePostInputModel & {
-    blogName: string
-}
+    blogName: string;
+};

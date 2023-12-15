@@ -33,14 +33,14 @@ export class PostsQueryRepository {
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
             totalCount: totalCount,
-            items: posts.map((p) => PostsDataMapper.toPostView(p)),
+            items: posts.map((p) => PostsDataMapper.toPostView(p, null)),
         };
     }
     async getPostById(id: string): Promise<PostViewModel | null> {
         try {
             const post: PostMongoType | null = await this.postModel.findById(id).lean();
             if (!post) return null;
-            return PostsDataMapper.toPostView(post);
+            return PostsDataMapper.toPostView(post, null);
         } catch (e) {
             console.log(e);
             return null;

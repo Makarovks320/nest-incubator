@@ -1,6 +1,7 @@
-import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument} from 'mongoose';
-import {CreatePostModel, UpdatePostInputModel} from "../types/create-post-input-type";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
+import { CreatePostModel, UpdatePostInputModel } from '../types/create-post-input-type';
+import { NewestLikesType } from '../types/post-view-model';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -12,22 +13,32 @@ export class Post {
         this.content = inputPost.content;
         this.blogId = inputPost.blogId;
         this.blogName = inputPost.blogName;
+        this.likesCount = 0;
+        this.dislikesCount = 0;
+        this.newestLikes = [];
         this.createdAt = new Date();
     }
 
-    @Prop({required: true})
+    @Prop({ required: true })
     title: string;
-    @Prop({required: true})
+    @Prop({ required: true })
     shortDescription: string;
-    @Prop({required: true})
+    @Prop({ required: true })
     content: string;
-    @Prop({default: false})
+    @Prop({ default: false })
     blogId: string;
-    @Prop({default: false})
+    @Prop({ default: false })
     blogName: string;
-    @Prop({required: true})
+    @Prop({ required: true })
     createdAt: Date;
+    @Prop({ required: true })
+    likesCount: number;
+    @Prop({ required: true })
+    dislikesCount: number;
+    @Prop({ required: true })
+    newestLikes: NewestLikesType[];
 
+    //todo: зачем в некоторых случаях делают этот метод как альтернативу конструктору?
     static createPost(post: CreatePostModel): Post {
         return new this(post);
     }
@@ -40,16 +51,14 @@ export class Post {
         this.blogId = postNewData.blogId;
         this.blogName = postNewData.blogName;
     }
-
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.methods = {
-    updatePost: Post.prototype.updatePost
+    updatePost: Post.prototype.updatePost,
 };
 
 PostSchema.statics = {
     createPost: Post.createPost,
 };
-
