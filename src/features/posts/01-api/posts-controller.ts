@@ -1,21 +1,21 @@
-import {Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query} from '@nestjs/common';
-import {HttpStatus, WithPagination} from "../../../common/types";
-import {CreatePostInputModel, CreatePostModel, UpdatePostInputModel} from "../types/create-post-input-type";
-import {PostService} from "../02-services/post-service";
-import {BlogsQueryRepository} from "../../blogs/04-repositories/blogs-query-repository";
-import {PostViewModel} from "../types/post-view-model";
-import {PostsQueryRepository} from "../04-repositories/posts-query-repository";
-import {PostPaginationQueryDto} from "../types/dto";
-import {PostQueryParams} from "../types/post-query-params-type";
-import {getPostQueryParams} from "../../../helpers/get-query-params";
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { HttpStatus, WithPagination } from '../../../common/types';
+import { CreatePostInputModel, CreatePostModel, UpdatePostInputModel } from '../types/create-post-input-type';
+import { PostService } from '../02-services/post-service';
+import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
+import { PostViewModel } from '../types/post-view-model';
+import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
+import { PostPaginationQueryDto } from '../types/dto';
+import { PostQueryParams } from '../types/post-query-params-type';
+import { getPostQueryParams } from '../../../helpers/get-query-params';
 
 @Controller('posts')
 export class PostsController {
-    constructor(private postService: PostService,
-                private blogsQueryRepository: BlogsQueryRepository,
-                private postsQueryRepository: PostsQueryRepository,
-    ) {
-    }
+    constructor(
+        private postService: PostService,
+        private blogsQueryRepository: BlogsQueryRepository,
+        private postsQueryRepository: PostsQueryRepository,
+    ) {}
 
     @Get()
     @HttpCode(HttpStatus.OK_200)
@@ -43,8 +43,8 @@ export class PostsController {
 
         const post: CreatePostModel = {
             ...inputModel,
-            blogName: blog.name
-        }
+            blogName: blog.name,
+        };
         const result: PostViewModel = await this.postService.createNewPost(post);
         return result;
     }

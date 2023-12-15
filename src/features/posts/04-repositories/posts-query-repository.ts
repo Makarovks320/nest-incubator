@@ -1,19 +1,16 @@
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import {Post, PostDocument} from "../03-domain/post-db-model";
-import {PostMongoType} from "../types/dto";
-import {PostViewModel} from "../types/post-view-model";
-import {PostsDataMapper} from "../01-api/posts-data-mapper";
-import {InjectModel} from "@nestjs/mongoose";
-import {PostQueryParams} from "../types/post-query-params-type";
-import {WithPagination} from "../../../common/types";
-
+import { Post, PostDocument } from '../03-domain/post-db-model';
+import { PostMongoType } from '../types/dto';
+import { PostViewModel } from '../types/post-view-model';
+import { PostsDataMapper } from '../01-api/posts-data-mapper';
+import { InjectModel } from '@nestjs/mongoose';
+import { PostQueryParams } from '../types/post-query-params-type';
+import { WithPagination } from '../../../common/types';
 
 @Injectable()
 export class PostsQueryRepository {
-  constructor(
-      @InjectModel(Post.name) private postModel: Model<PostDocument>
-  ) {}
+    constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
     async getPosts(queryParams: PostQueryParams, blogId?: string): Promise<WithPagination<PostViewModel>> {
         const filter: FilterQuery<Post> = {};
         if (blogId) {
@@ -23,7 +20,8 @@ export class PostsQueryRepository {
         if (queryParams.sortBy) {
             sort[queryParams.sortBy] = queryParams.sortDirection === 'asc' ? 1 : -1;
         }
-        const posts: PostDocument[] = await this.postModel.find(filter)
+        const posts: PostDocument[] = await this.postModel
+            .find(filter)
             .lean()
             .sort(sort)
             .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
@@ -35,17 +33,17 @@ export class PostsQueryRepository {
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
             totalCount: totalCount,
-            items: posts.map(p => PostsDataMapper.toPostView(p))
+            items: posts.map((p) => PostsDataMapper.toPostView(p)),
+        };
+    }
+    async getPostById(id: string): Promise<PostViewModel | null> {
+        try {
+            const post: PostMongoType | null = await this.postModel.findById(id).lean();
+            if (!post) return null;
+            return PostsDataMapper.toPostView(post);
+        } catch (e) {
+            console.log(e);
+            return null;
         }
     }
-  async getPostById(id: string): Promise<PostViewModel | null> {
-    try{
-      const post: PostMongoType | null = await this.postModel.findById(id).lean();
-      if (!post) return null;
-      return PostsDataMapper.toPostView(post);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
 }
