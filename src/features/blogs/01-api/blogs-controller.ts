@@ -9,12 +9,15 @@ import { PostPaginationQueryDto } from '../../posts/types/dto';
 import { PostViewModel } from '../../posts/types/post-view-model';
 import { PostQueryParams } from '../../posts/types/post-query-params-type';
 import { PostsQueryRepository } from '../../posts/04-repositories/posts-query-repository';
+import { CreatePostByBlogsRouterInputModel, CreatePostModel } from '../../posts/types/create-post-input-type';
+import { PostService } from '../../posts/02-services/post-service';
 
 @Controller('blogs')
 export class BlogsController {
     constructor(
         private blogService: BlogService,
-        private blogsQueryRepo: BlogsQueryRepository,
+        private postService: PostService,
+        private blogsQueryRepository: BlogsQueryRepository,
         private postsQueryRepository: PostsQueryRepository,
     ) {}
 
@@ -22,13 +25,13 @@ export class BlogsController {
     @HttpCode(HttpStatus.OK_200)
     async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
         const queryParams: BlogQueryParams = getBlogQueryParams(query);
-        return await this.blogsQueryRepo.getBlogs(queryParams);
+        return await this.blogsQueryRepository.getBlogs(queryParams);
     }
 
     @Get(':id')
     @HttpCode(HttpStatus.OK_200)
     async getBlogById(@Param('id') blogId: string) {
-        const blog = await this.blogsQueryRepo.getBlogById(blogId);
+        const blog = await this.blogsQueryRepository.getBlogById(blogId);
         if (blog) {
             return blog;
         }
@@ -67,7 +70,7 @@ export class BlogsController {
         return await this.blogService.deleteAllBlogs();
     }
 
-    // Получение постов для блога
+    // Работа с сущностями постов через контроллер блогов
     @Get(':id/posts')
     @HttpCode(HttpStatus.OK_200)
     async getPosts(
@@ -77,5 +80,23 @@ export class BlogsController {
         const queryParams: PostQueryParams = getPostQueryParams(query);
         const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams, blogId);
         return posts;
+    }
+
+    @Post(':id/posts')
+    @HttpCode(HttpStatus.OK_200)
+    async createPostForExistingBlog(
+        @Param('id') blogId: string,
+        @Body() inputModel: CreatePostByBlogsRouterInputModel,
+    ): Promise<PostViewModel> {
+        const blog = await this.blogsQueryRepository.getBlogById(blogId);
+        if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');
+
+        const post: CreatePostModel = {
+            ...inputModel,
+            blogId,
+            blogName: blog.name,
+        };
+        const result: PostViewModel = await this.postService.createNewPost(post);
+        return result;
     }
 }
