@@ -1,0 +1,53 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument, UserMongoType } from '../03-domain/user-db-model';
+import { FilterQuery, Model } from 'mongoose';
+import { Injectable } from '@nestjs/common';
+import { UsersQueryParams } from '../types/users-query-params';
+import { WithPagination } from '../../../common/types';
+import { UserViewModel } from '../types/user-view-model';
+import { UsersDataMapper } from '../01-api/users-data-mapper';
+
+@Injectable()
+export class UsersQueryRepository {
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+    async getUsers(queryParams: UsersQueryParams): Promise<WithPagination<UserViewModel>> {
+        let filter: FilterQuery<UserMongoType> = {};
+        if (queryParams.searchEmailTerm || queryParams.searchLoginTerm) {
+            filter = {
+                $or: [],
+            };
+        }
+        if (queryParams.searchEmailTerm) {
+            filter.$or!.push({ 'accountData.email': { $regex: queryParams.searchEmailTerm, $options: 'i' } });
+        }
+        if (queryParams.searchLoginTerm) {
+            filter.$or!.push({ 'accountData.userName': { $regex: queryParams.searchLoginTerm, $options: 'i' } });
+        }
+
+        const sort: Record<string, 1 | -1> = {};
+        if (queryParams.sortBy) {
+            sort[queryParams.sortBy] = queryParams.sortDirection === 'asc' ? 1 : -1;
+        }
+        const users: UserDocument[] = await this.userModel
+            .find(filter)
+            .lean()
+            .sort(sort)
+            .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
+            .limit(queryParams.pageSize);
+
+        const totalCount = await this.userModel.countDocuments(filter);
+
+        return {
+            pagesCount: Math.ceil(totalCount / queryParams.pageSize),
+            page: queryParams.pageNumber,
+            pageSize: queryParams.pageSize,
+            totalCount: totalCount,
+            items: users.map(user => UsersDataMapper.getUserViewModel(user)),
+        };
+    }
+
+    async findUserByPassRecoveryCode(code: string): Promise<User | null> {
+        return this.userModel.findOne({ 'passwordRecovery.passwordRecoveryCode': code });
+    }
+}

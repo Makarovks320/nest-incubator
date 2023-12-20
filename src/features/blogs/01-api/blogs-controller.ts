@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
-import { BlogPaginationQueryDto, BlogViewModel, CreateBlogInputDto } from '../types/dto';
+import { BlogInputQueryParams, BlogViewModel, CreateBlogInputDto } from '../types/dto';
 import { HttpStatus, WithPagination } from '../../../common/types';
 import { BlogsQueryRepository } from '../04-repositories/blogs-query-repository';
 import { BlogQueryParams } from '../types/query';
 import { getBlogQueryParams, getPostQueryParams } from '../../../helpers/get-query-params';
-import { PostPaginationQueryDto } from '../../posts/types/dto';
+import { PostInputQueryParams } from '../../posts/types/dto';
 import { PostViewModel } from '../../posts/types/post-view-model';
 import { PostQueryParams } from '../../posts/types/post-query-params-type';
 import { PostsQueryRepository } from '../../posts/04-repositories/posts-query-repository';
@@ -23,7 +23,7 @@ export class BlogsController {
 
     @Get()
     @HttpCode(HttpStatus.OK_200)
-    async getAll(@Query() query: BlogPaginationQueryDto): Promise<WithPagination<BlogViewModel>> {
+    async getAll(@Query() query: BlogInputQueryParams): Promise<WithPagination<BlogViewModel>> {
         const queryParams: BlogQueryParams = getBlogQueryParams(query);
         return await this.blogsQueryRepository.getBlogs(queryParams);
     }
@@ -75,7 +75,7 @@ export class BlogsController {
     @HttpCode(HttpStatus.OK_200)
     async getPosts(
         @Param('id') blogId: string,
-        @Query() query: PostPaginationQueryDto,
+        @Query() query: PostInputQueryParams,
     ): Promise<WithPagination<PostViewModel>> {
         const queryParams: PostQueryParams = getPostQueryParams(query);
         const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams, blogId);

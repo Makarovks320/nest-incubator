@@ -5,7 +5,7 @@ import { PostService } from '../02-services/post-service';
 import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
 import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
-import { PostPaginationQueryDto } from '../types/dto';
+import { PostInputQueryParams } from '../types/dto';
 import { PostQueryParams } from '../types/post-query-params-type';
 import { getPostQueryParams } from '../../../helpers/get-query-params';
 
@@ -19,7 +19,7 @@ export class PostsController {
 
     @Get()
     @HttpCode(HttpStatus.OK_200)
-    async getPosts(@Query() query: PostPaginationQueryDto): Promise<WithPagination<PostViewModel>> {
+    async getPosts(@Query() query: PostInputQueryParams): Promise<WithPagination<PostViewModel>> {
         const queryParams: PostQueryParams = getPostQueryParams(query);
         const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams);
         return posts;
