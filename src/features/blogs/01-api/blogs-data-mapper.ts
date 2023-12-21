@@ -17,7 +17,7 @@ export class BlogsDataMapper {
             name: blogDoc.name,
             description: blogDoc.description,
             websiteUrl: blogDoc.websiteUrl,
-            createdAt: blogDoc.createdAt?.toString(),
+            createdAt: blogDoc.createdAt?.toISOString(),
             isMembership: blogDoc.isMembership,
         };
     }

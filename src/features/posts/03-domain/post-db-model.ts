@@ -49,7 +49,6 @@ export class Post {
         this.shortDescription = postNewData.shortDescription;
         this.content = postNewData.content;
         this.blogId = postNewData.blogId;
-        this.blogName = postNewData.blogName;
     }
 }
 

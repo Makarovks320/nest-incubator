@@ -6,9 +6,7 @@ export type CreatePostInputModel = CreatePostByBlogsRouterInputModel & {
     blogId: string;
 };
 
-export type UpdatePostInputModel = CreatePostInputModel & {
-    blogName: string;
-};
+export type UpdatePostInputModel = CreatePostInputModel;
 
 export type CreatePostModel = CreatePostInputModel & {
     blogName: string;

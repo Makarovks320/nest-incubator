@@ -13,12 +13,12 @@ export class PostsDataMapper {
             content: postDoc.content,
             blogId: postDoc.blogId,
             blogName: postDoc.blogName,
-            createdAt: postDoc.createdAt?.toString(),
+            createdAt: postDoc.createdAt?.toISOString(),
             extendedLikesInfo: {
                 likesCount: postDoc.likesCount,
                 dislikesCount: postDoc.dislikesCount,
                 myStatus: myStatus || LIKE_STATUS_ENUM.NONE,
-                newestLikes: postDoc.newestLikes.map((l) => {
+                newestLikes: postDoc.newestLikes.map(l => {
                     return {
                         addedAt: l.addedAt,
                         userId: l.userId,

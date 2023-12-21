@@ -77,13 +77,17 @@ export class BlogsController {
         @Param('id') blogId: string,
         @Query() query: PostInputQueryParams,
     ): Promise<WithPagination<PostViewModel>> {
+        const blog = await this.blogsQueryRepository.getBlogById(blogId);
+        if (!blog) {
+            throw new NotFoundException();
+        }
         const queryParams: PostQueryParams = getPostQueryParams(query);
         const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams, blogId);
         return posts;
     }
 
     @Post(':id/posts')
-    @HttpCode(HttpStatus.OK_200)
+    @HttpCode(HttpStatus.CREATED_201)
     async createPostForExistingBlog(
         @Param('id') blogId: string,
         @Body() inputModel: CreatePostByBlogsRouterInputModel,
