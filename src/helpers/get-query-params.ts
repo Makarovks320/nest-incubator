@@ -12,6 +12,7 @@ export function getPostQueryParams(query: PostInputQueryParams): PostQueryParams
         query.sortDirection === 'asc' ? 'asc' : 'desc',
     );
 }
+
 export function getBlogQueryParams(queryParams: BlogInputQueryParams): BlogQueryParams {
     return new BlogQueryParams(
         parseInt(queryParams.pageNumber as string) || 1,
@@ -21,6 +22,7 @@ export function getBlogQueryParams(queryParams: BlogInputQueryParams): BlogQuery
         (queryParams.searchNameTerm as string) || null,
     );
 }
+
 export function getQueryParamsForUsers(queryParams: UsersInputQueryParams): UsersQueryParams {
     return new UsersQueryParams(
         parseInt(queryParams.pageNumber as string) || 1,

@@ -12,8 +12,10 @@ export class UsersQueryParams implements CommonQueryParams {
         public pageNumber: number,
         public pageSize: number,
         public sortBy: string,
-        public sortDirection: 'asc' | 'desc',
+        public sortDirection: SortDirection,
         public searchLoginTerm: string | null,
         public searchEmailTerm: string | null,
     ) {}
 }
+
+export type SortDirection = 'asc' | 'desc';

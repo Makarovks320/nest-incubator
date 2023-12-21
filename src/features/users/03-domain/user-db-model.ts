@@ -9,25 +9,30 @@ import { WithId } from '../../../common/types';
 export type UserDocument = HydratedDocument<User>;
 export type UserMongoType = WithId<User>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
     constructor(
+        login: string,
+        email: string,
         accountData: AccountDataType,
         emailConfirmation: EmailConfirmationType,
         passwordRecovery: PasswordRecoveryType,
     ) {
+        this.login = login;
+        this.email = email;
         this.accountData = accountData;
         this.emailConfirmation = emailConfirmation;
         this.passwordRecovery = passwordRecovery;
     }
 
+    @Prop({ required: true })
+    login: string;
+    @Prop({ required: true })
+    email: string;
     @Prop({
         type: {
-            userName: { type: String, required: true },
-            email: { type: String, required: true },
             salt: { type: String, required: true },
             hash: { type: String, required: true },
-            createdAt: { type: String, required: true },
         },
     })
     accountData: AccountDataType;
@@ -49,16 +54,17 @@ export class User {
     })
     passwordRecovery: PasswordRecoveryType;
 
+    createdAt: Date;
+
     static async createUser(userInputData: CreateUserInputModel): Promise<User> {
         const passwordSalt = await bcrypt.genSalt(8);
         const passwordHash = await this.prototype.generateHash(userInputData.password, passwordSalt);
         const newUser: User = new this(
+            userInputData.login,
+            userInputData.email,
             {
-                userName: userInputData.login,
-                email: userInputData.email,
                 salt: passwordSalt,
                 hash: passwordHash,
-                createdAt: new Date().toISOString(),
             },
             {
                 confirmationCode: uuidv4(),
@@ -92,11 +98,8 @@ export class User {
 }
 
 type AccountDataType = {
-    userName: string;
-    email: string;
     salt: string;
     hash: string;
-    createdAt: string;
 };
 export type EmailConfirmationType = {
     confirmationCode: string;

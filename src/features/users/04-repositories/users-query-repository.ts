@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument, UserMongoType } from '../03-domain/user-db-model';
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { UsersQueryParams } from '../types/users-query-params';
+import { SortDirection, UsersQueryParams } from '../types/users-query-params';
 import { WithPagination } from '../../../common/types';
 import { UserViewModel } from '../types/user-view-model';
 import { UsersDataMapper } from '../01-api/users-data-mapper';
@@ -19,22 +19,22 @@ export class UsersQueryRepository {
             };
         }
         if (queryParams.searchEmailTerm) {
-            filter.$or!.push({ 'accountData.email': { $regex: queryParams.searchEmailTerm, $options: 'i' } });
+            filter.$or!.push({ email: { $regex: queryParams.searchEmailTerm, $options: 'i' } });
         }
         if (queryParams.searchLoginTerm) {
-            filter.$or!.push({ 'accountData.userName': { $regex: queryParams.searchLoginTerm, $options: 'i' } });
+            filter.$or!.push({ login: { $regex: queryParams.searchLoginTerm, $options: 'i' } });
         }
 
-        const sort: Record<string, 1 | -1> = {};
+        const sort: Record<string, SortDirection> = {};
         if (queryParams.sortBy) {
-            sort[queryParams.sortBy] = queryParams.sortDirection === 'asc' ? 1 : -1;
+            sort[queryParams.sortBy] = queryParams.sortDirection;
         }
         const users: UserDocument[] = await this.userModel
             .find(filter)
-            .lean()
             .sort(sort)
             .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
-            .limit(queryParams.pageSize);
+            .limit(queryParams.pageSize)
+            .lean();
 
         const totalCount = await this.userModel.countDocuments(filter);
 

@@ -83,7 +83,7 @@ export class UsersRepository {
         return result.deletedCount === 1;
     }
 
-    async deleteAllUsers(): Promise<void> {
+    async clear(): Promise<void> {
         await this.userModel.deleteMany({});
     }
 }

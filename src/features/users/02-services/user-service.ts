@@ -17,12 +17,12 @@ export class UserService {
         return await this.usersRepository.findUserById(id);
     }
 
-    async deleteUserById(_id: string): Promise<boolean> {
-        return await this.usersRepository.deleteUserById(_id);
+    async deleteUserById(id: string): Promise<boolean> {
+        return await this.usersRepository.deleteUserById(id);
     }
 
     async deleteAllUsers(): Promise<void> {
-        return await this.usersRepository.deleteAllUsers();
+        return await this.usersRepository.clear();
     }
 
     // async checkCredentials(loginOrEmail: string, password: string): Promise<User | null> {

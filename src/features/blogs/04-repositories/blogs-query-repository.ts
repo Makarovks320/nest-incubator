@@ -26,7 +26,7 @@ export class BlogsQueryRepository {
             .sort(sort)
             .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
             .limit(queryParams.pageSize);
-        const totalCount = await this.blogModel.countDocuments();
+        const totalCount = await this.blogModel.countDocuments(filter);
 
         return {
             pagesCount: Math.ceil(totalCount / queryParams.pageSize),
