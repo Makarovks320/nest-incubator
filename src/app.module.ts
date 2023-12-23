@@ -8,7 +8,7 @@ import { BlogsRepository } from './features/blogs/04-repositories/blogs-reposito
 import { appConfig } from './utils/config';
 import { Blog, BlogSchema } from './features/blogs/03-domain/blog-db-model';
 import { BlogsQueryRepository } from './features/blogs/04-repositories/blogs-query-repository';
-import { TestsController } from './features/tests/api/tests.controller';
+import { TestingController } from './features/tests/api/testing.controller';
 import { PostsController } from './features/posts/01-api/posts-controller';
 import { PostsRepository } from './features/posts/04-repositories/posts-repository';
 import { PostsQueryRepository } from './features/posts/04-repositories/posts-query-repository';
@@ -44,7 +44,7 @@ import { User, UserSchema } from './features/users/03-domain/user-db-model';
             },
         ]),
     ],
-    controllers: [AppController, BlogsController, PostsController, UsersController, TestsController],
+    controllers: [AppController, BlogsController, PostsController, UsersController, TestingController],
     providers: [
         AppService,
         BlogService,

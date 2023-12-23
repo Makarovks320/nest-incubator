@@ -6,7 +6,7 @@ import { UsersRepository } from '../../users/04-repositories/users-repository';
 
 @Injectable()
 @Controller('testing')
-export class TestsController {
+export class TestingController {
     constructor(
         private blogsRepo: BlogsRepository,
         private postsRepo: PostsRepository,
