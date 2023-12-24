@@ -15,6 +15,13 @@ export enum HttpStatus {
     SERVER_ERROR_500 = 500,
 }
 
+// ключи объекта типа HTTP_STATUSES
+type HttpStatusKeys = keyof typeof HttpStatus
+
+// значения объекта типа HttpStatus, например, любое число
+// или ссылка на значение через путь, например, const b: HttpStatusType = HttpStatus.OK_200;
+export type HttpStatusType = (typeof HttpStatus)[HttpStatusKeys]
+
 export type WithId<T> = T & {
     _id: ObjectId;
 };

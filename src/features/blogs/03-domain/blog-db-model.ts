@@ -1,11 +1,11 @@
-import {CreateBlogInputDto, UpdateBlogInputDto} from '../types/dto';
+import {CreateBlogInputModel, UpdateBlogInputDto} from '../types/dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {HydratedDocument} from 'mongoose';
 
 export type BlogDocument = HydratedDocument<Blog>;
 @Schema()
 export class Blog {
-    constructor(inputBlog: CreateBlogInputDto) {
+    constructor(inputBlog: CreateBlogInputModel) {
         this.name = inputBlog.name;
         this.description = inputBlog.description;
         this.websiteUrl = inputBlog.websiteUrl;
@@ -23,7 +23,7 @@ export class Blog {
   @Prop({ required: true })
   createdAt: Date;
 
-  static createBlog(inputBlog: CreateBlogInputDto): Blog {
+  static createBlog(inputBlog: CreateBlogInputModel): Blog {
     return new this(inputBlog);
   }
 

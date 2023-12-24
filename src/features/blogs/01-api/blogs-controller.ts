@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
-import { BlogInputQueryParams, BlogViewModel, CreateBlogInputDto } from '../types/dto';
+import { BlogInputQueryParams, BlogViewModel, CreateBlogInputModel } from '../types/dto';
 import { HttpStatus, WithPagination } from '../../../common/types';
 import { BlogsQueryRepository } from '../04-repositories/blogs-query-repository';
 import { BlogQueryParams } from '../types/query';
@@ -40,13 +40,13 @@ export class BlogsController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED_201)
-    async createBlog(@Body() inputModel: CreateBlogInputDto): Promise<BlogViewModel> {
+    async createBlog(@Body() inputModel: CreateBlogInputModel): Promise<BlogViewModel> {
         return this.blogService.createNewBlog(inputModel);
     }
 
     @Put(':id')
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    async updateBlog(@Param('id') blogId: string, @Body() inputModel: CreateBlogInputDto) {
+    async updateBlog(@Param('id') blogId: string, @Body() inputModel: CreateBlogInputModel) {
         const updatedBlog = await this.blogService.updateBlogById(blogId, inputModel);
         if (updatedBlog) {
             return updatedBlog;

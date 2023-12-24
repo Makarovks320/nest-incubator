@@ -3,7 +3,7 @@ import {Injectable} from '@nestjs/common';
 import {Blog, BlogDocument} from "../03-domain/blog-db-model";
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
-import {BlogViewModel, CreateBlogInputDto, UpdateBlogInputDto} from "../types/dto";
+import {BlogViewModel, CreateBlogInputModel, UpdateBlogInputDto} from "../types/dto";
 import {BlogsDataMapper} from "../01-api/blogs-data-mapper";
 
 @Injectable()
@@ -13,7 +13,7 @@ export class BlogsRepository {
     ) {
     }
 
-    async save(blog: CreateBlogInputDto): Promise<BlogViewModel> {
+    async save(blog: CreateBlogInputModel): Promise<BlogViewModel> {
         const createdBlog: BlogDocument = new this.blogModel(blog);
         await createdBlog.save();
         return BlogsDataMapper.toBlogView(createdBlog);

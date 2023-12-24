@@ -8,7 +8,7 @@ export type IBlog = {
     createdAt: Date;
 };
 
-export type CreateBlogInputDto = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
+export type CreateBlogInputModel = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
 
 export type UpdateBlogInputDto = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
 
