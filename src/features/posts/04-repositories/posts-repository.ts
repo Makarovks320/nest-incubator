@@ -10,7 +10,13 @@ import { PostViewModel } from '../types/post-view-model';
 export class PostsRepository {
     constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
     async findPostById(_id: string): Promise<PostDocument | null> {
-        return this.postModel.findOne({ _id });
+        try {
+            const post: PostDocument | null = await this.postModel.findOne({ _id });
+            return post;
+        } catch (e) {
+            if (e instanceof MongooseError) console.log(e.message);
+            return null;
+        }
     }
     //     async createNewPost(p: PostDBType): Promise<PostDBType | string> {
     //     try {
