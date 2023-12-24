@@ -1,5 +1,5 @@
 import 'reflect-metadata'; //todo: нужен?
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, MongooseError } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../03-domain/blog-db-model';
@@ -38,8 +38,14 @@ export class BlogsQueryRepository {
     }
 
     async getBlogById(id: string): Promise<BlogViewModel | null> {
-        const blog: BlogMongoType | null = await this.blogModel.findById(id).lean();
-        if (!blog) return null;
-        return BlogsDataMapper.toBlogView(blog);
+        try {
+            const blog: BlogMongoType | null = await this.blogModel.findById(id).lean();
+            if (!blog) return null;
+            return BlogsDataMapper.toBlogView(blog);
+        } catch (e) {
+            if (e instanceof MongooseError) console.log(e.message);
+            console.log(e);
+            return null;
+        }
     }
 }

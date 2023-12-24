@@ -2,7 +2,7 @@ import {UpdateResult} from 'mongodb';
 import {Injectable} from '@nestjs/common';
 import {Blog, BlogDocument} from "../03-domain/blog-db-model";
 import {InjectModel} from "@nestjs/mongoose";
-import {Model} from "mongoose";
+import { Model, MongooseError } from 'mongoose';
 import {BlogViewModel, CreateBlogInputModel, UpdateBlogInputDto} from "../types/dto";
 import {BlogsDataMapper} from "../01-api/blogs-data-mapper";
 
@@ -19,9 +19,14 @@ export class BlogsRepository {
         return BlogsDataMapper.toBlogView(createdBlog);
     }
 
-    async getBlogById(id: string): Promise<Blog | null> {
-        const blog: Blog | null = await this.blogModel.findById(id).lean();
-        return blog;
+    async getBlogById(_id: string): Promise<BlogDocument | null> {
+        try {
+            const blog: BlogDocument | null = await this.blogModel.findById(_id).lean();
+            return blog;
+        } catch (e) {
+        if (e instanceof MongooseError) console.log(e.message);
+            return null;
+        }
     }
 
     async updateBlogById(id: string, blogNewData: UpdateBlogInputDto): Promise<boolean> {
