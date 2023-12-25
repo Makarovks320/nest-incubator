@@ -33,7 +33,7 @@ export class PostsQueryRepository {
             page: queryParams.pageNumber,
             pageSize: queryParams.pageSize,
             totalCount: totalCount,
-            items: posts.map((p) => PostsDataMapper.toPostView(p, null)),
+            items: posts.map(p => PostsDataMapper.toPostView(p, null)),
         };
     }
     async getPostById(id: string): Promise<PostViewModel | null> {

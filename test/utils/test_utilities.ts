@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const authBasicHeader = {Authorization: 'Basic YWRtaW46cXdlcnR5'};
+export const authBasicHeader = { Authorization: 'Basic YWRtaW46cXdlcnR5' };
 
 export function generateString(length: number): string {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -15,4 +15,3 @@ export function generateString(length: number): string {
 
     return result;
 }
-

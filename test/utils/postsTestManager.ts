@@ -1,6 +1,6 @@
-import request from "supertest";
-import {authBasicHeader} from "./test_utilities";
-import * as supertest from "supertest";
+import request from 'supertest';
+import { authBasicHeader } from './test_utilities';
+import * as supertest from 'supertest';
 import {
     CreatePostByBlogsRouterInputModel,
     CreatePostInputModel,
@@ -11,25 +11,28 @@ import { RouterPaths } from '../../src/application/utils/router-paths';
 import { HttpStatus } from '../../src/common/types';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 
-
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 export const postsTestManager = {
     /*
-    * метод создания поста с ожидаемым в ответ кодом статуса (например, можно ожидать 201 или 400).
-    * Если ожидаем успешное создание, метод выполнит проверку тела ответа.
-    * */
-    async createPost(data: CreatePostInputModel, expectedStatusCode: HttpStatusType, useBlogsRouter: boolean = false)
-        : Promise<{ response: supertest.Response; createdPost: PostViewModel | null }> {
+     * метод создания поста с ожидаемым в ответ кодом статуса (например, можно ожидать 201 или 400).
+     * Если ожидаем успешное создание, метод выполнит проверку тела ответа.
+     * */
+    async createPost(
+        data: CreatePostInputModel,
+        expectedStatusCode: HttpStatusType,
+        useBlogsRouter: boolean = false,
+    ): Promise<{ response: supertest.Response; createdPost: PostViewModel | null }> {
         const path = useBlogsRouter ? `${RouterPaths.blogs}/${data.blogId}/posts` : RouterPaths.posts;
         let sendData: CreatePostInputModel | CreatePostByBlogsRouterInputModel = data;
         if (useBlogsRouter) {
             sendData = {
                 title: data.title,
                 content: data.content,
-                shortDescription: data.shortDescription
-            }
-        };
-        const response: request.Response = await testingProvider.getHttp()
+                shortDescription: data.shortDescription,
+            };
+        }
+        const response: request.Response = await testingProvider
+            .getHttp()
             .post(path)
             .set(authBasicHeader)
             .send(sendData)
@@ -55,18 +58,21 @@ export const postsTestManager = {
                     likesCount: 0,
                     dislikesCount: 0,
                     myStatus: 'None',
-                    newestLikes: []
-                }
+                    newestLikes: [],
+                },
             });
         }
 
-        return {response, createdPost: createdPost};
+        return { response, createdPost: createdPost };
     },
 
-
-    async updatePost(post_id: string, data: CreatePostInputModel, expectedStatusCode: HttpStatusType)
-        : Promise<{ response: supertest.Response; updatedPost: PostViewModel | null }> {
-        const response: request.Response = await testingProvider.getHttp()
+    async updatePost(
+        post_id: string,
+        data: CreatePostInputModel,
+        expectedStatusCode: HttpStatusType,
+    ): Promise<{ response: supertest.Response; updatedPost: PostViewModel | null }> {
+        const response: request.Response = await testingProvider
+            .getHttp()
             .put(RouterPaths.posts + '/' + post_id)
             .set(authBasicHeader)
             .send(data)
@@ -85,10 +91,10 @@ export const postsTestManager = {
                 content: data.content,
                 shortDescription: data.shortDescription,
                 blogId: updatedPost.blogId,
-                blogName: expect.any(String)
+                blogName: expect.any(String),
             });
         }
 
-        return {response, updatedPost: updatedPost};
-    }
-}
+        return { response, updatedPost: updatedPost };
+    },
+};

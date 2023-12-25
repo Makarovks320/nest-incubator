@@ -1,5 +1,5 @@
 import { HttpStatus } from '../../../src/common/types';
-import { authBasicHeader, generateString } from "../../utils/test_utilities";
+import { authBasicHeader, generateString } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { RouterPaths } from '../../../src/application/utils/router-paths';
 import { usersTestManager } from '../../utils/usersTestManager';
@@ -7,128 +7,129 @@ import { CreateUserInputModel } from '../../../src/features/users/types/create-i
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
 
 describe('/Testing users', () => {
-
     const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 
     it('should return 401 without AUTH', async () => {
-        await testingProvider.getHttp()
-            .get(RouterPaths.users)
-            .expect(HttpStatus.UNAUTHORIZED_401)
-    })
-
+        await testingProvider.getHttp().get(RouterPaths.users).expect(HttpStatus.UNAUTHORIZED_401);
+    });
 
     it('should return 200 and empty array', async () => {
-        await testingProvider.getHttp()
+        await testingProvider
+            .getHttp()
             .get(RouterPaths.users)
             .set(authBasicHeader)
-            .expect(HttpStatus.OK_200, {pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: []})
-    })
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
 
     it('should not create user without AUTH', async () => {
-
         const data: CreateUserInputModel = {
-            login: "Feynman",
-            password: "Richard8=227",
-            email: "Feynman1918@gmailya.com",
-        }
+            login: 'Feynman',
+            password: 'Richard8=227',
+            email: 'Feynman1918@gmailya.com',
+        };
 
-        await usersTestManager.createUser(data, HttpStatus.UNAUTHORIZED_401)
+        await usersTestManager.createUser(data, HttpStatus.UNAUTHORIZED_401);
 
-        await testingProvider.getHttp()
+        await testingProvider
+            .getHttp()
             .get(RouterPaths.users)
             .set(authBasicHeader)
-            .expect(HttpStatus.OK_200, {pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: []})
-    })
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
 
     let createdUser1: UserViewModel | null = null;
 
     it(`shouldn't create user with AUTH and incorrect input data`, async () => {
-
         // Короткий логин
         const data1: CreateUserInputModel = {
-            login: "12",
-            password: "password123",
-            email: "email@mail.com",
-        }
+            login: '12',
+            password: 'password123',
+            email: 'email@mail.com',
+        };
 
-        await usersTestManager.createUser(data1, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data1, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Длинный логин
         const data2: CreateUserInputModel = {
             login: generateString(11),
-            password: "password123",
-            email: "email@mail.com",
-        }
+            password: 'password123',
+            email: 'email@mail.com',
+        };
 
-        await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader);
         // Запрещенный символ @ в логине
         const data3: CreateUserInputModel = {
-            login: "bad_login@",
-            password: "password123",
-            email: "email@mail.com",
-        }
+            login: 'bad_login@',
+            password: 'password123',
+            email: 'email@mail.com',
+        };
 
-        await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader);
         // Пароль короткий / длинный
         const data4: CreateUserInputModel = {
-            login: "good_login",
+            login: 'good_login',
             password: generateString(5),
-            email: "email@mail.com",
-        }
+            email: 'email@mail.com',
+        };
 
-        await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         const data5: CreateUserInputModel = {
-            login: "good_login",
+            login: 'good_login',
             password: generateString(21),
-            email: "email@mail.com",
-        }
+            email: 'email@mail.com',
+        };
 
-        await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Проверка email на соответствие регулярному выражению
 
         const data6: CreateUserInputModel = {
-            login: "good_login",
-            password: "password123",
-            email: "email@mail.co.m",
-        }
+            login: 'good_login',
+            password: 'password123',
+            email: 'email@mail.co.m',
+        };
 
-        await usersTestManager.createUser(data6, HttpStatus.BAD_REQUEST_400, authBasicHeader)
+        await usersTestManager.createUser(data6, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
-        await testingProvider.getHttp()
+        await testingProvider
+            .getHttp()
             .get(RouterPaths.users)
             .set(authBasicHeader)
-            .expect(HttpStatus.OK_200, {pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: []})
-    })
-
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
 
     it('should create user with AUTH and correct input data', async () => {
-
         const data: CreateUserInputModel = {
-            login: "good_login",
-            password: "password123",
-            email: "email@mail.com",
-        }
+            login: 'good_login',
+            password: 'password123',
+            email: 'email@mail.com',
+        };
 
-        const {createdUser} = await usersTestManager.createUser(data, HttpStatus.CREATED_201, authBasicHeader)
+        const { createdUser } = await usersTestManager.createUser(data, HttpStatus.CREATED_201, authBasicHeader);
 
         createdUser1 = createdUser;
         if (!createdUser1) {
             throw new Error('test cannot be performed.');
         }
 
-        await testingProvider.getHttp()
+        await testingProvider
+            .getHttp()
             .get(RouterPaths.users)
             .set(authBasicHeader)
             .expect(HttpStatus.OK_200, {
-                pagesCount: 1, page: 1, pageSize: 10, totalCount: 1, items: [{
-                    "id": createdUser1.id,
-                    login: data.login,
-                    email: data.email,
-                    "createdAt": createdUser1.createdAt,
-                }]
-            })
-    })
-
-})
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 1,
+                items: [
+                    {
+                        id: createdUser1.id,
+                        login: data.login,
+                        email: data.email,
+                        createdAt: createdUser1.createdAt,
+                    },
+                ],
+            });
+    });
+});
