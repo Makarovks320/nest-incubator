@@ -1,4 +1,4 @@
-import {CreateBlogInputModel, UpdateBlogInputDto} from '../types/dto';
+import {CreateBlogInputModel} from '../types/dto';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {HydratedDocument} from 'mongoose';
 

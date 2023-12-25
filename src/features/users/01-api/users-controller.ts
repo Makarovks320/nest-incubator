@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query } from '@nestjs/common';
 import { UserService } from '../02-services/user-service';
 import { UsersQueryRepository } from '../04-repositories/users-query-repository';
 import { HttpStatus, WithPagination } from '../../../common/types';
@@ -7,7 +7,7 @@ import { UserViewModel } from '../types/user-view-model';
 import { UsersDataMapper } from './users-data-mapper';
 import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-params';
 import { getQueryParamsForUsers } from '../../../helpers/get-query-params';
-import { User, UserDocument } from '../03-domain/user-db-model';
+import { UserDocument } from '../03-domain/user-db-model';
 
 @Controller('users')
 export class UsersController {
