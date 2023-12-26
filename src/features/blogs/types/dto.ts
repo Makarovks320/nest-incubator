@@ -1,24 +1,17 @@
 import { PaginationQueryModel, WithId } from '../../../common/types';
+import { Blog } from '../03-domain/blog-db-model';
 
-export type IBlog = {
-    name: string;
-    description: string;
-    websiteUrl: string;
-    isMembership: boolean;
-    createdAt: Date;
-};
+export type CreateBlogInputModel = Pick<Blog, 'name' | 'description' | 'websiteUrl'>;
 
-export type CreateBlogInputModel = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
+export type UpdateBlogInputDto = Pick<Blog, 'name' | 'description' | 'websiteUrl'>;
 
-export type UpdateBlogInputDto = Pick<IBlog, 'name' | 'description' | 'websiteUrl'>;
-
-export type BlogViewModel = Pick<IBlog, 'name' | 'description' | 'websiteUrl' | 'isMembership'> & {
+export type BlogViewModel = Pick<Blog, 'name' | 'description' | 'websiteUrl' | 'isMembership'> & {
     id: string;
     createdAt: string;
 };
 
-export type BlogMongoType = WithId<IBlog>;
+export type BlogMongoType = WithId<Blog>;
 
-export type BlogInputQueryParams = PaginationQueryModel<IBlog> & {
+export type BlogInputQueryParams = PaginationQueryModel<Blog> & {
     searchNameTerm?: string;
 };
