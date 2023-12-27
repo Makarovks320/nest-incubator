@@ -8,6 +8,8 @@ import { PostsQueryRepository } from '../04-repositories/posts-query-repository'
 import { PostInputQueryParams } from '../types/dto';
 import { PostQueryParams } from '../types/post-query-params-type';
 import { getPostQueryParams } from '../../../helpers/get-query-params';
+import { CreatePostInputDto } from '../05-dto/CreatePostInputDto';
+import { UpdatePostInputDto } from '../05-dto/UpdatePostInputDto';
 
 @Controller('posts')
 export class PostsController {
@@ -16,6 +18,20 @@ export class PostsController {
         private blogsQueryRepository: BlogsQueryRepository,
         private postsQueryRepository: PostsQueryRepository,
     ) {}
+
+    @Post()
+    @HttpCode(HttpStatus.CREATED_201)
+    async createNewPost(@Body() inputModel: CreatePostInputDto): Promise<PostViewModel> {
+        const blog = await this.blogsQueryRepository.getBlogById(inputModel.blogId);
+        if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');
+
+        const post: CreatePostModel = {
+            ...inputModel,
+            blogName: blog.name,
+        };
+        const result: PostViewModel = await this.postService.createNewPost(post);
+        return result;
+    }
 
     @Get()
     @HttpCode(HttpStatus.OK_200)
@@ -35,23 +51,9 @@ export class PostsController {
         return post;
     }
 
-    @Post()
-    @HttpCode(HttpStatus.CREATED_201)
-    async createNewPost(@Body() inputModel: CreatePostInputModel): Promise<PostViewModel> {
-        const blog = await this.blogsQueryRepository.getBlogById(inputModel.blogId);
-        if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');
-
-        const post: CreatePostModel = {
-            ...inputModel,
-            blogName: blog.name,
-        };
-        const result: PostViewModel = await this.postService.createNewPost(post);
-        return result;
-    }
-
     @Put(':id')
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    async updatePost(@Param('id') postId: string, @Body() inputModel: UpdatePostInputModel) {
+    async updatePost(@Param('id') postId: string, @Body() inputModel: UpdatePostInputDto) {
         const updatedPost = await this.postService.updatePostById(postId, inputModel);
         if (updatedPost) {
             return updatedPost;
