@@ -55,41 +55,38 @@ describe('/Testing users', () => {
             password: 'password123',
             email: 'email@mail.com',
         };
-
         await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+
         // Запрещенный символ @ в логине
         const data3: CreateUserInputModel = {
-            login: 'bad_login@',
+            login: 'bad_login_@',
             password: 'password123',
             email: 'email@mail.com',
         };
-
         await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader);
-        // Пароль короткий / длинный
+
+        // Пароль короткий
         const data4: CreateUserInputModel = {
             login: 'good_login',
             password: generateString(5),
             email: 'email@mail.com',
         };
-
         await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
+        // Пароль длинный
         const data5: CreateUserInputModel = {
             login: 'good_login',
             password: generateString(21),
             email: 'email@mail.com',
         };
-
         await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Проверка email на соответствие регулярному выражению
-
         const data6: CreateUserInputModel = {
             login: 'good_login',
             password: 'password123',
             email: 'email@mail.co.m',
         };
-
         await usersTestManager.createUser(data6, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         await testingProvider

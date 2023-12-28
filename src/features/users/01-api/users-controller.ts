@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    NotFoundException,
+    Param,
+    Post,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { UserService } from '../02-services/user-service';
 import { UsersQueryRepository } from '../04-repositories/users-query-repository';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
@@ -8,8 +19,11 @@ import { UsersDataMapper } from './users-data-mapper';
 import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-params';
 import { getQueryParamsForUsers } from '../../../application/helpers/get-query-params';
 import { UserDocument } from '../03-domain/user-db-model';
+import { RefreshTokenGuard } from '../../../application/guards/basicAuthGuard';
+import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
 
 @Controller('users')
+@UseGuards(RefreshTokenGuard)
 export class UsersController {
     constructor(
         private userService: UserService,
@@ -18,7 +32,7 @@ export class UsersController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED_201)
-    async createNewUser(@Body() inputModel: CreateUserInputModel) {
+    async createNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel = await this.userService.createUser(inputModel);
         return createdUser;
     }

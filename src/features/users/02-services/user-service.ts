@@ -3,6 +3,7 @@ import { User, UserDocument } from '../03-domain/user-db-model';
 import { Injectable } from '@nestjs/common';
 import { CreateUserInputModel } from '../types/create-input-user-model';
 import { UserViewModel } from '../types/user-view-model';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -25,14 +26,18 @@ export class UserService {
         return await this.usersRepository.clear();
     }
 
-    // async checkCredentials(loginOrEmail: string, password: string): Promise<User | null> {
-    //     const user = await this.usersRepository.findUserByLoginOrEmail(loginOrEmail);
-    //     if (!user) return null;
-    //     const passwordHash = await this._generateHash(password, user.accountData.salt);
-    //     if (user.accountData.hash !== passwordHash) {
-    //         return null;
-    //     } else {
-    //         return user;
-    //     }
-    // }
+    async checkCredentials(loginOrEmail: string, password: string): Promise<UserDocument | null> {
+        const user = await this.usersRepository.findUserByLoginOrEmail(loginOrEmail);
+        if (!user) return null;
+        const passwordHash = await this._generateHash(password, user.accountData.salt);
+        if (user.accountData.hash !== passwordHash) {
+            return null;
+        } else {
+            return user;
+        }
+    }
+
+    async _generateHash(password: string, salt: string) {
+        return await bcrypt.hash(password, salt);
+    }
 }
