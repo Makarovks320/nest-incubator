@@ -146,6 +146,7 @@ export class AuthController {
         }
     }
 
+    @Post('password-recovery')
     async recoverPassword(req: Request, res: Response) {
         const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(req.body.email);
         if (isPasswordRecovered) {
