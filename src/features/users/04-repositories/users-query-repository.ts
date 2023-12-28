@@ -3,7 +3,7 @@ import { User, UserDocument, UserMongoType } from '../03-domain/user-db-model';
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { SortDirection, UsersQueryParams } from '../types/users-query-params';
-import { WithPagination } from '../../../common/types';
+import { WithPagination } from '../../../application/types/types';
 import { UserViewModel } from '../types/user-view-model';
 import { UsersDataMapper } from '../01-api/users-data-mapper';
 

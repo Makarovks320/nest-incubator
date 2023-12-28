@@ -1,8 +1,8 @@
-import { BlogQueryParams } from '../features/blogs/types/query';
-import { BlogInputQueryParams } from '../features/blogs/types/dto';
-import { PostQueryParams } from '../features/posts/types/post-query-params-type';
-import { PostInputQueryParams } from '../features/posts/types/dto';
-import { UsersInputQueryParams, UsersQueryParams } from '../features/users/types/users-query-params';
+import { BlogQueryParams } from '../../features/blogs/types/query';
+import { BlogInputQueryParams } from '../../features/blogs/types/dto';
+import { PostQueryParams } from '../../features/posts/types/post-query-params-type';
+import { PostInputQueryParams } from '../../features/posts/types/dto';
+import { UsersInputQueryParams, UsersQueryParams } from '../../features/users/types/users-query-params';
 
 export function getPostQueryParams(query: PostInputQueryParams): PostQueryParams {
     return new PostQueryParams(

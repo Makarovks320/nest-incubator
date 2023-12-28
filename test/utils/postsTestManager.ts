@@ -5,10 +5,10 @@ import {
     CreatePostByBlogsRouterInputModel,
     CreatePostInputModel,
 } from '../../src/features/posts/types/create-post-input-type';
-import { HttpStatusType } from '../../src/common/types';
+import { HttpStatusType } from '../../src/application/types/types';
 import { PostViewModel } from '../../src/features/posts/types/post-view-model';
-import { RouterPaths } from '../../src/application/utils/router-paths';
-import { HttpStatus } from '../../src/common/types';
+import { RouterPaths } from '../../src/application/types/router-paths';
+import { HttpStatus } from '../../src/application/types/types';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();

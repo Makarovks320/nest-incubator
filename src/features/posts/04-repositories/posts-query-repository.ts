@@ -6,7 +6,7 @@ import { PostViewModel } from '../types/post-view-model';
 import { PostsDataMapper } from '../01-api/posts-data-mapper';
 import { InjectModel } from '@nestjs/mongoose';
 import { PostQueryParams } from '../types/post-query-params-type';
-import { WithPagination } from '../../../common/types';
+import { WithPagination } from '../../../application/types/types';
 
 @Injectable()
 export class PostsQueryRepository {

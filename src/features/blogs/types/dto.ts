@@ -1,4 +1,4 @@
-import { PaginationQueryModel, WithId } from '../../../common/types';
+import { PaginationQueryModel, WithId } from '../../../application/types/types';
 import { Blog } from '../03-domain/blog-db-model';
 
 export type CreateBlogInputModel = Pick<Blog, 'name' | 'description' | 'websiteUrl'>;

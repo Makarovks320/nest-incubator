@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
-import { HttpStatus, WithPagination } from '../../../common/types';
+import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreatePostInputModel, CreatePostModel, UpdatePostInputModel } from '../types/create-post-input-type';
 import { PostService } from '../02-services/post-service';
 import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
@@ -7,7 +7,7 @@ import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
 import { PostInputQueryParams } from '../types/dto';
 import { PostQueryParams } from '../types/post-query-params-type';
-import { getPostQueryParams } from '../../../helpers/get-query-params';
+import { getPostQueryParams } from '../../../application/helpers/get-query-params';
 import { CreatePostInputDto } from '../05-dto/CreatePostInputDto';
 import { UpdatePostInputDto } from '../05-dto/UpdatePostInputDto';
 

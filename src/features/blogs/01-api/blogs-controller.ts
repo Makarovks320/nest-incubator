@@ -16,13 +16,13 @@ import {
     BlogViewModel,
     CreateBlogInputModel,
 } from '../types/dto';
-import { HttpStatus, WithPagination } from '../../../common/types';
+import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { BlogsQueryRepository } from '../04-repositories/blogs-query-repository';
 import { BlogQueryParams } from '../types/query';
 import {
     getBlogQueryParams,
     getPostQueryParams,
-} from '../../../helpers/get-query-params';
+} from '../../../application/helpers/get-query-params';
 import { PostInputQueryParams } from '../../posts/types/dto';
 import { PostViewModel } from '../../posts/types/post-view-model';
 import { PostQueryParams } from '../../posts/types/post-query-params-type';

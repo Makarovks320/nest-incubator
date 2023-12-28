@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument } from 'mongoose';
-import { WithId } from '../../../common/types';
+import { WithId } from '../../../application/types/types';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserMongoType = WithId<User>;

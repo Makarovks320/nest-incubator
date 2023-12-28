@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiValidationError } from '../core/ApiValidationError';
+import { ApiValidationError } from '../errors/ApiValidationError';
 
 @Catch(ApiValidationError)
 export class HttpExceptionFilter implements ExceptionFilter {

@@ -1,7 +1,7 @@
-import { HttpStatus } from '../../../src/common/types';
+import { HttpStatus } from '../../../src/application/types/types';
 import { authBasicHeader, generateString } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
-import { RouterPaths } from '../../../src/application/utils/router-paths';
+import { RouterPaths } from '../../../src/application/types/router-paths';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { CreateUserInputModel } from '../../../src/features/users/types/create-input-user-model';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';

@@ -1,8 +1,8 @@
-import { HttpStatus } from '../../../src/common/types';
+import { HttpStatus } from '../../../src/application/types/types';
 import { authBasicHeader } from '../../utils/test_utilities';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { ObjectId } from 'mongodb';
-import { RouterPaths } from '../../../src/application/utils/router-paths';
+import { RouterPaths } from '../../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { BlogViewModel, CreateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { PostViewModel } from '../../../src/features/posts/types/post-view-model';

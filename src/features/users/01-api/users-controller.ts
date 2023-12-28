@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Query } from '@nestjs/common';
 import { UserService } from '../02-services/user-service';
 import { UsersQueryRepository } from '../04-repositories/users-query-repository';
-import { HttpStatus, WithPagination } from '../../../common/types';
+import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreateUserInputModel } from '../types/create-input-user-model';
 import { UserViewModel } from '../types/user-view-model';
 import { UsersDataMapper } from './users-data-mapper';
 import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-params';
-import { getQueryParamsForUsers } from '../../../helpers/get-query-params';
+import { getQueryParamsForUsers } from '../../../application/helpers/get-query-params';
 import { UserDocument } from '../03-domain/user-db-model';
 
 @Controller('users')

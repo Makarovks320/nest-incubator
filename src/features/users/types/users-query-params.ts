@@ -1,6 +1,6 @@
-import { PaginationQueryModel } from '../../../common/types';
+import { PaginationQueryModel } from '../../../application/types/types';
 import { User } from '../03-domain/user-db-model';
-import { CommonQueryParams } from '../../../common/types/common-query-params';
+import { CommonQueryParams } from '../../../application/types/common-query-params';
 
 export type UsersInputQueryParams = PaginationQueryModel<User> & {
     searchLoginTerm?: string;

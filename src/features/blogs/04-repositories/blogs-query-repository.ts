@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Blog, BlogDocument } from '../03-domain/blog-db-model';
 import { BlogMongoType, BlogViewModel } from '../types/dto';
 import { BlogsDataMapper } from '../01-api/blogs-data-mapper';
-import { WithPagination } from '../../../common/types';
+import { WithPagination } from '../../../application/types/types';
 import { BlogQueryParams } from '../types/query';
 
 @Injectable()

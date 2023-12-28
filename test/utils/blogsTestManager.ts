@@ -1,8 +1,8 @@
 import { BlogViewModel, CreateBlogInputModel } from '../../src/features/blogs/types/dto';
 import request from 'supertest';
 import * as supertest from 'supertest';
-import { RouterPaths } from '../../src/application/utils/router-paths';
-import { HttpStatus, HttpStatusType } from '../../src/common/types';
+import { RouterPaths } from '../../src/application/types/router-paths';
+import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { authBasicHeader } from './test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 

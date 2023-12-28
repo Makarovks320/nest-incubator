@@ -2,8 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import { agent, SuperAgentTest } from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { useAppSettings } from '../../src/application/utils/use-app-settings';
-import { RouterPaths } from '../../src/application/utils/router-paths';
+import { useAppSettings } from '../../src/application/use-app-settings';
+import { RouterPaths } from '../../src/application/types/router-paths';
 
 export type AppE2eTestingProvider = {
     getApp(): INestApplication;

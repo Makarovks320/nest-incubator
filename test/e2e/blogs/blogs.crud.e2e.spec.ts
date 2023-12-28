@@ -1,5 +1,5 @@
-import { HttpStatus } from '../../../src/common/types';
-import { RouterPaths } from '../../../src/application/utils/router-paths';
+import { HttpStatus } from '../../../src/application/types/types';
+import { RouterPaths } from '../../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputDto } from '../../../src/features/blogs/types/dto';
 import { blogsTestManager } from '../../utils/blogsTestManager';

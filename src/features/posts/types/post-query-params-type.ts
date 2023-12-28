@@ -1,4 +1,4 @@
-import { CommonQueryParams } from '../../../common/types/common-query-params';
+import { CommonQueryParams } from '../../../application/types/common-query-params';
 
 export class PostQueryParams implements CommonQueryParams {
     constructor(

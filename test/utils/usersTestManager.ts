@@ -1,7 +1,7 @@
 import request from 'supertest';
 import * as supertest from 'supertest';
-import { HttpStatus, HttpStatusType } from '../../src/common/types';
-import { RouterPaths } from '../../src/application/utils/router-paths';
+import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
+import { RouterPaths } from '../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 import { CreateUserInputModel } from '../../src/features/users/types/create-input-user-model';
 import { UserViewModel } from '../../src/features/users/types/user-view-model';
