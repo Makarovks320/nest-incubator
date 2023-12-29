@@ -8,8 +8,9 @@ import { RouterPaths } from '../../../src/application/types/router-paths';
 import { UsersRepository } from '../../../src/features/users/04-repositories/users-repository';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { agent, SuperAgentTest } from 'supertest';
+import request, { SuperAgentTest } from 'supertest';
 import { authBasicHeader } from '../../utils/test_utilities';
+import { AppModule } from '../../../src/app.module';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -22,13 +23,14 @@ import { authBasicHeader } from '../../utils/test_utilities';
 
 describe('testing password recovery', () => {
     let app: INestApplication;
-    let http: SuperAgentTest;
+    let httpServer: SuperAgentTest;
     let jwtService: JwtService;
     let usersRepository: UsersRepository;
 
     beforeEach(async () => {
         const moduleRef = await Test.createTestingModule({
             // controllers: [],
+            imports: [AppModule],
             providers: [JwtService, UsersRepository],
         }).compile();
 
@@ -37,8 +39,8 @@ describe('testing password recovery', () => {
 
         app = moduleRef.createNestApplication();
         await app.init();
-        http = agent(app.getHttpServer());
-        await agent(app.getHttpServer()).delete(RouterPaths.testing);
+        httpServer = app.getHttpServer();
+        await request(httpServer).delete(RouterPaths.testing);
     });
     // изначальные credentials
     const email: string = "email123@mail.com";
@@ -72,7 +74,7 @@ describe('testing password recovery', () => {
             'email': 'unexistingEmailAddress@jopa.com'
         }
 
-        await http
+        await request(httpServer)
             .post(`${RouterPaths.auth}/password-recovery`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204)
@@ -91,7 +93,7 @@ describe('testing password recovery', () => {
             'email': 'email123@mail.com'
         }
 
-        await http
+        await request(httpServer)
             .post(`${RouterPaths.auth}/password-recovery`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204);
@@ -121,7 +123,7 @@ describe('testing password recovery', () => {
             'recoveryCode': passwordRecovery.passwordRecoveryCode
         }
 
-        const response = await http
+        const response = await request(httpServer)
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.BAD_REQUEST_400)
@@ -136,7 +138,7 @@ describe('testing password recovery', () => {
             'recoveryCode': 'wrong recovery code'
         }
 
-        const response = await http
+        const response = await request(httpServer)
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.BAD_REQUEST_400)
@@ -154,7 +156,7 @@ describe('testing password recovery', () => {
             'recoveryCode': passwordRecovery.passwordRecoveryCode
         }
 
-        await http
+        await request(httpServer)
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204)
@@ -166,7 +168,7 @@ describe('testing password recovery', () => {
             'password': passwordBeforeChanging
         }
 
-        await http
+        await request(httpServer)
             .post(`${RouterPaths.auth}/login`)
             .send(data)
             .expect(HttpStatus.UNAUTHORIZED_401)
@@ -178,7 +180,7 @@ describe('testing password recovery', () => {
             'password': newPassword
         }
 
-        const response = await http
+        const response = await request(httpServer)
             .post(`${RouterPaths.auth}/login`)
             .send(data)
             .expect(HttpStatus.OK_200);
