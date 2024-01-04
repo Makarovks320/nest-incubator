@@ -1,22 +1,13 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { JwtService } from '../../../src/application/adapters/jwt-service';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
-import {
-    PasswordRecoveryType,
-    User,
-    UserDocument,
-    UserSchema,
-} from '../../../src/features/users/03-domain/user-db-model';
+import { PasswordRecoveryType, UserDocument } from '../../../src/features/users/03-domain/user-db-model';
 import { CreateUserInputModel } from '../../../src/features/users/types/create-input-user-model';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { UsersRepository } from '../../../src/features/users/04-repositories/users-repository';
-import { Test } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import request, { SuperAgentTest } from 'supertest';
 import { authBasicHeader } from '../../utils/test_utilities';
-import { AppModule } from '../../../src/app.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -24,40 +15,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 //     }
 // }
 
-// const jwtService = new JwtService();
-// const usersRepository = new UsersRepository();
-
 describe('testing password recovery', () => {
-    let app: INestApplication;
-    let httpServer: SuperAgentTest;
+    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+
     let jwtService: JwtService;
     let usersRepository: UsersRepository;
 
-    beforeEach(async () => {
-        const moduleRef = await Test.createTestingModule({
-            // controllers: [],
-            imports: [
-                AppModule,
-                MongooseModule.forFeature([
-                    {
-                        name: User.name,
-                        schema: UserSchema,
-                    },
-                ]),
-            ],
-            providers: [JwtService, UsersRepository],
-        }).compile();
-
-        jwtService = moduleRef.get<JwtService>(JwtService);
-        usersRepository = moduleRef.get<UsersRepository>(UsersRepository);
-
-        app = moduleRef.createNestApplication();
-        await app.init();
-        httpServer = app.getHttpServer();
-        await request(httpServer).delete(RouterPaths.testing);
-    });
     // изначальные credentials
     const email: string = 'email123@mail.com';
+    const login: string = 'login1';
     const passwordBeforeChanging: string = 'password123';
     // сюда сохраним юзера
     let user: UserViewModel | null = null;
@@ -69,16 +35,12 @@ describe('testing password recovery', () => {
     beforeAll(async () => {
         // Создаем юзера
         const userData: CreateUserInputModel = {
-            login: 'login1',
+            login: login,
             password: passwordBeforeChanging,
             email: email,
         };
 
-        const { createdUser } = await usersTestManager.createUser(
-            userData,
-            HttpStatus.CREATED_201,
-            authBasicHeader,
-        );
+        const { createdUser } = await usersTestManager.createUser(userData, HttpStatus.CREATED_201, authBasicHeader);
         user = createdUser;
     });
 
@@ -91,7 +53,8 @@ describe('testing password recovery', () => {
             email: 'unexistingEmailAddress@jopa.com',
         };
 
-        await request(httpServer)
+        await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/password-recovery`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204);
@@ -103,15 +66,15 @@ describe('testing password recovery', () => {
         // const isPlaying = await emailAdapter.sendEmail('a', 'b', 'c');
 
         if (!user) throw new Error('test cannot be performed.');
-        const userDB: UserDocument | null =
-            await usersRepository.findUserByLoginOrEmail(user.email);
+        const userDB: UserDocument | null = await usersRepository.findUserByLoginOrEmail(user.email);
         if (!userDB) throw new Error('test cannot be performed.');
 
         const data = {
             email: 'email123@mail.com',
         };
 
-        await request(httpServer)
+        await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/password-recovery`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204);
@@ -120,19 +83,17 @@ describe('testing password recovery', () => {
         // expect(isPlaying).toBe(true);
 
         // Response получен, теперь проверим, что код сохранился верный.
-        const userWithCreatedPasswordRecoveryCode: UserDocument | null =
-            await usersRepository.findUserByLoginOrEmail(data.email);
+        const userWithCreatedPasswordRecoveryCode: UserDocument | null = await usersRepository.findUserByLoginOrEmail(
+            data.email,
+        );
 
-        if (!userWithCreatedPasswordRecoveryCode)
-            throw new Error('test cannot be performed.');
+        if (!userWithCreatedPasswordRecoveryCode) throw new Error('test cannot be performed.');
 
         // Заодно сохраним код для последующих тестов
         passwordRecovery = userWithCreatedPasswordRecoveryCode.passwordRecovery;
 
         // проверим код на корректность
-        const restoredUserDb_id = await jwtService.getUserIdByToken(
-            passwordRecovery.passwordRecoveryCode,
-        );
+        const restoredUserDb_id = await jwtService.getUserIdByToken(passwordRecovery.passwordRecoveryCode);
         expect(userDB._id).toEqual(restoredUserDb_id);
         expect(passwordRecovery.active).toEqual(false);
     });
@@ -145,14 +106,13 @@ describe('testing password recovery', () => {
             recoveryCode: passwordRecovery.passwordRecoveryCode,
         };
 
-        const response = await request(httpServer)
+        const response = await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.BAD_REQUEST_400);
         expect(response.body).toEqual({
-            errorsMessages: [
-                { message: expect.any(String), field: 'newPassword' },
-            ],
+            errorsMessages: [{ message: expect.any(String), field: 'newPassword' }],
         });
     });
 
@@ -162,14 +122,13 @@ describe('testing password recovery', () => {
             recoveryCode: 'wrong recovery code',
         };
 
-        const response = await request(httpServer)
+        const response = await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.BAD_REQUEST_400);
         expect(response.body).toEqual({
-            errorsMessages: [
-                { message: expect.any(String), field: 'recoveryCode' },
-            ],
+            errorsMessages: [{ message: expect.any(String), field: 'recoveryCode' }],
         });
     });
 
@@ -181,7 +140,8 @@ describe('testing password recovery', () => {
             recoveryCode: passwordRecovery.passwordRecoveryCode,
         };
 
-        await request(httpServer)
+        await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/new-password`)
             .send(data)
             .expect(HttpStatus.NO_CONTENT_204);
@@ -193,7 +153,8 @@ describe('testing password recovery', () => {
             password: passwordBeforeChanging,
         };
 
-        await request(httpServer)
+        await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/login`)
             .send(data)
             .expect(HttpStatus.UNAUTHORIZED_401);
@@ -205,13 +166,12 @@ describe('testing password recovery', () => {
             password: newPassword,
         };
 
-        const response = await request(httpServer)
+        const response = await testingProvider
+            .getHttp()
             .post(`${RouterPaths.auth}/login`)
             .send(data)
             .expect(HttpStatus.OK_200);
-        expect(response.body.accessToken).toMatch(
-            /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/,
-        );
+        expect(response.body.accessToken).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
     });
 });
 
