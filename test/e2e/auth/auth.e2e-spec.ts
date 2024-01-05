@@ -15,7 +15,7 @@ import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUse
 //     }
 // }
 
-describe('testing password recovery', () => {
+describe('testing auth flow', () => {
     const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 
     let jwtService: JwtService;
