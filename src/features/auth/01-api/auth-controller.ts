@@ -11,6 +11,8 @@ import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
 import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard';
+import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
+import { UserViewModel } from '../../users/types/user-view-model';
 
 const refreshTokenOptions = {httpOnly: true, secure: true}
 
@@ -119,13 +121,11 @@ export class AuthController {
         }
     }
 
-    async registerNewUser(req: Request, res: Response) {
-        const user = await this.authService.createUser(req.body.login, req.body.email, req.body.password)
-        if (user) {
-            res.status(HttpStatus.NO_CONTENT_204).send();
-        } else {
-            res.status(HttpStatus.BAD_REQUEST_400).send();
-        }
+    @Post('registration')
+    @HttpCode(HttpStatus.OK_200)
+    async registerNewUser(@Body() inputModel: CreateUserInputDto) {
+        const createdUser: UserViewModel = await this.userService.createUser(inputModel);
+        return createdUser;
     }
 
     async confirmRegistration(req: Request, res: Response) {

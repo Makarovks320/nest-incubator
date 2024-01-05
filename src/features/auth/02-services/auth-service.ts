@@ -7,7 +7,6 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
 import { JwtService } from '../../../application/adapters/jwt-service';
 import { EmailManager } from '../../../application/managers/emailManager';
-import { UserViewModel } from '../../users/types/user-view-model';
 import { UserService } from '../../users/02-services/user-service';
 
 @Injectable()
@@ -18,36 +17,6 @@ export class AuthService {
         private jwtService: JwtService,
         private emailManager: EmailManager,
     ) {}
-
-    async createUser(login: string, email: string, password: string): Promise<UserViewModel | null> {
-        const passwordSalt = await bcrypt.genSalt(8);
-        const passwordHash = await this._generateHash(password, passwordSalt);
-        const user = new UserDBModel(
-            new ObjectId(),
-            {
-                userName: login,
-                email,
-                salt: passwordSalt,
-                hash: passwordHash,
-          createdAt: (new Date()).toISOString()
-            },
-            {
-                confirmationCode: uuidv4(),
-          expirationDate: add(new Date(), {minutes: 15}),
-          isConfirmed: false
-        },
-        {
-          passwordRecoveryCode: "",
-          active: false
-        });
-    const createResult = await this.userService.createUser(user);
-    const sendEmailResult = await this.emailManager.sendConformationCode(email, user.emailConfirmation.confirmationCode);
-    if (!sendEmailResult) {
-      await this.usersRepository.deleteUserById(user._id);
-      return null;
-    }
-    return createResult;
-  }
 
   async confirmEmailByCodeOrEmail(codeOrEmail: string): Promise<boolean> {
     const user = await this.usersRepository.findUserByConfirmationCodeOrEmail(codeOrEmail);
