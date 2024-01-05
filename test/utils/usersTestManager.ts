@@ -16,6 +16,7 @@ export const usersTestManager = {
         data: CreateUserInputDto,
         expectedStatusCode: HttpStatusType = HttpStatus.CREATED_201,
         headers = {},
+        errorField?: string,
     ): Promise<{ response: supertest.Response; createdUser: UserViewModel | null }> {
         const response: request.Response = await testingProvider
             .getHttp()
@@ -34,6 +35,18 @@ export const usersTestManager = {
                 login: data.login,
                 email: data.email,
                 createdAt: expect.any(String),
+            });
+        }
+        if (expectedStatusCode === HttpStatus.BAD_REQUEST_400) {
+            createdUser = response.body;
+
+            expect(createdUser).toEqual({
+                errorsMessages: [
+                    {
+                        message: expect.any(String),
+                        field: errorField,
+                    },
+                ],
             });
         }
         return { response, createdUser };

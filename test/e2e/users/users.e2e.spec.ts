@@ -47,7 +47,7 @@ describe('/Testing users', () => {
             email: 'email@mail.com',
         };
 
-        await usersTestManager.createUser(data1, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data1, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'login');
 
         // Длинный логин
         const data2: CreateUserInputDto = {
@@ -55,7 +55,7 @@ describe('/Testing users', () => {
             password: 'password123',
             email: 'email@mail.com',
         };
-        await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'login');
 
         // Запрещенный символ @ в логине
         const data3: CreateUserInputDto = {
@@ -63,7 +63,7 @@ describe('/Testing users', () => {
             password: 'password123',
             email: 'email@mail.com',
         };
-        await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'login');
 
         // Пароль короткий
         const data4: CreateUserInputDto = {
@@ -71,7 +71,7 @@ describe('/Testing users', () => {
             password: generateString(5),
             email: 'email@mail.com',
         };
-        await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'password');
 
         // Пароль длинный
         const data5: CreateUserInputDto = {
@@ -79,15 +79,15 @@ describe('/Testing users', () => {
             password: generateString(21),
             email: 'email@mail.com',
         };
-        await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'password');
 
-        // Проверка email на соответствие регулярному выражению
+        // email не соответствует регулярному выражению
         const data6: CreateUserInputDto = {
             login: 'good_login',
             password: 'password123',
             email: 'email@mail.co.m',
         };
-        await usersTestManager.createUser(data6, HttpStatus.BAD_REQUEST_400, authBasicHeader);
+        await usersTestManager.createUser(data6, HttpStatus.BAD_REQUEST_400, authBasicHeader, 'email');
 
         await testingProvider
             .getHttp()
