@@ -16,7 +16,7 @@ export const usersTestManager = {
         data: CreateUserInputDto,
         expectedStatusCode: HttpStatusType = HttpStatus.CREATED_201,
         headers = {},
-        errorField?: string,
+        errorField?: keyof CreateUserInputDto,
     ): Promise<{ response: supertest.Response; createdUser: UserViewModel | null }> {
         const response: request.Response = await testingProvider
             .getHttp()
