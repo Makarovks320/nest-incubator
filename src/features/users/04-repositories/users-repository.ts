@@ -45,7 +45,7 @@ export class UsersRepository {
         return user ? user : null;
     }
 
-    async findUserByConfirmationCodeOrEmail(codeOrEmail: string): Promise<User | null> {
+    async findUserByConfirmationCodeOrEmail(codeOrEmail: string): Promise<UserDocument | null> {
         const user = await this.userModel.findOne({
             $or: [{ 'emailConfirmation.confirmationCode': codeOrEmail }, { 'accountData.email': codeOrEmail }],
         });
@@ -65,7 +65,7 @@ export class UsersRepository {
         return result.modifiedCount === 1;
     }
 
-    async updatePassword(newPasswordHash: string, userId: ObjectId): Promise<boolean> {
+    async updatePassword(newPasswordHash: string, userId: string): Promise<boolean> {
         const result = await this.userModel.updateOne(
             { _id: userId },
             {

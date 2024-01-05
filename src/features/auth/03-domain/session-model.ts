@@ -34,7 +34,7 @@ export class Session {
     refreshTokenExpiresAt: Date;
 
     @Prop({ required: true })
-    userId: ObjectId;
+    userId: string;
 }
 
 export const SessionSchema = SchemaFactory.createForClass(Session);
