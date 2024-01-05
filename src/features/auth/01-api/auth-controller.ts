@@ -147,13 +147,10 @@ export class AuthController {
     }
 
     @Post('password-recovery')
-    async recoverPassword(req: Request, res: Response) {
-        const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(req.body.email);
-        if (isPasswordRecovered) {
-            res.status(HttpStatus.NO_CONTENT_204).send();
-        } else {
-            res.status(HttpStatus.SERVER_ERROR_500).send();
-        }
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async recoverPassword(@Body() email: string) {
+        const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(email);
+        return isPasswordRecovered;
     }
 
     // async updatePassword(req: Request, res: Response) {

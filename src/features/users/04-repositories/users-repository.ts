@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, UpdateResult } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { EmailConfirmationType, User, UserDocument } from '../03-domain/user-db-model';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,18 +15,18 @@ export class UsersRepository {
         return UsersDataMapper.getUserViewModel(createdUser);
     }
 
-    // async addPassRecoveryCode(_id: ObjectId, passwordRecoveryCode: string): Promise<boolean> {
-    //     const result = this.userModel.updateOne(
-    //         { _id: _id },
-    //         {
-    //             $set: {
-    //                 'passwordRecovery.passwordRecoveryCode': passwordRecoveryCode,
-    //                 'passwordRecoveryCode.active': true,
-    //             },
-    //         },
-    //     );
-    //     return result.modifiedCount === 1;
-    // }
+    async addPassRecoveryCode(id: string, passwordRecoveryCode: string): Promise<boolean> {
+        const result: UpdateResult = await this.userModel.updateOne(
+            { _id: id },
+            {
+                $set: {
+                    'passwordRecovery.passwordRecoveryCode': passwordRecoveryCode,
+                    'passwordRecoveryCode.active': true,
+                },
+            },
+        );
+        return result.modifiedCount === 1;
+    }
 
     async confirmUserById(_id: ObjectId): Promise<boolean> {
         const result = await this.userModel.updateOne({ _id }, { $set: { 'emailConfirmation.isConfirmed': true } });
