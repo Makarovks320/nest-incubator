@@ -13,7 +13,6 @@ import {
 import { UserService } from '../02-services/user-service';
 import { UsersQueryRepository } from '../04-repositories/users-query-repository';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
-import { CreateUserInputModel } from '../types/create-input-user-model';
 import { UserViewModel } from '../types/user-view-model';
 import { UsersDataMapper } from './users-data-mapper';
 import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-params';

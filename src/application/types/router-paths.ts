@@ -6,4 +6,4 @@ export enum RouterPaths {
     auth = '/auth',
     securityDevices = '/security/devices',
     testing = '/testing/all-data',
-};
+}

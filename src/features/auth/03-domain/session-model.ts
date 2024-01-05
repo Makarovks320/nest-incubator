@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Blog } from '../../blogs/03-domain/blog-db-model';
@@ -6,11 +6,11 @@ import { Blog } from '../../blogs/03-domain/blog-db-model';
 export type IpType = string | string[];
 
 export type SessionViewModel = {
-    ip: IpType,
-    title: string,
-    lastActiveDate: string,
-    deviceId: string
-}
+    ip: IpType;
+    title: string;
+    lastActiveDate: string;
+    deviceId: string;
+};
 
 export type SessionDocument = HydratedDocument<Blog>;
 @Schema()

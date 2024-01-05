@@ -5,11 +5,11 @@ import { appConfig } from '../config';
 import { ObjectId } from 'mongodb';
 
 export type RefreshTokenInfoType = {
-    deviceId: string,
-    userId: string,
-    iat: number,
-    exp: number
-}
+    deviceId: string;
+    userId: string;
+    iat: number;
+    exp: number;
+};
 
 @Injectable()
 export class JwtService {
@@ -17,11 +17,11 @@ export class JwtService {
     refreshSecret: string = appConfig.JWT_REFRESH_SECRET;
 
     async createAccessToken(userId: ObjectId) {
-        return jwt.sign({userId}, this.secret, {expiresIn: '600s'});
+        return jwt.sign({ userId }, this.secret, { expiresIn: '600s' });
     }
 
     async createRefreshToken(userId: ObjectId, deviceId: string) {
-        return jwt.sign({userId, deviceId}, this.refreshSecret, {expiresIn: '1200s'})
+        return jwt.sign({ userId, deviceId }, this.refreshSecret, { expiresIn: '1200s' });
     }
 
     async getUserIdByToken(token: string): Promise<string | null> {
@@ -38,15 +38,15 @@ export class JwtService {
 
     getRefreshTokenInfo(refreshToken: string): RefreshTokenInfoType | null {
         try {
-            const result: any = jwt.verify(refreshToken, this.secret)
+            const result: any = jwt.verify(refreshToken, this.secret);
             return {
                 deviceId: result.deviceId,
                 iat: result.iat * 1000,
                 exp: result.exp * 1000,
-                userId: result.userId
-            }
+                userId: result.userId,
+            };
         } catch (e) {
-            return null
+            return null;
         }
     }
 }

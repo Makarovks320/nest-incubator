@@ -3,8 +3,8 @@ import { authBasicHeader, generateString } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { usersTestManager } from '../../utils/usersTestManager';
-import { CreateUserInputModel } from '../../../src/features/users/types/create-input-user-model';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
+import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
 
 describe('/Testing users', () => {
     const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
@@ -22,7 +22,7 @@ describe('/Testing users', () => {
     });
 
     it('should not create user without AUTH', async () => {
-        const data: CreateUserInputModel = {
+        const data: CreateUserInputDto = {
             login: 'Feynman',
             password: 'Richard8=227',
             email: 'Feynman1918@gmailya.com',
@@ -41,7 +41,7 @@ describe('/Testing users', () => {
 
     it(`shouldn't create user with AUTH and incorrect input data`, async () => {
         // Короткий логин
-        const data1: CreateUserInputModel = {
+        const data1: CreateUserInputDto = {
             login: '12',
             password: 'password123',
             email: 'email@mail.com',
@@ -50,7 +50,7 @@ describe('/Testing users', () => {
         await usersTestManager.createUser(data1, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Длинный логин
-        const data2: CreateUserInputModel = {
+        const data2: CreateUserInputDto = {
             login: generateString(11),
             password: 'password123',
             email: 'email@mail.com',
@@ -58,7 +58,7 @@ describe('/Testing users', () => {
         await usersTestManager.createUser(data2, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Запрещенный символ @ в логине
-        const data3: CreateUserInputModel = {
+        const data3: CreateUserInputDto = {
             login: 'bad_login_@',
             password: 'password123',
             email: 'email@mail.com',
@@ -66,7 +66,7 @@ describe('/Testing users', () => {
         await usersTestManager.createUser(data3, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Пароль короткий
-        const data4: CreateUserInputModel = {
+        const data4: CreateUserInputDto = {
             login: 'good_login',
             password: generateString(5),
             email: 'email@mail.com',
@@ -74,7 +74,7 @@ describe('/Testing users', () => {
         await usersTestManager.createUser(data4, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Пароль длинный
-        const data5: CreateUserInputModel = {
+        const data5: CreateUserInputDto = {
             login: 'good_login',
             password: generateString(21),
             email: 'email@mail.com',
@@ -82,7 +82,7 @@ describe('/Testing users', () => {
         await usersTestManager.createUser(data5, HttpStatus.BAD_REQUEST_400, authBasicHeader);
 
         // Проверка email на соответствие регулярному выражению
-        const data6: CreateUserInputModel = {
+        const data6: CreateUserInputDto = {
             login: 'good_login',
             password: 'password123',
             email: 'email@mail.co.m',
@@ -97,7 +97,7 @@ describe('/Testing users', () => {
     });
 
     it('should create user with AUTH and correct input data', async () => {
-        const data: CreateUserInputModel = {
+        const data: CreateUserInputDto = {
             login: 'good_login',
             password: 'password123',
             email: 'email@mail.com',

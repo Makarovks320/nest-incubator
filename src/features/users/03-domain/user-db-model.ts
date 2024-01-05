@@ -1,10 +1,10 @@
-import { CreateUserInputModel } from '../types/create-input-user-model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import bcrypt from 'bcrypt';
 import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument } from 'mongoose';
 import { WithId } from '../../../application/types/types';
+import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserMongoType = WithId<User>;
@@ -56,7 +56,7 @@ export class User {
 
     createdAt: Date;
 
-    static async createUser(userInputData: CreateUserInputModel): Promise<User> {
+    static async createUser(userInputData: CreateUserInputDto): Promise<User> {
         const passwordSalt = await bcrypt.genSalt(8);
         const passwordHash = await this.prototype.generateHash(userInputData.password, passwordSalt);
         const newUser: User = new this(

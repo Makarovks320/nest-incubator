@@ -2,12 +2,12 @@ import { HttpStatus } from '../../../src/application/types/types';
 import { JwtService } from '../../../src/application/adapters/jwt-service';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
 import { PasswordRecoveryType, UserDocument } from '../../../src/features/users/03-domain/user-db-model';
-import { CreateUserInputModel } from '../../../src/features/users/types/create-input-user-model';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { UsersRepository } from '../../../src/features/users/04-repositories/users-repository';
 import { authBasicHeader } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -34,7 +34,7 @@ describe('testing password recovery', () => {
 
     beforeAll(async () => {
         // Создаем юзера
-        const userData: CreateUserInputModel = {
+        const userData: CreateUserInputDto = {
             login: login,
             password: passwordBeforeChanging,
             email: email,

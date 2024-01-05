@@ -1,25 +1,28 @@
-import {IpType, SessionDbModel} from "../models/session/session-model";
-import {SessionsRepository} from "../repositories/sessions-repository";
-import {ObjectId} from "mongodb";
-import {JwtService, RefreshTokenInfoType} from "../application/jwt-service";
-import {inject, injectable} from "inversify";
+import { IpType, SessionDbModel } from '../models/session/session-model';
+import { SessionsRepository } from '../repositories/sessions-repository';
+import { ObjectId } from 'mongodb';
+import { JwtService, RefreshTokenInfoType } from '../application/jwt-service';
+import { inject, injectable } from 'inversify';
 
 @injectable()
 export class SessionService {
     constructor(
         @inject(SessionsRepository) private sessionsRepository: SessionsRepository,
-        @inject(JwtService) private jwtService: JwtService
-    ) {
-    }
+        @inject(JwtService) private jwtService: JwtService,
+    ) {}
 
-    async addSession(ip: IpType, deviceId: string, deviceName: string, refreshToken: string)
-        : Promise<SessionDbModel | null> {
+    async addSession(
+        ip: IpType,
+        deviceId: string,
+        deviceName: string,
+        refreshToken: string,
+    ): Promise<SessionDbModel | null> {
         // достанем нужную для сессии инфу из Рефреш-токена:
         const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(refreshToken);
         if (!refreshTokenInfo) return null;
         const refreshTokenIssuedAt: Date = new Date(refreshTokenInfo.iat);
         const refreshTokenExpiresAt: Date = new Date(refreshTokenInfo.exp);
-        const userId: ObjectId = refreshTokenInfo.userId
+        const userId: ObjectId = refreshTokenInfo.userId;
 
         // сохраним сессию:
         const session: SessionDbModel = {
@@ -30,8 +33,8 @@ export class SessionService {
             deviceName,
             refreshTokenIssuedAt,
             refreshTokenExpiresAt,
-            userId
-        }
+            userId,
+        };
         await this.sessionsRepository.addSession(session);
         return session;
     }
@@ -44,8 +47,12 @@ export class SessionService {
         return await this.sessionsRepository.getSessionForDevice(deviceId);
     }
 
-    async updateSession(currentIp: IpType, deviceId: string, refreshToken: string, currentSession: SessionDbModel)
-        : Promise<SessionDbModel | null> {
+    async updateSession(
+        currentIp: IpType,
+        deviceId: string,
+        refreshToken: string,
+        currentSession: SessionDbModel,
+    ): Promise<SessionDbModel | null> {
         const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(refreshToken);
         if (!refreshTokenInfo) return null;
         const refreshTokenIssuedAt: Date = new Date(refreshTokenInfo.iat);
@@ -57,8 +64,8 @@ export class SessionService {
             ip: currentIp,
             deviceId,
             refreshTokenIssuedAt,
-            refreshTokenExpiresAt
-        }
+            refreshTokenExpiresAt,
+        };
         try {
             await this.sessionsRepository.updateSession(deviceId, session);
         } catch (e) {

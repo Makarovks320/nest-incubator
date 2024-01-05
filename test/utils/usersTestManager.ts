@@ -3,8 +3,8 @@ import * as supertest from 'supertest';
 import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { RouterPaths } from '../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
-import { CreateUserInputModel } from '../../src/features/users/types/create-input-user-model';
 import { UserViewModel } from '../../src/features/users/types/user-view-model';
+import { CreateUserInputDto } from '../../src/features/users/05-dto/CreateUserInputDto';
 
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 export const usersTestManager = {
@@ -13,7 +13,7 @@ export const usersTestManager = {
      * Если ожидаем успешное создание, метод выполнит проверку тела ответа.
      * */
     async createUser(
-        data: CreateUserInputModel,
+        data: CreateUserInputDto,
         expectedStatusCode: HttpStatusType = HttpStatus.CREATED_201,
         headers = {},
     ): Promise<{ response: supertest.Response; createdUser: UserViewModel | null }> {

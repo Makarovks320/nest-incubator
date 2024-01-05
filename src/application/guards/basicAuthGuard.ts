@@ -3,7 +3,6 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
     async canActivate(context: ExecutionContext): Promise<boolean> {
-
         const request = context.switchToHttp().getRequest();
         // закодируем верные логин и пароль для дальнейшей проверки
         const coded = Buffer.from('admin:qwerty').toString('base64');

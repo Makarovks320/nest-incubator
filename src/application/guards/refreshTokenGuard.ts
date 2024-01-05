@@ -6,11 +6,10 @@ import { UserService } from '../../features/users/02-services/user-service';
 export class RefreshTokenGuard implements CanActivate {
     constructor(
         private userService: UserService,
-        private jwtService: JwtService) {
-    }
+        private jwtService: JwtService,
+    ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-
         const request = context.switchToHttp().getRequest();
 
         const token = request.cookies.refreshToken;

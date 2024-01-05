@@ -9,7 +9,8 @@ export class EmailAdapter {
                 pass: process.env.EMAIL_APP_PASS,
             },
         });
-        const info = await transport.sendMail({
+        // const info =
+        await transport.sendMail({
             from: `INCUBATOR APP 👻 <${process.env.EMAIL_ADDRESS}>`,
             to: email,
             subject: subject,

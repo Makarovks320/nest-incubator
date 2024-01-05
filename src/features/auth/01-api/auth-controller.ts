@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import {v4 as uuidv4} from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../02-services/auth-service';
@@ -14,7 +14,7 @@ import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 
-const refreshTokenOptions = {httpOnly: true, secure: true}
+const refreshTokenOptions = { httpOnly: true, secure: true };
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +22,8 @@ export class AuthController {
         private authService: AuthService,
         private userService: UserService,
         private sessionService: SessionService,
-        private jwtService: JwtService
-    ){}
+        private jwtService: JwtService,
+    ) {}
 
     @Post('login')
     async login(@Body() input: AuthLoginInputDto, @Req() req: Request, @Res() res: Response) {
@@ -32,8 +32,8 @@ export class AuthController {
             // todo: если есть валидный рефреш-токен, сделать перезапись сессии вместо создания новой
             // подготавливаем данные для сохранения сессии:
             const deviceId: string = uuidv4();
-            const ip: IpType = req.headers['x-forwarded-for'] /*|| req.socket.remoteAddress*/ || "IP undefined";
-            const deviceName: string = req.headers['user-agent'] || "device name is undefined";
+            const ip: IpType = req.headers['x-forwarded-for'] /*|| req.socket.remoteAddress*/ || 'IP undefined';
+            const deviceName: string = req.headers['user-agent'] || 'device name is undefined';
 
             // создаем токены
             const accessToken: string = await this.jwtService.createAccessToken(user._id);
@@ -44,7 +44,7 @@ export class AuthController {
 
             res.status(HttpStatus.OK_200)
                 .cookie('refreshToken', refreshToken, refreshTokenOptions)
-                .send({accessToken: accessToken});
+                .send({ accessToken: accessToken });
         } else {
             res.sendStatus(HttpStatus.UNAUTHORIZED_401);
         }
@@ -108,15 +108,15 @@ export class AuthController {
     @UseGuards(RefreshTokenGuard)
     @HttpCode(HttpStatus.OK_200)
     async getCurrentUserInfo(req: Request, res: Response) {
-        const user: UserDocument | null = await this.userService.findUserById(req.userId)
+        const user: UserDocument | null = await this.userService.findUserById(req.userId);
         if (!user) {
-            res.sendStatus(HttpStatus.UNAUTHORIZED_401)
+            res.sendStatus(HttpStatus.UNAUTHORIZED_401);
         } else {
             const userAuthMeOutput: UserAuthMeViewModel = {
                 email: user.email,
                 login: user.login,
-                userId: user._id.toString()
-            }
+                userId: user._id.toString(),
+            };
             res.status(HttpStatus.OK_200).send(userAuthMeOutput);
         }
     }
@@ -129,7 +129,7 @@ export class AuthController {
     }
 
     async confirmRegistration(req: Request, res: Response) {
-        const result = await this.authService.confirmEmailByCodeOrEmail(req.body.code)
+        const result = await this.authService.confirmEmailByCodeOrEmail(req.body.code);
         if (result) {
             res.status(HttpStatus.NO_CONTENT_204).send();
         } else {
@@ -138,7 +138,7 @@ export class AuthController {
     }
 
     async resendConfirmationCode(req: Request, res: Response) {
-        const result = await this.authService.sendEmailWithNewCode(req.body.email)
+        const result = await this.authService.sendEmailWithNewCode(req.body.email);
         if (result) {
             res.status(HttpStatus.NO_CONTENT_204).send();
         } else {
