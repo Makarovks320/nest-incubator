@@ -8,15 +8,20 @@ import { User, UserSchema } from '../../src/features/users/03-domain/user-db-mod
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from '../../src/features/blogs/03-domain/blog-db-model';
 import { Post, PostSchema } from '../../src/features/posts/03-domain/post-db-model';
+import { JwtService } from '../../src/application/adapters/jwt-service';
+import { UsersRepository } from '../../src/features/users/04-repositories/users-repository';
 
 export type AppE2eTestingProvider = {
     getApp(): INestApplication;
     getHttp(): SuperAgentTest;
+    getDaoUtils(): { usersRepository: UsersRepository; jwtService: JwtService };
 };
 
 export function arrangeTestingEnvironment(): AppE2eTestingProvider {
     let app: INestApplication;
     let http: SuperAgentTest;
+    let usersRepository: UsersRepository;
+    let jwtService: JwtService;
 
     beforeAll(async () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -41,13 +46,17 @@ export function arrangeTestingEnvironment(): AppE2eTestingProvider {
                     },
                 ]),
             ],
-            providers: [],
+            providers: [JwtService, UsersRepository],
         }).compile();
         app = moduleFixture.createNestApplication();
         useAppSettings(app);
         await app.init();
         http = agent(app.getHttpServer());
         await agent(app.getHttpServer()).delete(RouterPaths.testing);
+
+        // провайдеры
+        usersRepository = moduleFixture.get(UsersRepository);
+        jwtService = moduleFixture.get(JwtService);
     });
     afterAll(async () => {
         await app.close();
@@ -59,6 +68,12 @@ export function arrangeTestingEnvironment(): AppE2eTestingProvider {
         },
         getHttp(): SuperAgentTest {
             return http;
+        },
+        getDaoUtils(): any {
+            return {
+                usersRepository,
+                jwtService,
+            };
         },
     };
 }
