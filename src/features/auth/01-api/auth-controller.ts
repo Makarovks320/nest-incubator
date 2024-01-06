@@ -6,7 +6,6 @@ import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
 import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt-service';
-import { IpType } from '../03-domain/session-model';
 import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
@@ -32,7 +31,7 @@ export class AuthController {
             // todo: если есть валидный рефреш-токен, сделать перезапись сессии вместо создания новой
             // подготавливаем данные для сохранения сессии:
             const deviceId: string = uuidv4();
-            const ip: IpType = req.headers['x-forwarded-for'] /*|| req.socket.remoteAddress*/ || 'IP undefined';
+            const ip = req.ip; //.headers['x-forwarded-for'] /*|| req.socket.remoteAddress*/ || 'IP undefined';
             const deviceName: string = req.headers['user-agent'] || 'device name is undefined';
 
             // создаем токены
@@ -40,7 +39,7 @@ export class AuthController {
             const refreshToken: string = await this.jwtService.createRefreshToken(user._id, deviceId);
 
             // сохраняем текущую сессию:
-            await this.sessionService.addSession(ip, deviceId, deviceName, refreshToken);
+            await this.sessionService.addSession(ip!, deviceId, deviceName, refreshToken);
 
             res.status(HttpStatus.OK_200)
                 .cookie('refreshToken', refreshToken, refreshTokenOptions)
@@ -128,23 +127,23 @@ export class AuthController {
         return createdUser;
     }
 
-    async confirmRegistration(req: Request, res: Response) {
-        const result = await this.authService.confirmEmailByCodeOrEmail(req.body.code);
-        if (result) {
-            res.status(HttpStatus.NO_CONTENT_204).send();
-        } else {
-            res.status(HttpStatus.BAD_REQUEST_400).send();
-        }
-    }
-
-    async resendConfirmationCode(req: Request, res: Response) {
-        const result = await this.authService.sendEmailWithNewCode(req.body.email);
-        if (result) {
-            res.status(HttpStatus.NO_CONTENT_204).send();
-        } else {
-            res.status(HttpStatus.BAD_REQUEST_400).send();
-        }
-    }
+    // async confirmRegistration(req: Request, res: Response) {
+    //     const result = await this.authService.confirmEmailByCodeOrEmail(req.body.code);
+    //     if (result) {
+    //         res.status(HttpStatus.NO_CONTENT_204).send();
+    //     } else {
+    //         res.status(HttpStatus.BAD_REQUEST_400).send();
+    //     }
+    // }
+    //
+    // async resendConfirmationCode(req: Request, res: Response) {
+    //     const result = await this.authService.sendEmailWithNewCode(req.body.email);
+    //     if (result) {
+    //         res.status(HttpStatus.NO_CONTENT_204).send();
+    //     } else {
+    //         res.status(HttpStatus.BAD_REQUEST_400).send();
+    //     }
+    // }
 
     @Post('password-recovery')
     @HttpCode(HttpStatus.NO_CONTENT_204)

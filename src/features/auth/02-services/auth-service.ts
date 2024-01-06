@@ -1,12 +1,11 @@
 import bcrypt from 'bcrypt';
-import { ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
 import { JwtService } from '../../../application/adapters/jwt-service';
 import { EmailManager } from '../../../application/managers/emailManager';
-import { EmailConfirmationType, User, UserDocument } from '../../users/03-domain/user-db-model';
+import { EmailConfirmationType, UserDocument } from '../../users/03-domain/user-db-model';
 
 @Injectable()
 export class AuthService {

@@ -1,13 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { Model, MongooseError } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { Session, SessionDocument } from '../03-domain/session-model';
+import { AuthSession, SessionDocument } from '../03-domain/session-model';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class SessionsRepository {
-    constructor(@InjectModel(Session.name) private sessionModel: Model<SessionDocument>) {}
-    async addSession(session: Session): Promise<Session | null> {
+    constructor(@InjectModel(AuthSession.name) private sessionModel: Model<SessionDocument>) {}
+    async addSession(session: AuthSession): Promise<AuthSession | null> {
         try {
             await this.sessionModel.insertMany(session);
         } catch (e) {
@@ -16,20 +16,20 @@ export class SessionsRepository {
         }
         return session;
     }
-    async getAllSessionsForUser(userId: ObjectId): Promise<Session[] | string> {
+    async getAllSessionsForUser(userId: ObjectId): Promise<AuthSession[] | string> {
         try {
-            const sessions: Session[] = await this.sessionModel.find({ userId }).lean();
+            const sessions: AuthSession[] = await this.sessionModel.find({ userId }).lean();
             return sessions;
         } catch (e) {
             if (e instanceof MongooseError) return e.message;
             return 'Mongoose Error';
         }
     }
-    async getSessionForDevice(deviceId: string): Promise<Session | null> {
-        const session: Session | null = await this.sessionModel.findOne({ deviceId });
+    async getSessionForDevice(deviceId: string): Promise<AuthSession | null> {
+        const session: AuthSession | null = await this.sessionModel.findOne({ deviceId });
         return session;
     }
-    async updateSession(deviceId: string, session: Session): Promise<boolean> {
+    async updateSession(deviceId: string, session: AuthSession): Promise<boolean> {
         const result = await this.sessionModel.updateOne({ deviceId }, session);
         return result.matchedCount === 1;
     }

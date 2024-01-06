@@ -6,7 +6,7 @@ import { Blog } from '../../blogs/03-domain/blog-db-model';
 export type IpType = string | string[];
 
 export type SessionViewModel = {
-    ip: IpType;
+    ip: string;
     title: string;
     lastActiveDate: string;
     deviceId: string;
@@ -14,9 +14,10 @@ export type SessionViewModel = {
 
 export type SessionDocument = HydratedDocument<Blog>;
 @Schema()
-export class Session {
+export class AuthSession {
+    // @Prop({ type: string | string[] })
     @Prop({ required: true })
-    ip: IpType;
+    ip: string;
 
     @Prop({ required: true })
     title: string;
@@ -37,4 +38,4 @@ export class Session {
     userId: string;
 }
 
-export const SessionSchema = SchemaFactory.createForClass(Session);
+export const AuthSessionSchema = SchemaFactory.createForClass(AuthSession);

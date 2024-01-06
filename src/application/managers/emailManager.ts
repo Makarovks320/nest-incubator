@@ -5,7 +5,7 @@ import { EmailAdapter } from '../adapters/email-adapter';
 export class EmailManager {
     constructor(private emailAdapter: EmailAdapter) {}
     async sendConformationCode(email: string, code: string): Promise<boolean> {
-        const message = ` <h1>Thank for your registration</h1>
+        const message = ` <h1>Thanks for your registration</h1>
             <p>To finish registration please follow the link below:
                 <a href=\'https://somesite.com/confirm-email?code=${code}\'>complete registration</a>
             </p>

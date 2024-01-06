@@ -19,6 +19,18 @@ import { UserService } from './features/users/02-services/user-service';
 import { UsersRepository } from './features/users/04-repositories/users-repository';
 import { UsersQueryRepository } from './features/users/04-repositories/users-query-repository';
 import { User, UserSchema } from './features/users/03-domain/user-db-model';
+import { AuthController } from './features/auth/01-api/auth-controller';
+import { AuthService } from './features/auth/02-services/auth-service';
+import { SessionService } from './features/auth/02-services/session-service';
+import { JwtService } from './application/adapters/jwt-service';
+import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/session-model';
+import { EmailManager } from './application/managers/emailManager';
+import { EmailAdapter } from './application/adapters/email-adapter';
+import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
+
+const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
+const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
+const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
 
 @Module({
     imports: [
@@ -43,19 +55,14 @@ import { User, UserSchema } from './features/users/03-domain/user-db-model';
                 schema: UserSchema,
             },
         ]),
+        MongooseModule.forFeature([
+            {
+                name: AuthSession.name,
+                schema: AuthSessionSchema,
+            },
+        ]),
     ],
-    controllers: [AppController, BlogsController, PostsController, UsersController, TestingController],
-    providers: [
-        AppService,
-        BlogService,
-        BlogsRepository,
-        BlogsQueryRepository,
-        PostService,
-        PostsRepository,
-        PostsQueryRepository,
-        UserService,
-        UsersRepository,
-        UsersQueryRepository,
-    ],
+    controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
+    providers: [...services, ...queryRepositories, ...repositories, EmailManager, EmailAdapter],
 })
 export class AppModule {}
