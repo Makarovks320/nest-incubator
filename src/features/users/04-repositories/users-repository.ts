@@ -40,7 +40,7 @@ export class UsersRepository {
 
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UserDocument | null> {
         const user = await this.userModel.findOne({
-            $or: [{ 'accountData.userName': loginOrEmail }, { 'accountData.email': loginOrEmail }],
+            $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
         });
         return user ? user : null;
     }
