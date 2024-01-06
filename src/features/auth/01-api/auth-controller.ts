@@ -12,6 +12,7 @@ import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
 import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
+import { checkLoginOrEmailExistenceGuard } from '../../../application/guards/checkLoginOrEmailExistenceGuard';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -121,6 +122,7 @@ export class AuthController {
     }
 
     @Post('registration')
+    @UseGuards(checkLoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel = await this.userService.createUser(inputModel);
@@ -147,8 +149,10 @@ export class AuthController {
 
     @Post('password-recovery')
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    async recoverPassword(@Body() email: string) {
-        const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(email);
+    async recoverPassword(@Body() recoveryData: { email: string }) {
+        const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(
+            recoveryData.email,
+        );
         return isPasswordRecovered;
     }
 

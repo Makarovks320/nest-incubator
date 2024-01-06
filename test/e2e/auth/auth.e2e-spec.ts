@@ -60,6 +60,32 @@ describe('testing auth flow', () => {
             .expect(HttpStatus.NO_CONTENT_204);
     });
 
+    it('should return error if email or login already exist; status 400;', async () => {
+        const userData: CreateUserInputDto = {
+            login: login + 'x', // addition to login
+            password: passwordBeforeChanging,
+            email: email, // email already exist
+        };
+
+        await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/registration`)
+            .send(userData)
+            .expect(HttpStatus.BAD_REQUEST_400);
+
+        const userData2: CreateUserInputDto = {
+            login: login, // login already exist
+            password: passwordBeforeChanging,
+            email: 'x' + email, // addition to email
+        };
+
+        await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/registration`)
+            .send(userData2)
+            .expect(HttpStatus.BAD_REQUEST_400);
+    });
+
     it('should send email with correct recovery code', async () => {
         //todo: Как правильно замокать?
         // const spyForSendEmail = jest.spyOn(emailAdapter, 'sendEmail');
