@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
-// import { ObjectId } from 'mongoose';
 import { appConfig } from '../config';
 import { ObjectId } from 'mongodb';
 
@@ -36,9 +35,9 @@ export class JwtService {
         }
     }
 
-    getRefreshTokenInfo(refreshToken: string): RefreshTokenInfoType | null {
+    async getRefreshTokenInfo(refreshToken: string): Promise<RefreshTokenInfoType | null> {
         try {
-            const result: any = jwt.verify(refreshToken, this.secret);
+            const result: any = await jwt.verify(refreshToken, this.refreshSecret);
             return {
                 deviceId: result.deviceId,
                 iat: result.iat * 1000,

@@ -55,7 +55,7 @@ export class AuthController {
         //здесь надо убить текущую сессию, для этого
         // возьмем deviceId:
         const refreshToken: string = req.cookies.refreshToken;
-        const refreshTokenInfo: RefreshTokenInfoType | null = this.jwtService.getRefreshTokenInfo(refreshToken);
+        const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(refreshToken);
         if (!refreshTokenInfo) {
             res.sendStatus(HttpStatus.UNAUTHORIZED_401);
             return;
