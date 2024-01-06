@@ -121,7 +121,7 @@ export class AuthController {
     }
 
     @Post('registration')
-    @HttpCode(HttpStatus.OK_200)
+    @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel = await this.userService.createUser(inputModel);
         return createdUser;
