@@ -24,7 +24,7 @@ import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { loginOrEmailExistenceGuard } from '../../../application/guards/loginOrEmailExistenceGuard';
-import { SaveNewPasswordInputDto } from '../../users/05-dto/SaveNewPasswordInputDto';
+import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -175,8 +175,9 @@ export class AuthController {
     async updatePassword(@Body() inputPasswordDto: SaveNewPasswordInputDto, @Req() req: Request, @Res() res: Response) {
         if (!req.userId) throw new InternalServerErrorException('userId is undefined');
         const result = await this.authService.updatePassword(inputPasswordDto.newPassword, req.userId);
-        if (result) {
-            res.status(HttpStatus.NO_CONTENT_204).send();
+        if (!result) {
+            res.status(HttpStatus.BAD_REQUEST_400).send();
         }
+        res.status(HttpStatus.NO_CONTENT_204).send();
     }
 }

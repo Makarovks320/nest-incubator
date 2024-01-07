@@ -27,6 +27,7 @@ import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/sessio
 import { EmailManager } from './application/managers/emailManager';
 import { EmailAdapter } from './application/adapters/email-adapter';
 import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
+import { IsPassConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsPassConfirmationCodeValid';
 
 const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
@@ -63,6 +64,13 @@ const repositories = [BlogsRepository, PostsRepository, SessionsRepository, User
         ]),
     ],
     controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
-    providers: [...services, ...queryRepositories, ...repositories, EmailManager, EmailAdapter],
+    providers: [
+        ...services,
+        ...queryRepositories,
+        ...repositories,
+        EmailManager,
+        EmailAdapter,
+        IsPassConfirmationCodeValidator,
+    ],
 })
 export class AppModule {}
