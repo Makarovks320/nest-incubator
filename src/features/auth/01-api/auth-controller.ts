@@ -1,7 +1,18 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    InternalServerErrorException,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
@@ -12,7 +23,7 @@ import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
 import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
-import { checkLoginOrEmailExistenceGuard } from '../../../application/guards/checkLoginOrEmailExistenceGuard';
+import { loginOrEmailExistenceGuard } from '../../../application/guards/loginOrEmailExistenceGuard';
 import { SaveNewPasswordInputDto } from '../../users/05-dto/SaveNewPasswordInputDto';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
@@ -123,7 +134,7 @@ export class AuthController {
     }
 
     @Post('registration')
-    @UseGuards(checkLoginOrEmailExistenceGuard)
+    @UseGuards(loginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
@@ -158,12 +169,14 @@ export class AuthController {
         return isPasswordRecovered;
     }
 
-    // async updatePassword(req: Request, res: Response) {
-    //     const result = await this.authService.updatePassword(req.body.newPassword, req.userId)
-    //     if (result) {
-    //         res.status(HttpStatus.NO_CONTENT_204).send()
-    //     } else {
-    //         res.status(HttpStatus.SERVER_ERROR_500).send()
-    //     }
-    // }
+    @Post('/new-password')
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    @UseGuards() //todo: создать гард для проверки Confirmation code у юзера и записи id в реквест
+    async updatePassword(@Body() inputPasswordDto: SaveNewPasswordInputDto, @Req() req: Request, @Res() res: Response) {
+        if (!req.userId) throw new InternalServerErrorException('userId is undefined');
+        const result = await this.authService.updatePassword(inputPasswordDto.newPassword, req.userId);
+        if (result) {
+            res.status(HttpStatus.NO_CONTENT_204).send();
+        }
+    }
 }
