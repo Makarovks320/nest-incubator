@@ -7,6 +7,7 @@ import { authBasicHeader } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
 import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
+import { ConfirmationCode } from '../../../src/features/auth/05-dto/ConfirmationCode';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -97,6 +98,27 @@ describe('testing auth flow', () => {
             .getHttp()
             .post(`${RouterPaths.auth}/registration-email-resending`)
             .send(emailData)
+            .expect(HttpStatus.NO_CONTENT_204);
+    });
+
+    it(' should confirm registration by email; status 204;', async () => {
+        //todo: get ConfirmationCode from repo
+
+        if (!user) throw new Error('test cannot be performed.');
+        const userDB: UserDocument | null = await testingProvider
+            .getDaoUtils()
+            .usersRepository.findUserByLoginOrEmail(user.email);
+
+        if (!userDB) throw new Error('test cannot be performed.');
+
+        const confirmationData: ConfirmationCode = {
+            code: userDB.emailConfirmation.confirmationCode!, // correct confirmation code
+        };
+
+        await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/registration-confirmation`)
+            .send(confirmationData)
             .expect(HttpStatus.NO_CONTENT_204);
     });
 
