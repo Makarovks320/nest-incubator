@@ -26,6 +26,7 @@ import { UserViewModel } from '../../users/types/user-view-model';
 import { loginOrEmailExistenceGuard } from '../../../application/guards/loginOrEmailExistenceGuard';
 import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
 import { EmailDto } from '../05-dto/EmailDto';
+import { ConfirmationCode } from '../05-dto/ConfirmationCode';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -143,15 +144,16 @@ export class AuthController {
         return createdUser;
     }
 
-    // async confirmRegistration(req: Request, res: Response) {
-    //     const result = await this.authService.confirmEmailByCodeOrEmail(req.body.code);
-    //     if (result) {
-    //         res.status(HttpStatus.NO_CONTENT_204).send();
-    //     } else {
-    //         res.status(HttpStatus.BAD_REQUEST_400).send();
-    //     }
-    // }
-    //
+    @Post('registration-confirmation')
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async confirmRegistration(@Body() confirmationData: ConfirmationCode) {
+        const result = await this.authService.confirmEmailByCodeOrEmail(confirmationData.code);
+        if (!result) {
+            throw new InternalServerErrorException();
+        }
+        return;
+    }
+
     @Post('registration-email-resending')
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async resendConfirmationCode(@Body() emailData: EmailDto) {

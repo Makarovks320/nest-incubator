@@ -47,7 +47,7 @@ export class UsersRepository {
 
     async findUserByConfirmationCodeOrEmail(codeOrEmail: string): Promise<UserDocument | null> {
         const user = await this.userModel.findOne({
-            $or: [{ 'emailConfirmation.confirmationCode': codeOrEmail }, { 'accountData.email': codeOrEmail }],
+            $or: [{ 'emailConfirmation.confirmationCode': codeOrEmail }, { email: codeOrEmail }],
         });
         return user;
     }
