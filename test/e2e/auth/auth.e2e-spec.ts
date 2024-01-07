@@ -6,6 +6,7 @@ import { RouterPaths } from '../../../src/application/types/router-paths';
 import { authBasicHeader } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
 import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
+import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -85,6 +86,18 @@ describe('testing auth flow', () => {
         expect(response2.body).toEqual({
             errorsMessages: [{ message: expect.any(String), field: 'login' }],
         });
+    });
+
+    it('should send email with new code if user exists but not confirmed yet; status 204;', async () => {
+        const emailData: EmailDto = {
+            email: email, // email already exist
+        };
+
+        await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/registration-email-resending`)
+            .send(emailData)
+            .expect(HttpStatus.NO_CONTENT_204);
     });
 
     it('should send email with correct recovery code', async () => {
