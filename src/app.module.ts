@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogsController } from './features/blogs/01-api/blogs-controller';
@@ -28,6 +28,8 @@ import { EmailManager } from './application/managers/emailManager';
 import { EmailAdapter } from './application/adapters/email-adapter';
 import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
 import { IsPassConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsPassConfirmationCodeValid';
+import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
+import { RouterPaths } from './application/types/router-paths';
 
 const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
@@ -73,4 +75,10 @@ const repositories = [BlogsRepository, PostsRepository, SessionsRepository, User
         IsPassConfirmationCodeValidator,
     ],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(UserIdMiddleware)
+            .forRoutes({ path: RouterPaths.auth + '/new-password', method: RequestMethod.POST });
+    }
+}

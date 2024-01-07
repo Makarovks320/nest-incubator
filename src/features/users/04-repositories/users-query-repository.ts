@@ -47,7 +47,7 @@ export class UsersQueryRepository {
         };
     }
 
-    async findUserByPassRecoveryCode(code: string): Promise<User | null> {
+    async findUserByPassRecoveryCode(code: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ 'passwordRecovery.passwordRecoveryCode': code });
     }
 }
