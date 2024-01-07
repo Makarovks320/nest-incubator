@@ -62,11 +62,14 @@ describe('testing auth flow', () => {
             email: email, // email already exist
         };
 
-        await testingProvider
+        const response1 = await testingProvider
             .getHttp()
             .post(`${RouterPaths.auth}/registration`)
             .send(userData)
             .expect(HttpStatus.BAD_REQUEST_400);
+        expect(response1.body).toEqual({
+            errorsMessages: [{ message: expect.any(String), field: 'email' }],
+        });
 
         const userData2: CreateUserInputDto = {
             login: login, // login already exist
@@ -74,11 +77,14 @@ describe('testing auth flow', () => {
             email: 'x' + email, // addition to email
         };
 
-        await testingProvider
+        const response2 = await testingProvider
             .getHttp()
             .post(`${RouterPaths.auth}/registration`)
             .send(userData2)
             .expect(HttpStatus.BAD_REQUEST_400);
+        expect(response2.body).toEqual({
+            errorsMessages: [{ message: expect.any(String), field: 'login' }],
+        });
     });
 
     it('should send email with correct recovery code', async () => {
