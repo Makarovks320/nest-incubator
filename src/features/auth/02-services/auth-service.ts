@@ -40,7 +40,7 @@ export class AuthService {
     }
 
     async sendEmailWithNewCode(email: string): Promise<boolean> {
-        const user: UserDocument | null = await this.usersRepository.findUserByConfirmationCodeOrEmail(email);
+        const user: UserDocument | null = await this.usersRepository.findUserByLoginOrEmail(email);
         if (!user) return false;
         if (user.emailConfirmation.isConfirmed) return false;
         const emailConfirmation: EmailConfirmationType = {

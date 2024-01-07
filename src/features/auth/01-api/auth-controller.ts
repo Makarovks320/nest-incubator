@@ -25,6 +25,7 @@ import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { loginOrEmailExistenceGuard } from '../../../application/guards/loginOrEmailExistenceGuard';
 import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
+import { EmailDto } from '../05-dto/EmailDto';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -151,14 +152,16 @@ export class AuthController {
     //     }
     // }
     //
-    // async resendConfirmationCode(req: Request, res: Response) {
-    //     const result = await this.authService.sendEmailWithNewCode(req.body.email);
-    //     if (result) {
-    //         res.status(HttpStatus.NO_CONTENT_204).send();
-    //     } else {
-    //         res.status(HttpStatus.BAD_REQUEST_400).send();
-    //     }
-    // }
+    @Post('registration-email-resending')
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async resendConfirmationCode(@Body() emailData: EmailDto) {
+        const result = await this.authService.sendEmailWithNewCode(emailData.email);
+        if (!result) {
+            throw new BadRequestException();
+        } else {
+            return;
+        }
+    }
 
     @Post('password-recovery')
     @HttpCode(HttpStatus.NO_CONTENT_204)

@@ -30,10 +30,12 @@ import { SessionsRepository } from './features/auth/04-repositories/sessions-rep
 import { IsPassConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsPassConfirmationCodeValid';
 import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
 import { RouterPaths } from './application/types/router-paths';
+import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
 
 const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
+const customValidators = [IsPassConfirmationCodeValidator, EmailExistenceValidator];
 
 @Module({
     imports: [
@@ -66,14 +68,7 @@ const repositories = [BlogsRepository, PostsRepository, SessionsRepository, User
         ]),
     ],
     controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
-    providers: [
-        ...services,
-        ...queryRepositories,
-        ...repositories,
-        EmailManager,
-        EmailAdapter,
-        IsPassConfirmationCodeValidator,
-    ],
+    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, EmailManager, EmailAdapter],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
