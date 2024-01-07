@@ -5,7 +5,9 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
 import { JwtService } from '../../../application/adapters/jwt-service';
 import { EmailManager } from '../../../application/managers/emailManager';
-import { EmailConfirmationType, UserDocument } from '../../users/03-domain/user-db-model';
+import { EmailConfirmationType, User, UserDocument } from '../../users/03-domain/user-db-model';
+import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
+import { UserViewModel } from '../../users/types/user-view-model';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,19 @@ export class AuthService {
         private emailManager: EmailManager,
     ) {}
 
+    async createUser(userInput: CreateUserInputDto): Promise<UserViewModel | null> {
+        const user: User = await User.createUser(userInput);
+        const result = await this.usersRepository.save(user);
+        const sendEmailResult = await this.emailManager.sendConfirmationCode(
+            userInput.email,
+            user.emailConfirmation.confirmationCode,
+        );
+        if (!sendEmailResult) {
+            await this.usersRepository.deleteUserById(result.id);
+            return null;
+        }
+        return result;
+    }
     async confirmEmailByCodeOrEmail(codeOrEmail: string): Promise<boolean> {
         const user = await this.usersRepository.findUserByConfirmationCodeOrEmail(codeOrEmail);
         if (!user) return false;

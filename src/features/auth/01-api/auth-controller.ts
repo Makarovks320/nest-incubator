@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
-import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
@@ -13,6 +13,7 @@ import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { checkLoginOrEmailExistenceGuard } from '../../../application/guards/checkLoginOrEmailExistenceGuard';
+import { SaveNewPasswordInputDto } from '../../users/05-dto/SaveNewPasswordInputDto';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -125,7 +126,8 @@ export class AuthController {
     @UseGuards(checkLoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
-        const createdUser: UserViewModel = await this.userService.createUser(inputModel);
+        const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
+        if (!createdUser) throw new BadRequestException();
         return createdUser;
     }
 
