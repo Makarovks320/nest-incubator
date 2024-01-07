@@ -33,6 +33,6 @@ export class ClassValidationPipe extends ValidationPipe {
 }
 
 export type FieldError = {
-    message: string;
     field: string;
+    message: string;
 };
