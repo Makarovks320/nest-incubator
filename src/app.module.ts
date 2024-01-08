@@ -31,11 +31,12 @@ import { RecoveryCodeValidator } from './features/auth/05-dto/custom-validators/
 import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
 import { RouterPaths } from './application/types/router-paths';
 import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
+import { ConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsConfirmationCodeValid';
 
 const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
-const customValidators = [RecoveryCodeValidator, EmailExistenceValidator];
+const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, EmailExistenceValidator];
 
 @Module({
     imports: [
