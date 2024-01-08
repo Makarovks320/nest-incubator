@@ -141,7 +141,7 @@ export class AuthController {
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
         if (!createdUser) throw new BadRequestException();
-        return createdUser;
+        return;
     }
 
     @Post('registration-confirmation')
@@ -176,7 +176,6 @@ export class AuthController {
 
     @Post('/new-password')
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    @UseGuards() //todo: создать гард для проверки Confirmation code у юзера и записи id в реквест
     async updatePassword(@Body() inputPasswordDto: SaveNewPasswordInputDto, @Req() req: Request, @Res() res: Response) {
         if (!req.userId) throw new InternalServerErrorException('userId is undefined');
         const result = await this.authService.updatePassword(inputPasswordDto.newPassword, req.userId);

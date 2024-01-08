@@ -27,7 +27,7 @@ import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/sessio
 import { EmailManager } from './application/managers/emailManager';
 import { EmailAdapter } from './application/adapters/email-adapter';
 import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
-import { IsPassConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsPassConfirmationCodeValid';
+import { RecoveryCodeValidator } from './features/auth/05-dto/custom-validators/IsRecoveryCodeValid';
 import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
 import { RouterPaths } from './application/types/router-paths';
 import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
@@ -35,7 +35,7 @@ import { EmailExistenceValidator } from './features/auth/05-dto/custom-validator
 const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
-const customValidators = [IsPassConfirmationCodeValidator, EmailExistenceValidator];
+const customValidators = [RecoveryCodeValidator, EmailExistenceValidator];
 
 @Module({
     imports: [

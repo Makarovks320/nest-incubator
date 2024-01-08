@@ -1,10 +1,10 @@
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { PASSWORD_MAX, PASSWORD_MIN } from '../../users/05-dto/dto-variables';
-import { IsPassConfirmationCodeValid } from './custom-validators/IsPassConfirmationCodeValid';
+import { IsRecoveryCodeValid } from './custom-validators/IsRecoveryCodeValid';
 
 export class SaveNewPasswordInputDto {
     @IsNotEmpty()
-    @IsPassConfirmationCodeValid()
+    @IsRecoveryCodeValid()
     recoveryCode: string;
 
     @IsNotEmpty()

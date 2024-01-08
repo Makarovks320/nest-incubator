@@ -12,16 +12,16 @@ import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
-export class IsPassConfirmationCodeValidator implements ValidatorConstraintInterface {
+export class RecoveryCodeValidator implements ValidatorConstraintInterface {
     constructor(private usersQueryRepo: UsersQueryRepository) {}
     async validate(code: string) {
         const user = await this.usersQueryRepo.findUserByPassRecoveryCode(code);
         const errors: FieldError[] = [];
 
         if (!user) {
-            errors.push({ field: 'recoveryCode', message: 'Confirmation code is incorrect' });
+            errors.push({ field: 'recoveryCode', message: 'Recovery code is incorrect' });
         } else if (user!.passwordRecovery.active) {
-            errors.push({ field: 'recoveryCode', message: 'Confirmation code has been activated' });
+            errors.push({ field: 'recoveryCode', message: 'Recovery code has been activated' });
         }
         if (errors.length) throw new ApiValidationError(errors);
 
@@ -37,15 +37,15 @@ export class IsPassConfirmationCodeValidator implements ValidatorConstraintInter
     }
 }
 
-export function IsPassConfirmationCodeValid(validationOptions?: ValidationOptions) {
+export function IsRecoveryCodeValid(validationOptions?: ValidationOptions) {
     return function (object: object, propertyName: string) {
         registerDecorator({
-            name: 'IsPassConfirmationCodeValid',
+            name: 'IsRecoveryCodeValid',
             target: object.constructor,
             propertyName: propertyName,
             options: validationOptions,
             async: true,
-            validator: IsPassConfirmationCodeValidator,
+            validator: RecoveryCodeValidator,
         });
     };
 }
