@@ -101,9 +101,7 @@ describe('testing auth flow', () => {
             .expect(HttpStatus.NO_CONTENT_204);
     });
 
-    it(' should confirm registration by email; status 204;', async () => {
-        //todo: get ConfirmationCode from repo
-
+    it('should confirm registration by email OR should return error if code is already confirmed', async () => {
         if (!user) throw new Error('test cannot be performed.');
         const userDB: UserDocument | null = await testingProvider
             .getDaoUtils()
@@ -120,6 +118,13 @@ describe('testing auth flow', () => {
             .post(`${RouterPaths.auth}/registration-confirmation`)
             .send(confirmationData)
             .expect(HttpStatus.NO_CONTENT_204);
+
+        // check case if code is already confirmed
+        await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/registration-confirmation`)
+            .send(confirmationData)
+            .expect(HttpStatus.BAD_REQUEST_400);
     });
 
     it('should send email with correct recovery code', async () => {
