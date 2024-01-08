@@ -7,6 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ApiValidationError } from '../../../../application/errors/ApiValidationError';
 import { UsersRepository } from '../../../users/04-repositories/users-repository';
+import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
@@ -15,10 +16,14 @@ export class EmailExistenceValidator implements ValidatorConstraintInterface {
 
     async validate(email: string) {
         const user = await this.usersRepo.findUserByLoginOrEmail(email);
+        const errors: FieldError[] = [];
 
         if (!user) {
-            throw new ApiValidationError([{ field: 'email', message: 'email does not exist' }]);
+            errors.push({ field: 'email', message: 'email does not exist' });
+        } else if (user.emailConfirmation.isConfirmed) {
+            errors.push({ field: 'email', message: 'email is already confirmed' });
         }
+        if (errors.length) throw new ApiValidationError(errors);
 
         return true;
     }
