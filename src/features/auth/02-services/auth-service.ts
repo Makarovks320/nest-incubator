@@ -5,9 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
 import { JwtService } from '../../../application/adapters/jwt-service';
 import { EmailManager } from '../../../application/managers/emailManager';
-import { EmailConfirmationType, User, UserDocument } from '../../users/03-domain/user-db-model';
+import { EmailConfirmationType, User, UserDocument, UserModel } from '../../users/03-domain/user-db-model';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class AuthService {
@@ -15,10 +16,11 @@ export class AuthService {
         private usersRepository: UsersRepository,
         private jwtService: JwtService,
         private emailManager: EmailManager,
+        @InjectModel(User.name) private userModel: UserModel,
     ) {}
 
     async createUser(userInput: CreateUserInputDto): Promise<UserViewModel | null> {
-        const user: User = await User.createUser(userInput);
+        const user = await this.userModel.createUser(userInput);
         const result = await this.usersRepository.save(user);
         const sendEmailResult = await this.emailManager.sendConfirmationCode(
             userInput.email,
@@ -28,6 +30,7 @@ export class AuthService {
             await this.usersRepository.deleteUserById(result.id);
             return null;
         }
+
         return result;
     }
     async confirmEmailByCodeOrEmail(codeOrEmail: string): Promise<boolean> {
