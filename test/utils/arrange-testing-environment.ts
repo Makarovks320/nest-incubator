@@ -8,7 +8,7 @@ import { User, UserSchema } from '../../src/features/users/03-domain/user-db-mod
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from '../../src/features/blogs/03-domain/blog-db-model';
 import { Post, PostSchema } from '../../src/features/posts/03-domain/post-db-model';
-import { JwtService } from '../../src/application/adapters/jwt-service';
+import { JwtService } from '../../src/application/adapters/jwt/jwt-service';
 import { UsersRepository } from '../../src/features/users/04-repositories/users-repository';
 
 export type AppE2eTestingProvider = {

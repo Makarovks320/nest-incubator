@@ -13,7 +13,7 @@ export type UserMongoType = WithId<User>;
 
 const staticMethods = {
     async createUser(userInputData: CreateUserInputDto): Promise<UserDocument> {
-        const passwordSalt = await bcrypt.genSalt(8); // получить через аргументы из сервиса
+        const passwordSalt = await bcrypt.genSalt(8); //todo: получить через аргументы из сервиса
         const passwordHash = await this.generateHash(userInputData.password, passwordSalt);
 
         const newUser: UserDocument = new this(

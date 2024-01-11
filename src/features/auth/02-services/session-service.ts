@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { SessionsRepository } from '../04-repositories/sessions-repository';
-import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt-service';
+import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { AuthSession } from '../03-domain/session-model';
 
 @Injectable()
