@@ -1,10 +1,10 @@
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiValidationError } from '../errors/ApiValidationError';
+import { ApiValidationException } from './exceptions/ApiValidationException';
 
-@Catch(ApiValidationError)
+@Catch(ApiValidationException)
 export class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: ApiValidationError, host: ArgumentsHost) {
+    catch(exception: ApiValidationException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const status = exception.getStatus();

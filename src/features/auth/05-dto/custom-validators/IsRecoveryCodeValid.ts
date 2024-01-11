@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { UsersQueryRepository } from '../../../users/04-repositories/users-query-repository';
 import jwt from 'jsonwebtoken';
-import { ApiValidationError } from '../../../../application/errors/ApiValidationError';
+import { ApiValidationException } from '../../../../application/exception-filters/exceptions/ApiValidationException';
 import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
 
 @Injectable()
@@ -23,14 +23,14 @@ export class RecoveryCodeValidator implements ValidatorConstraintInterface {
         } else if (user!.passwordRecovery.active) {
             errors.push({ field: 'recoveryCode', message: 'Recovery code has been activated' });
         }
-        if (errors.length) throw new ApiValidationError(errors);
+        if (errors.length) throw new ApiValidationException(errors);
 
         // Check that the token is not expired
         try {
             await jwt.verify(code, process.env.JWT_SECRET!);
         } catch (e) {
             errors.push({ field: 'recoveryCode', message: 'Token is expired' });
-            throw new ApiValidationError(errors);
+            throw new ApiValidationException(errors);
         }
 
         return true;

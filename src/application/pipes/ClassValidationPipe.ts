@@ -1,6 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
-import { ApiValidationError } from '../errors/ApiValidationError';
+import { ApiValidationException } from '../exception-filters/exceptions/ApiValidationException';
 
 export class ClassValidationPipe extends ValidationPipe {
     constructor() {
@@ -28,7 +28,7 @@ export class ClassValidationPipe extends ValidationPipe {
             });
         });
 
-        throw new ApiValidationError(fieldErrors);
+        throw new ApiValidationException(fieldErrors);
     }
 }
 

@@ -5,7 +5,7 @@ import {
     ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { ApiValidationError } from '../../../../application/errors/ApiValidationError';
+import { ApiValidationException } from '../../../../application/exception-filters/exceptions/ApiValidationException';
 import { UsersRepository } from '../../../users/04-repositories/users-repository';
 import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
 
@@ -23,7 +23,7 @@ export class EmailExistenceValidator implements ValidatorConstraintInterface {
         } else if (user.emailConfirmation.isConfirmed) {
             errors.push({ field: 'email', message: 'email is already confirmed' });
         }
-        if (errors.length) throw new ApiValidationError(errors);
+        if (errors.length) throw new ApiValidationException(errors);
 
         return true;
     }
