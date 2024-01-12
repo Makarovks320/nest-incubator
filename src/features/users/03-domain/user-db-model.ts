@@ -12,45 +12,31 @@ export type UserMongoType = WithId<User>;
 
 const staticMethods = {
     async createUser(userInputData: CreateUserInputDto, cryptedData: CryptedDataType): Promise<UserDocument> {
-        const newUser: UserDocument = new this(
-            userInputData.login,
-            userInputData.email,
-            {
+        const newUser: UserDocument = new this({
+            login: userInputData.login,
+            email: userInputData.email,
+            accountData: {
                 salt: cryptedData.passwordSalt,
                 hash: cryptedData.passwordHash,
             },
-            {
+            emailConfirmation: {
                 confirmationCode: uuidv4(),
                 expirationDate: add(new Date(), {
                     minutes: 15,
                 }),
                 isConfirmed: false,
             },
-            {
+            passwordRecovery: {
                 passwordRecoveryCode: '',
                 active: false,
             },
-        );
+        });
         return newUser;
     },
 };
 
 @Schema({ timestamps: true, statics: staticMethods })
 export class User {
-    constructor(
-        login: string,
-        email: string,
-        accountData: AccountDataType,
-        emailConfirmation: EmailConfirmationType,
-        passwordRecovery: PasswordRecoveryType,
-    ) {
-        this.login = login;
-        this.email = email;
-        this.accountData = accountData;
-        this.emailConfirmation = emailConfirmation;
-        this.passwordRecovery = passwordRecovery;
-    }
-
     @Prop({ required: true })
     login: string;
     @Prop({ required: true })
