@@ -1,16 +1,20 @@
 import { UsersRepository } from '../04-repositories/users-repository';
-import { User, UserDocument } from '../03-domain/user-db-model';
+import { User, UserDocument, UserModel } from '../03-domain/user-db-model';
 import { Injectable } from '@nestjs/common';
 import { UserViewModel } from '../types/user-view-model';
 import bcrypt from 'bcrypt';
 import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserService {
-    constructor(private usersRepository: UsersRepository) {}
+    constructor(
+        private usersRepository: UsersRepository,
+        @InjectModel(User.name) private userModel: UserModel,
+    ) {}
 
     async createUser(userInput: CreateUserInputDto): Promise<UserViewModel> {
-        const user: User = await User.createUser(userInput);
+        const user: User = await this.userModel.createUser(userInput);
         return await this.usersRepository.save(user);
     }
 
