@@ -33,6 +33,7 @@ import { RouterPaths } from './application/types/router-paths';
 import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
 import { ConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsConfirmationCodeValid';
 import { CryptoService } from './application/adapters/crypto/crypto-service';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
@@ -42,6 +43,12 @@ const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
 
 @Module({
     imports: [
+        ThrottlerModule.forRoot([
+            {
+                ttl: 10000,
+                limit: 5,
+            },
+        ]),
         MongooseModule.forRoot(appConfig.mongoUrl, {
             dbName: appConfig.dbName,
         }),

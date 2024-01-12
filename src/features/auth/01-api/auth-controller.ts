@@ -27,6 +27,7 @@ import { LoginOrEmailExistenceGuard } from '../../../application/guards/Login-or
 import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
 import { EmailDto } from '../05-dto/EmailDto';
 import { ConfirmationCode } from '../05-dto/ConfirmationCode';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
@@ -40,6 +41,7 @@ export class AuthController {
     ) {}
 
     @Post('login')
+    @UseGuards(ThrottlerGuard)
     async login(@Body() input: AuthLoginInputDto, @Req() req: Request, @Res() res: Response) {
         const user: UserDocument | null = await this.userService.checkCredentials(input.loginOrEmail, input.password);
         if (user) {
@@ -136,7 +138,7 @@ export class AuthController {
     }
 
     @Post('registration')
-    @UseGuards(LoginOrEmailExistenceGuard)
+    @UseGuards(ThrottlerGuard, LoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
@@ -145,6 +147,7 @@ export class AuthController {
     }
 
     @Post('registration-confirmation')
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async confirmRegistration(@Body() confirmationData: ConfirmationCode) {
         const result = await this.authService.confirmEmailByCodeOrEmail(confirmationData.code);
@@ -155,6 +158,7 @@ export class AuthController {
     }
 
     @Post('registration-email-resending')
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async resendConfirmationCode(@Body() emailData: EmailDto) {
         const result = await this.authService.sendEmailWithNewCode(emailData.email);
@@ -175,6 +179,7 @@ export class AuthController {
     }
 
     @Post('/new-password')
+    @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async updatePassword(@Body() inputPasswordDto: SaveNewPasswordInputDto, @Req() req: Request, @Res() res: Response) {
         if (!req.userId) throw new InternalServerErrorException('userId is undefined');
