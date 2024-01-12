@@ -3,7 +3,7 @@ import { UsersRepository } from '../../features/users/04-repositories/users-repo
 import { ApiValidationException } from '../exception-filters/exceptions/ApiValidationException';
 
 @Injectable()
-export class loginOrEmailExistenceGuard implements CanActivate {
+export class LoginOrEmailExistenceGuard implements CanActivate {
     constructor(private usersRepository: UsersRepository) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {

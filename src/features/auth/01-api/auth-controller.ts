@@ -20,10 +20,10 @@ import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/
 import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
-import { RefreshTokenGuard } from '../../../application/guards/refreshTokenGuard';
+import { RefreshTokenGuard } from '../../../application/guards/RefreshTokenGuard';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
-import { loginOrEmailExistenceGuard } from '../../../application/guards/loginOrEmailExistenceGuard';
+import { LoginOrEmailExistenceGuard } from '../../../application/guards/Login-or-email-existence-guard.service';
 import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
 import { EmailDto } from '../05-dto/EmailDto';
 import { ConfirmationCode } from '../05-dto/ConfirmationCode';
@@ -136,7 +136,7 @@ export class AuthController {
     }
 
     @Post('registration')
-    @UseGuards(loginOrEmailExistenceGuard)
+    @UseGuards(LoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputDto) {
         const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);

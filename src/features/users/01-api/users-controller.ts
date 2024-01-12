@@ -18,11 +18,11 @@ import { UsersDataMapper } from './users-data-mapper';
 import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-params';
 import { getQueryParamsForUsers } from '../../../application/helpers/get-query-params';
 import { UserDocument } from '../03-domain/user-db-model';
-import { RefreshTokenGuard } from '../../../application/guards/basicAuthGuard';
+import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
 import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
 
 @Controller('users')
-@UseGuards(RefreshTokenGuard)
+@UseGuards(BasicAuthGuard)
 export class UsersController {
     constructor(
         private userService: UserService,
