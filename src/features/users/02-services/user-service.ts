@@ -5,16 +5,19 @@ import { UserViewModel } from '../types/user-view-model';
 import bcrypt from 'bcrypt';
 import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
 import { InjectModel } from '@nestjs/mongoose';
+import { CryptoService } from '../../../application/adapters/crypto/crypto-service';
 
 @Injectable()
 export class UserService {
     constructor(
         private usersRepository: UsersRepository,
+        private cryptoService: CryptoService,
         @InjectModel(User.name) private userModel: UserModel,
     ) {}
 
     async createUser(userInput: CreateUserInputDto): Promise<UserViewModel> {
-        const user: User = await this.userModel.createUser(userInput);
+        const cryptedData = await this.cryptoService.getCryptedData(userInput.password);
+        const user = await this.userModel.createUser(userInput, cryptedData);
         return await this.usersRepository.save(user);
     }
 

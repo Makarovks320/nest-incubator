@@ -32,11 +32,13 @@ import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
 import { RouterPaths } from './application/types/router-paths';
 import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
 import { ConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsConfirmationCodeValid';
+import { CryptoService } from './application/adapters/crypto/crypto-service';
 
-const services = [AppService, AuthService, BlogService, JwtService, PostService, SessionService, UserService];
+const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
 const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, EmailExistenceValidator];
+const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
 
 @Module({
     imports: [
@@ -69,7 +71,7 @@ const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, Emai
         ]),
     ],
     controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
-    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, EmailManager, EmailAdapter],
+    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, ...adapters],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {

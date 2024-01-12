@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import bcrypt from 'bcrypt';
 import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
@@ -12,16 +11,13 @@ export type UserModel = Model<UserDocument> & typeof staticMethods;
 export type UserMongoType = WithId<User>;
 
 const staticMethods = {
-    async createUser(userInputData: CreateUserInputDto): Promise<UserDocument> {
-        const passwordSalt = await bcrypt.genSalt(8); //todo: получить через аргументы из сервиса
-        const passwordHash = await this.generateHash(userInputData.password, passwordSalt);
-
+    async createUser(userInputData: CreateUserInputDto, cryptedData: CryptedDataType): Promise<UserDocument> {
         const newUser: UserDocument = new this(
             userInputData.login,
             userInputData.email,
             {
-                salt: passwordSalt,
-                hash: passwordHash,
+                salt: cryptedData.passwordSalt,
+                hash: cryptedData.passwordHash,
             },
             {
                 confirmationCode: uuidv4(),
@@ -96,10 +92,6 @@ export class User {
     //         return user;
     //     }
     // }
-
-    generateHash(password: string, salt: string) {
-        return bcrypt.hash(password, salt);
-    }
 }
 
 type AccountDataType = {
@@ -115,10 +107,13 @@ export type PasswordRecoveryType = {
     passwordRecoveryCode: string;
     active: boolean;
 };
+export type CryptedDataType = {
+    passwordSalt: string;
+    passwordHash: string;
+};
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.methods = {
     // updatePost: User.prototype.checkCredentials,
-    generateHash: User.prototype.generateHash,
 };

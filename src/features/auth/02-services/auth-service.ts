@@ -9,6 +9,7 @@ import { EmailConfirmationType, User, UserDocument, UserModel } from '../../user
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { InjectModel } from '@nestjs/mongoose';
+import { CryptoService } from '../../../application/adapters/crypto/crypto-service';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +17,13 @@ export class AuthService {
         private usersRepository: UsersRepository,
         private jwtService: JwtService,
         private emailManager: EmailManager,
+        private cryptoService: CryptoService,
         @InjectModel(User.name) private userModel: UserModel,
     ) {}
 
     async createUser(userInput: CreateUserInputDto): Promise<UserViewModel | null> {
-        const user = await this.userModel.createUser(userInput);
+        const cryptedData = await this.cryptoService.getCryptedData(userInput.password);
+        const user = await this.userModel.createUser(userInput, cryptedData);
         const result = await this.usersRepository.save(user);
         const sendEmailResult = await this.emailManager.sendConfirmationCode(
             userInput.email,
