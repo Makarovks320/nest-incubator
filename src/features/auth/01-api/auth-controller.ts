@@ -46,7 +46,7 @@ export class AuthController {
     @UseGuards(ThrottlerGuard)
     async login(@Body() input: AuthLoginInputDto, @Req() req: Request, @Res() res: Response) {
         const ip = this.authHelper.getIp(req);
-        if (!ip) throw new UnauthorizedException('ip is not defined');
+        if (!ip) throw new BadRequestException('ip is not defined');
 
         const deviceName = this.authHelper.getUserAgent(req);
 
@@ -80,38 +80,25 @@ export class AuthController {
         res.cookie('refreshToken', '', refreshTokenOptions).sendStatus(HttpStatus.NO_CONTENT_204);
     }
 
-    // @Post('refresh-token')
-    // @HttpCode(HttpStatus.OK_200)
-    // async refreshToken(@Req() req: Request, @Res() res: Response) {
-    //     // сначала из старого токена вытащим инфу о текущей сессии (понадобится deviceId):
-    //     const currentRefreshToken: string = req.cookies.refreshToken;
-    //     const currentRTInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(currentRefreshToken);
-    //     const deviceId: string = currentRTInfo!.deviceId;
-    //
-    //     // теперь создадим новую пару токенов:
-    //     const accessToken: string = await this.jwtService.createAccessToken(req.userId);
-    //     const newRefreshToken = await this.jwtService.createRefreshToken(req.userId, deviceId);
-    //
-    //     // Также может поменяться ip:
-    //     const currentIp: IpType = req.headers['x-forwarded-for'] || req.socket.remoteAddress || "IP undefined";
-    //
-    //     // Получим информацию о текущей сессии:
-    //     const currentSession: SessionDbModel | null = await this.sessionService.getSessionForDevice(deviceId);
-    //     if (!currentSession) {
-    //         res.sendStatus(HttpStatus.SERVER_ERROR_500);
-    //         return;
-    //     }
-    //
-    //     const result = await this.sessionService.updateSession(currentIp, deviceId, newRefreshToken, currentSession);
-    //     if (!result) {
-    //         res.sendStatus(HttpStatus.SERVER_ERROR_500);
-    //         return;
-    //     }
-    //
-    //     res.status(HttpStatus.OK_200)
-    //         .cookie('refreshToken', newRefreshToken, refreshTokenOptions)
-    //         .send({accessToken: accessToken});
-    // }
+    @Post('refresh-token')
+    @UseGuards(RefreshTokenGuard)
+    @HttpCode(HttpStatus.OK_200)
+    async refreshToken(@Req() req: Request, @Res() res: Response) {
+        // возьмем старый токен для получения информации о текущей сессии
+        const currentRefreshToken = this.authHelper.getRefreshToken(req);
+        // Возьмем ip, поскольку у клиента он мог поменяться:
+        const ip = this.authHelper.getIp(req);
+        if (!ip) throw new BadRequestException('ip is not defined');
+
+        const authTokenPair = await this.authService.refreshToken(req.userId, ip, currentRefreshToken);
+
+        if (!authTokenPair) {
+            throw new InternalServerErrorException();
+        } else {
+            this.authHelper.addRefreshTokenToCookie(res, authTokenPair.refreshToken);
+            res.status(HttpStatus.OK_200).send({ accessToken: authTokenPair.accessToken });
+        }
+    }
 
     @Get('me')
     @UseGuards(RefreshTokenGuard)

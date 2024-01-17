@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
-import { JwtService, AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
+import { JwtService, AuthTokenPair, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { EmailManager } from '../../../application/adapters/email-adapter/emailManager';
 import { EmailConfirmationType, User, UserDocument, UserModel } from '../../users/03-domain/user-db-model';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
@@ -13,6 +13,7 @@ import { CryptoService } from '../../../application/adapters/crypto/crypto-servi
 import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from './session-service';
+import { AuthSession } from '../03-domain/session-model';
 
 @Injectable()
 export class AuthService {
@@ -111,6 +112,31 @@ export class AuthService {
         return {
             accessToken,
             refreshToken,
+        };
+    }
+
+    async refreshToken(userId: string, ip: string, currentRefreshToken: string): Promise<AuthTokenPair | null> {
+        // из старого токена вытащим deviceId:
+        const currentRTInfo: RefreshTokenInfoType | null =
+            await this.jwtService.getRefreshTokenInfo(currentRefreshToken);
+        const deviceId: string = currentRTInfo!.deviceId;
+
+        // теперь создадим новую пару токенов:
+        const accessToken: string = await this.jwtService.createAccessToken(userId);
+        const newRefreshToken = await this.jwtService.createRefreshToken(userId, deviceId);
+
+        // Получим информацию о текущей сессии:
+        const currentSession: AuthSession | null = await this.sessionService.getSessionForDevice(deviceId);
+        if (!currentSession) {
+            return null;
+        }
+
+        const session = await this.sessionService.updateSession(ip, deviceId, newRefreshToken, currentSession);
+        if (!session) return null;
+
+        return {
+            accessToken,
+            refreshToken: newRefreshToken,
         };
     }
 }
