@@ -3,18 +3,23 @@ import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../users/04-repositories/users-repository';
-import { JwtService } from '../../../application/adapters/jwt/jwt-service';
+import { JwtService, AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
 import { EmailManager } from '../../../application/adapters/email-adapter/emailManager';
 import { EmailConfirmationType, User, UserDocument, UserModel } from '../../users/03-domain/user-db-model';
 import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { InjectModel } from '@nestjs/mongoose';
 import { CryptoService } from '../../../application/adapters/crypto/crypto-service';
+import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
+import { UserService } from '../../users/02-services/user-service';
+import { SessionService } from './session-service';
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersRepository: UsersRepository,
+        private userService: UserService,
+        private sessionService: SessionService,
         private jwtService: JwtService,
         private emailManager: EmailManager,
         private cryptoService: CryptoService,
@@ -86,5 +91,26 @@ export class AuthService {
         const passwordSalt: string = user.accountData.salt;
         const newPasswordHash = await this._generateHash(newPassword, passwordSalt);
         return await this.usersRepository.updatePassword(newPasswordHash, userId);
+    }
+
+    async loginUser(input: AuthLoginInputDto, ip: string, deviceName: string): Promise<AuthTokenPair | null> {
+        const user: UserDocument | null = await this.userService.checkCredentials(input.loginOrEmail, input.password);
+        if (!user) return null;
+
+        // todo: если есть валидный рефреш-токен, сделать перезапись сессии вместо создания новой
+        // подготавливаем данные для сохранения сессии:
+        const deviceId: string = uuidv4();
+
+        // создаем токены
+        const accessToken: string = await this.jwtService.createAccessToken(user._id.toString());
+        const refreshToken: string = await this.jwtService.createRefreshToken(user._id.toString(), deviceId);
+
+        // сохраняем текущую сессию:
+        await this.sessionService.addSession(ip, deviceId, deviceName, refreshToken);
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     }
 }

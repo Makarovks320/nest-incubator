@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
 import {
     BadRequestException,
@@ -11,12 +10,13 @@ import {
     Post,
     Req,
     Res,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
-import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
+import { AuthTokenPair, JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
@@ -43,26 +43,15 @@ export class AuthController {
     @Post('login')
     @UseGuards(ThrottlerGuard)
     async login(@Body() input: AuthLoginInputDto, @Req() req: Request, @Res() res: Response) {
-        const user: UserDocument | null = await this.userService.checkCredentials(input.loginOrEmail, input.password);
-        if (user) {
-            // todo: если есть валидный рефреш-токен, сделать перезапись сессии вместо создания новой
-            // подготавливаем данные для сохранения сессии:
-            const deviceId: string = uuidv4();
-            const ip = req.ip; //.headers['x-forwarded-for'] /*|| req.socket.remoteAddress*/ || 'IP undefined';
-            const deviceName: string = req.headers['user-agent'] || 'device name is undefined';
-
-            // создаем токены
-            const accessToken: string = await this.jwtService.createAccessToken(user._id);
-            const refreshToken: string = await this.jwtService.createRefreshToken(user._id, deviceId);
-
-            // сохраняем текущую сессию:
-            await this.sessionService.addSession(ip!, deviceId, deviceName, refreshToken);
-
-            res.status(HttpStatus.OK_200)
-                .cookie('refreshToken', refreshToken, refreshTokenOptions)
-                .send({ accessToken: accessToken });
+        const ip: string = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'IP undefined';
+        const deviceName: string = req.headers['user-agent'] || 'device name is undefined'; //todo: undefined
+        const authTokenPair: AuthTokenPair | null = await this.authService.loginUser(input, ip, deviceName);
+        if (!authTokenPair) {
+            throw new UnauthorizedException();
         } else {
-            res.sendStatus(HttpStatus.UNAUTHORIZED_401);
+            res.status(HttpStatus.OK_200)
+                .cookie('refreshToken', authTokenPair.refreshToken, refreshTokenOptions)
+                .send({ accessToken: authTokenPair.accessToken });
         }
     }
 

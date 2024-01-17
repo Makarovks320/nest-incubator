@@ -10,6 +10,11 @@ export type RefreshTokenInfoType = {
     exp: number;
 };
 
+export type AuthTokenPair = {
+    accessToken: string;
+    refreshToken: string;
+};
+
 @Injectable()
 export class JwtService {
     secret: string = appConfig.JWT_SECRET;
