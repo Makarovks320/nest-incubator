@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Blog } from '../../blogs/03-domain/blog-db-model';
@@ -15,7 +14,6 @@ export type SessionViewModel = {
 export type SessionDocument = HydratedDocument<Blog>;
 @Schema()
 export class AuthSession {
-    // @Prop({ type: string | string[] })
     @Prop({ required: true })
     ip: string;
 
@@ -25,8 +23,8 @@ export class AuthSession {
     @Prop({ required: true })
     deviceId: string;
 
-    @Prop({ required: true })
-    deviceName: string;
+    @Prop({ type: String || null, required: false })
+    deviceName: string | null;
 
     @Prop({ required: true })
     refreshTokenIssuedAt: Date;

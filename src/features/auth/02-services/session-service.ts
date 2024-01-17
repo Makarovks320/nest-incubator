@@ -14,7 +14,7 @@ export class SessionService {
     async addSession(
         ip: string,
         deviceId: string,
-        deviceName: string,
+        deviceName: string | null,
         refreshToken: string,
     ): Promise<AuthSession | null> {
         // достанем нужную для сессии инфу из Рефреш-токена:

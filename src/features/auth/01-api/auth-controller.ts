@@ -28,12 +28,14 @@ import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
 import { EmailDto } from '../05-dto/EmailDto';
 import { ConfirmationCode } from '../05-dto/ConfirmationCode';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { AuthHelper } from '../../../application/helpers/auth-helper';
 
 const refreshTokenOptions = { httpOnly: true, secure: true };
 
 @Controller('auth')
 export class AuthController {
     constructor(
+        private authHelper: AuthHelper,
         private authService: AuthService,
         private userService: UserService,
         private sessionService: SessionService,
@@ -43,15 +45,17 @@ export class AuthController {
     @Post('login')
     @UseGuards(ThrottlerGuard)
     async login(@Body() input: AuthLoginInputDto, @Req() req: Request, @Res() res: Response) {
-        const ip: string = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'IP undefined';
-        const deviceName: string = req.headers['user-agent'] || 'device name is undefined'; //todo: undefined
+        const ip = this.authHelper.getIp(req);
+        if (!ip) throw new UnauthorizedException('ip is not defined');
+
+        const deviceName = this.authHelper.getUserAgent(req);
+
         const authTokenPair: AuthTokenPair | null = await this.authService.loginUser(input, ip, deviceName);
         if (!authTokenPair) {
             throw new UnauthorizedException();
         } else {
-            res.status(HttpStatus.OK_200)
-                .cookie('refreshToken', authTokenPair.refreshToken, refreshTokenOptions)
-                .send({ accessToken: authTokenPair.accessToken });
+            this.authHelper.addRefreshTokenToCookie(res, authTokenPair.refreshToken);
+            res.status(HttpStatus.OK_200).send({ accessToken: authTokenPair.accessToken });
         }
     }
 

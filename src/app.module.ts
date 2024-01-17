@@ -34,12 +34,14 @@ import { EmailExistenceValidator } from './features/auth/05-dto/custom-validator
 import { ConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsConfirmationCodeValid';
 import { CryptoService } from './application/adapters/crypto/crypto-service';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthHelper } from './application/helpers/auth-helper';
 
 const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
 const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, EmailExistenceValidator];
 const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
+const helpers = [AuthHelper];
 
 @Module({
     imports: [
@@ -78,7 +80,7 @@ const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
         ]),
     ],
     controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
-    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, ...adapters],
+    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, ...adapters, ...helpers],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {

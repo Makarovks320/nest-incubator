@@ -93,7 +93,7 @@ export class AuthService {
         return await this.usersRepository.updatePassword(newPasswordHash, userId);
     }
 
-    async loginUser(input: AuthLoginInputDto, ip: string, deviceName: string): Promise<AuthTokenPair | null> {
+    async loginUser(input: AuthLoginInputDto, ip: string, deviceName: string | null): Promise<AuthTokenPair | null> {
         const user: UserDocument | null = await this.userService.checkCredentials(input.loginOrEmail, input.password);
         if (!user) return null;
 
