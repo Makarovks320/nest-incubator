@@ -15,11 +15,11 @@ export class JwtService {
     secret: string = appConfig.JWT_SECRET;
     refreshSecret: string = appConfig.JWT_REFRESH_SECRET;
 
-    async createAccessToken(userId: ObjectId) {
+    async createAccessToken(userId: string) {
         return jwt.sign({ userId }, this.secret, { expiresIn: '600s' });
     }
 
-    async createRefreshToken(userId: ObjectId, deviceId: string) {
+    async createRefreshToken(userId: string, deviceId: string) {
         return jwt.sign({ userId, deviceId }, this.refreshSecret, { expiresIn: '1200s' });
     }
 

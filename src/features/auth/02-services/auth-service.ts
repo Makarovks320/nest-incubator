@@ -70,7 +70,7 @@ export class AuthService {
         const userDB: UserDocument | null = await this.usersRepository.findUserByLoginOrEmail(email);
         // Return true even if current email is not registered (for prevent user's email detection)
         if (!userDB) return true;
-        const passwordRecoveryCode = await this.jwtService.createAccessToken(userDB._id);
+        const passwordRecoveryCode = await this.jwtService.createAccessToken(userDB._id.toString());
         await this.usersRepository.addPassRecoveryCode(userDB.id, passwordRecoveryCode);
 
         const sendEmailResult = await this.emailManager.sendPasswordRecoveryMessage(userDB.email, passwordRecoveryCode);
