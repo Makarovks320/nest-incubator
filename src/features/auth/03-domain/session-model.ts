@@ -2,8 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { Blog } from '../../blogs/03-domain/blog-db-model';
 
-export type IpType = string | string[];
-
 export type SessionViewModel = {
     ip: string;
     title: string;

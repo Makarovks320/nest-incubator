@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { appConfig } from '../../config';
-import { ObjectId } from 'mongodb';
 
 export type RefreshTokenInfoType = {
     deviceId: string;

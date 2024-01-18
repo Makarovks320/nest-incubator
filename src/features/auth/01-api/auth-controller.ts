@@ -60,24 +60,16 @@ export class AuthController {
     }
 
     @Post('logout')
+    @UseGuards(RefreshTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async logoutUser(@Req() req: Request, @Res() res: Response) {
-        //здесь надо убить текущую сессию, для этого
-        // возьмем deviceId:
-        const refreshToken: string = req.cookies.refreshToken;
-        const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(refreshToken);
-        if (!refreshTokenInfo) {
-            res.sendStatus(HttpStatus.UNAUTHORIZED_401);
-            return;
-        }
-        const deviceId: string = refreshTokenInfo.deviceId;
-        // теперь убьем текущую сессию
-        const result = await this.sessionService.deleteSessionByDeviceId(deviceId);
+        const result = await this.sessionService.deleteSessionByDeviceId(req.deviceId);
         if (!result) {
             res.sendStatus(HttpStatus.SERVER_ERROR_500);
             return;
         }
-        res.cookie('refreshToken', '', refreshTokenOptions).sendStatus(HttpStatus.NO_CONTENT_204);
+        this.authHelper.clearRefreshToken(res);
+        res.sendStatus(HttpStatus.NO_CONTENT_204);
     }
 
     @Post('refresh-token')

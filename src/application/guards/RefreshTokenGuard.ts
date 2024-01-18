@@ -1,35 +1,38 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, RefreshTokenInfoType } from '../adapters/jwt/jwt-service';
-import { UserService } from '../../features/users/02-services/user-service';
 import { AuthHelper } from '../helpers/auth-helper';
+import { SessionService } from '../../features/auth/02-services/session-service';
+import { AuthSession } from '../../features/auth/03-domain/session-model';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
     constructor(
         private authHelper: AuthHelper,
-        private userService: UserService,
+        private sessionService: SessionService,
         private jwtService: JwtService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
 
-        const token = this.authHelper.getRefreshToken(request);
-        if (!token) {
+        const refreshToken = this.authHelper.getRefreshToken(request);
+        if (!refreshToken) {
             throw new UnauthorizedException();
         }
 
-        const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(token);
+        const refreshTokenInfo: RefreshTokenInfoType | null = await this.jwtService.getRefreshTokenInfo(refreshToken);
         if (!refreshTokenInfo) {
             throw new UnauthorizedException();
         }
 
-        const user = await this.userService.findUserById(refreshTokenInfo.userId);
-        if (user) {
-            request.userId = refreshTokenInfo.userId;
-            request.deviceId = refreshTokenInfo.deviceId;
-            return true;
+        const session: AuthSession | null = await this.sessionService.getSessionForDevice(refreshTokenInfo.deviceId);
+
+        if (!session) {
+            throw new UnauthorizedException();
         }
-        throw new UnauthorizedException();
+
+        request.userId = refreshTokenInfo.userId;
+        request.deviceId = refreshTokenInfo.deviceId;
+        return true;
     }
 }

@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 export class AuthHelper {
     private refreshTokenOptions: { httpOnly: true; secure: true };
+    private refreshTokenName: 'refreshToken';
 
     getIp(req: Request): string | undefined {
         return (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
@@ -13,6 +14,10 @@ export class AuthHelper {
         return req.headers['user-agent'] || null;
     }
     addRefreshTokenToCookie(res: Response, refreshToken: string): void {
-        res.cookie('refreshToken', refreshToken, this.refreshTokenOptions);
+        res.cookie(this.refreshTokenName, refreshToken, this.refreshTokenOptions);
+    }
+
+    clearRefreshToken(res: Response): void {
+        res.clearCookie(this.refreshTokenName);
     }
 }
