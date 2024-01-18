@@ -5,6 +5,7 @@ import { RouterPaths } from '../../src/application/types/router-paths';
 import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { authBasicHeader } from './test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { UpdateBlogInputDto } from '../../src/features/blogs/05-dto/UpdateBlogInputDto';
 
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 export const blogsTestManager = {
@@ -39,5 +40,19 @@ export const blogsTestManager = {
         }
 
         return { response, createdBlog };
+    },
+
+    async updateBlog(
+        blogid: string,
+        data: UpdateBlogInputDto,
+        expectedStatusCode: HttpStatusType,
+        authorization = authBasicHeader,
+    ): Promise<void> {
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.blogs}/${blogid}`)
+            .set(authorization)
+            .send(data)
+            .expect(expectedStatusCode);
     },
 };

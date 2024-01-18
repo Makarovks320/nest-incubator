@@ -45,7 +45,7 @@ describe('testing auth flow', () => {
         expect(user).not.toBeNull();
     });
 
-    it('should return status 204 even if such email doesnt exist; status 204;', async () => {
+    it('password-recovery: should return status 204 even if such email doesnt exist', async () => {
         const data = {
             email: 'unexistingEmailAddress@jopa.com',
         };
@@ -57,7 +57,7 @@ describe('testing auth flow', () => {
             .expect(HttpStatus.NO_CONTENT_204);
     });
 
-    it('should return error if email or login already exist; status 400;', async () => {
+    it('registration: should return error if email or login already exist; status 400;', async () => {
         const userData: CreateUserInputDto = {
             login: login + 'x', // addition to login
             password: passwordBeforeChanging,

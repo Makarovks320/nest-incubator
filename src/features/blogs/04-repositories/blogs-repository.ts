@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Blog, BlogDocument } from '../03-domain/blog-db-model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, MongooseError } from 'mongoose';
-import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputDto } from '../types/dto';
+import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputModel } from '../types/dto';
 import { BlogsDataMapper } from '../01-api/blogs-data-mapper';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class BlogsRepository {
         }
     }
 
-    async updateBlogById(id: string, blogNewData: UpdateBlogInputDto): Promise<boolean> {
+    async updateBlogById(id: string, blogNewData: UpdateBlogInputModel): Promise<boolean> {
         const res: UpdateResult = await this.blogModel.updateOne({ _id: id }, { $set: blogNewData }).exec();
         return res.modifiedCount > 0;
     }

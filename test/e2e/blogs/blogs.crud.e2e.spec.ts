@@ -1,7 +1,7 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
-import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputDto } from '../../../src/features/blogs/types/dto';
+import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { authBasicHeader } from '../../utils/test_utilities';
 
@@ -93,23 +93,45 @@ describe('/blogs tests', () => {
     });
 
     // update:
-    it(`should update entity with correct input data`, async () => {
+    it(`should not update entity with incorrect auth credentials; status 401;`, async () => {
         if (!createdEntity1) {
             throw new Error('test cannot be performed.');
         }
 
-        const data: UpdateBlogInputDto = {
+        const data: UpdateBlogInputModel = {
             name: 'edited name a',
             description: 'description test',
             websiteUrl: 'http://test.ru',
         };
 
+        await blogsTestManager.updateBlog(createdEntity1.id, data, HttpStatus.UNAUTHORIZED_401, {
+            Authorization: 'bad',
+        });
+
         await testingProvider
             .getHttp()
-            .put(`${RouterPaths.blogs}/${createdEntity1.id}`)
-            .set(authBasicHeader)
-            .send(data)
-            .expect(HttpStatus.NO_CONTENT_204);
+            .get(RouterPaths.blogs)
+            .expect(HttpStatus.OK_200, {
+                pagesCount: 1,
+                page: 1,
+                pageSize: 10,
+                totalCount: 2,
+                items: [createdEntity2, createdEntity1],
+            });
+    });
+
+    it(`should update entity with correct input data`, async () => {
+        if (!createdEntity1) {
+            throw new Error('test cannot be performed.');
+        }
+
+        const data: UpdateBlogInputModel = {
+            name: 'edited name a',
+            description: 'description test',
+            websiteUrl: 'http://test.ru',
+        };
+
+        await blogsTestManager.updateBlog(createdEntity1.id, data, HttpStatus.NO_CONTENT_204);
 
         await testingProvider
             .getHttp()
