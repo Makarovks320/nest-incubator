@@ -1,9 +1,8 @@
-import { IsNotEmpty, IsString } from 'class-validator';
 import { IsConfirmationCodeValid } from '../../../application/decorators/validation/IsConfirmationCodeValid';
+import { IsNotEmptyString } from '../../../application/decorators/validation/IsNotEmptyString';
 
 export class ConfirmationCode {
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmptyString()
     @IsConfirmationCodeValid()
     code: string;
 }

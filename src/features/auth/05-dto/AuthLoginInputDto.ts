@@ -1,11 +1,9 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmptyString } from '../../../application/decorators/validation/IsNotEmptyString';
 
 export class AuthLoginInputDto {
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmptyString()
     loginOrEmail: string;
 
-    @IsNotEmpty()
-    @IsString()
+    @IsNotEmptyString()
     password: string;
 }

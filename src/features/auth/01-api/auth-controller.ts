@@ -16,7 +16,7 @@ import {
 import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
-import { AuthTokenPair, JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
+import { AuthTokenPair, JwtService } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
@@ -29,8 +29,6 @@ import { EmailDto } from '../05-dto/EmailDto';
 import { ConfirmationCode } from '../05-dto/ConfirmationCode';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthHelper } from '../../../application/helpers/auth-helper';
-
-const refreshTokenOptions = { httpOnly: true, secure: true };
 
 @Controller('auth')
 export class AuthController {
