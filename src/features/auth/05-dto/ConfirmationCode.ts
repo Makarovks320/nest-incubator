@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { IsConfirmationCodeValid } from './custom-validators/IsConfirmationCodeValid';
+import { IsConfirmationCodeValid } from '../../../application/decorators/validation/IsConfirmationCodeValid';
 
 export class ConfirmationCode {
     @IsNotEmpty()

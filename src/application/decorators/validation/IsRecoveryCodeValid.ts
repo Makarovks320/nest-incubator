@@ -5,10 +5,10 @@ import {
     ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { UsersQueryRepository } from '../../../users/04-repositories/users-query-repository';
+import { UsersQueryRepository } from '../../../features/users/04-repositories/users-query-repository';
 import jwt from 'jsonwebtoken';
-import { ApiValidationException } from '../../../../application/exception-filters/exceptions/ApiValidationException';
-import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
+import { ApiValidationException } from '../../exception-filters/exceptions/ApiValidationException';
+import { FieldError } from '../../pipes/ClassValidationPipe';
 
 @Injectable()
 @ValidatorConstraint({ async: true })

@@ -5,9 +5,9 @@ import {
     ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { ApiValidationException } from '../../../../application/exception-filters/exceptions/ApiValidationException';
-import { UsersRepository } from '../../../users/04-repositories/users-repository';
-import { FieldError } from '../../../../application/pipes/ClassValidationPipe';
+import { ApiValidationException } from '../../exception-filters/exceptions/ApiValidationException';
+import { UsersRepository } from '../../../features/users/04-repositories/users-repository';
+import { FieldError } from '../../pipes/ClassValidationPipe';
 
 @Injectable()
 @ValidatorConstraint({ async: true })

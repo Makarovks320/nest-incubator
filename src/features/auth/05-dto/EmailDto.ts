@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { IsEmailRegistered } from './custom-validators/EmailExistenceValidator';
+import { IsEmailRegistered } from '../../../application/decorators/validation/EmailExistenceValidator';
 
 export class EmailDto {
     @IsNotEmpty()

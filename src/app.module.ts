@@ -27,11 +27,11 @@ import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/sessio
 import { EmailManager } from './application/adapters/email-adapter/emailManager';
 import { EmailAdapter } from './application/adapters/email-adapter/email-adapter';
 import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
-import { RecoveryCodeValidator } from './features/auth/05-dto/custom-validators/IsRecoveryCodeValid';
+import { RecoveryCodeValidator } from './application/decorators/validation/IsRecoveryCodeValid';
 import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
 import { RouterPaths } from './application/types/router-paths';
-import { EmailExistenceValidator } from './features/auth/05-dto/custom-validators/EmailExistenceValidator';
-import { ConfirmationCodeValidator } from './features/auth/05-dto/custom-validators/IsConfirmationCodeValid';
+import { EmailExistenceValidator } from './application/decorators/validation/EmailExistenceValidator';
+import { ConfirmationCodeValidator } from './application/decorators/validation/IsConfirmationCodeValid';
 import { CryptoService } from './application/adapters/crypto/crypto-service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthHelper } from './application/helpers/auth-helper';
