@@ -15,6 +15,6 @@ export class CreateBlogInputDto {
     @IsNotEmpty()
     @IsString()
     @MaxLength(BLOG_WEB_URL_MAX)
-    @IsUrl()
+    @IsUrl() //todo: законтрибьютить в class-validator воозможность прокидывать опцию {ignore_max_length: true}
     websiteUrl: string;
 }
