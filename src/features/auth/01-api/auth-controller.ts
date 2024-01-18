@@ -16,7 +16,7 @@ import {
 import { AuthService } from '../02-services/auth-service';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
-import { AuthTokenPair, JwtService } from '../../../application/adapters/jwt/jwt-service';
+import { AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
@@ -37,7 +37,6 @@ export class AuthController {
         private authService: AuthService,
         private userService: UserService,
         private sessionService: SessionService,
-        private jwtService: JwtService,
     ) {}
 
     @Post('login')

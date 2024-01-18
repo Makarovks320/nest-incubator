@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    NotFoundException,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
 import { BlogInputQueryParams, BlogViewModel } from '../types/dto';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
@@ -13,6 +25,7 @@ import { CreatePostByBlogsRouterInputModel, CreatePostModel } from '../../posts/
 import { PostService } from '../../posts/02-services/post-service';
 import { CreateBlogInputDto } from '../05-dto/CreateBlogInputDto';
 import { UpdateBlogInputDto } from '../05-dto/UpdateBlogInputDto';
+import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -24,6 +37,7 @@ export class BlogsController {
     ) {}
 
     @Post()
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.CREATED_201)
     async createBlog(@Body() inputModel: CreateBlogInputDto): Promise<BlogViewModel> {
         return this.blogService.createNewBlog(inputModel);
@@ -47,6 +61,7 @@ export class BlogsController {
     }
 
     @Put(':id')
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async updateBlog(@Param('id') blogId: string, @Body() inputModel: UpdateBlogInputDto) {
         const updatedBlog = await this.blogService.updateBlogById(blogId, inputModel);
@@ -57,6 +72,7 @@ export class BlogsController {
     }
 
     @Delete(':id')
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteBlog(@Param('id') blogId: string) {
         const result: boolean = await this.blogService.deleteBlogById(blogId);
@@ -67,6 +83,7 @@ export class BlogsController {
     }
 
     @Delete()
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAllBlogs() {
         return await this.blogService.deleteAllBlogs();
@@ -89,6 +106,7 @@ export class BlogsController {
     }
 
     @Post(':id/posts')
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.CREATED_201)
     async createPostForExistingBlog(
         @Param('id') blogId: string,
