@@ -1,16 +1,3 @@
-import { ObjectId } from 'mongodb';
-
-export class LikeDbModel {
-    constructor(
-        public _id: ObjectId,
-        public parent_type: PARENT_TYPE_DB_ENUM,
-        public parent_id: ObjectId,
-        public type: LIKE_STATUS_DB_ENUM,
-        public user_id: ObjectId,
-        public createdAt: Date,
-        public updatedAt: Date,
-    ) {}
-}
 export enum PARENT_TYPE_ENUM {
     COMMENT = 'comment',
     POST = 'post',
