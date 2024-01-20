@@ -1,4 +1,5 @@
 import { Response, Request } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 export class AuthHelper {
     private refreshTokenOptions: { httpOnly: true; secure: true };
     private refreshTokenName: 'refreshToken';
@@ -19,5 +20,14 @@ export class AuthHelper {
 
     clearRefreshToken(res: Response): void {
         res.clearCookie(this.refreshTokenName);
+    }
+
+    getBearerAuthToken(request: Request) {
+        const { authorization } = request.headers;
+        if (!authorization) {
+            throw new UnauthorizedException();
+        }
+        const token = authorization.split(' ')[1];
+        return token;
     }
 }
