@@ -1,14 +1,27 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Body, Controller, Get, HttpCode, Param, Put, Req, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    NotFoundException,
+    Param,
+    Put,
+    Req,
+    UnauthorizedException,
+    UseGuards,
+} from '@nestjs/common';
 import { UserService } from '../../users/02-services/user-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UpdateCommentInputDto } from '../05-dto/UpdateCommentInputDto';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
 import { CommentService } from '../02-services/comment-service';
+import { CommentIdDto } from '../05-dto/CommentIdDto';
+import { CommentViewModel } from './models/output-models/CommentViewModel';
 
-@Controller()
+@Controller('comments')
 export class CommentsController {
     constructor(
         private commentService: CommentService,
@@ -28,25 +41,16 @@ export class CommentsController {
     // ) {
     //     return await this.commentService.updateComment(inputModel.content, commentId, req.userId);
     // }
-    // @Get(':id')
-    // @HttpCode(HttpStatus.OK_200)
-    // async getCommentById(@Param('id') commentId: string, req: Request, res: Response) {
-    //     try {
-    //         // const comment: CommentDbType | null = await this.commentsQueryRepository.getCommentById(commentId);
-    //         const viewComment: CommentViewModel | null = await this.commentsQueryRepository.getCommentViewModel(
-    //             commentId,
-    //             req.userId,
-    //         );
-    //         if (!viewComment) {
-    //             res.sendStatus(HttpStatus.NOT_FOUND_404);
-    //             return;
-    //         }
-    //         res.send(viewComment);
-    //     } catch (e) {
-    //         if (e instanceof mongoose.Error) res.status(HttpStatus.SERVER_ERROR_500).send('Db Error');
-    //         res.sendStatus(HttpStatus.SERVER_ERROR_500);
-    //     }
-    // }
+    @Get(':id')
+    @HttpCode(HttpStatus.OK_200)
+    async getCommentById(@Param() uriParam: CommentIdDto, req: Request) {
+        const viewComment: CommentViewModel | null = await this.commentsQueryRepository.getCommentViewModel(
+            uriParam.id,
+            req.userId,
+        );
+        if (!viewComment) throw new NotFoundException();
+        return viewComment;
+    }
 
     // async deleteCommentById(req: Request, res: Response) {
     //     const commentObjectId: ObjectId = stringToObjectIdMapper(req.params.id);

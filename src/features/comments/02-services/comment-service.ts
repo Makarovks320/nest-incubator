@@ -5,6 +5,7 @@ import { UserService } from '../../users/02-services/user-service';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { CreateCommentDto } from '../05-dto/CreateCommentDto';
 import { CommentsRepository } from '../04-repositories/comments-repository';
+import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
 
 export type InputCommentWithPostId = {
     content: string;
@@ -19,7 +20,7 @@ export class CommentService {
         private commentsRepository: CommentsRepository,
     ) {}
 
-    async createNewComment(postId: string, content: string, userId: string): Promise<CommentDocument> {
+    async createNewComment(postId: string, content: string, userId: string): Promise<CommentViewModel> {
         // найдем userLogin
         const user: UserDocument | null = await this.userService.findUserById(userId);
         if (!user) throw new Error('user is not found');
@@ -31,8 +32,7 @@ export class CommentService {
             userLogin: user.login,
         };
         const comment: CommentDocument = await this.commentModel.createComment(commentDto);
-        await this.commentsRepository.save(comment);
-        return comment;
+        return await this.commentsRepository.save(comment);
     }
 
     // async updateComment(content: string, commentId: string, userId: string): Promise<void> {

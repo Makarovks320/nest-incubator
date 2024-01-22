@@ -20,13 +20,17 @@ import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
 import { PostInputQueryParams } from '../types/dto';
 import { PostQueryParams } from '../types/post-query-params-type';
-import { getPostQueryParams } from '../../../application/helpers/get-query-params';
+import { getCommentQueryParams, getPostQueryParams } from '../../../application/helpers/get-query-params';
 import { CreatePostInputDto } from '../05-dto/CreatePostInputDto';
 import { UpdatePostInputDto } from '../05-dto/UpdatePostInputDto';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 import { CreateCommentInputModel } from '../../comments/01-api/models/input-models/CreateCommentInputModel';
 import { CommentService } from '../../comments/02-services/comment-service';
 import { Request } from 'express';
+import { CommentInputQueryParams } from '../../comments/01-api/models/input-models/CommentInputQueryParams';
+import { CommentViewModel } from '../../comments/01-api/models/output-models/CommentViewModel';
+import { CommentsQueryRepository } from '../../comments/04-repositories/comments-query-repository';
+import { CommentQueryParams } from '../../comments/types/comment-query-params-type';
 
 @Controller('posts')
 export class PostsController {
@@ -35,6 +39,7 @@ export class PostsController {
         private commentService: CommentService,
         private blogsQueryRepository: BlogsQueryRepository,
         private postsQueryRepository: PostsQueryRepository,
+        private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
     @Post()
@@ -94,12 +99,20 @@ export class PostsController {
     }
 
     // комментарии
-    //     postsRouter.get('/:id/comments', [
-    //         authMiddleware.lookBearerTokenForCurrentUserId.bind(authMiddleware),
-    //     postsValidations.checkPostExists.bind(postsValidations),
-    //     idFromUrlExistingValidator,
-    //     postsController.getCommentsForPost.bind(postsController)
-    // ]);
+    @Get('/:id/comments')
+    async getCommentsForPost(
+        @Param('id') postId: string,
+        @Query() query: CommentInputQueryParams,
+        @Req() req: Request,
+    ) {
+        const queryParams: CommentQueryParams = getCommentQueryParams(query);
+        const foundComments: WithPagination<CommentViewModel> = await this.commentsQueryRepository.getCommentsForPost(
+            postId,
+            queryParams,
+            req.userId,
+        );
+        return foundComments;
+    }
 
     @Post('/:id/comments')
     @UseGuards(AccessTokenGuard)

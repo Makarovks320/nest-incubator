@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CommentDocument } from '../03-domain/comment-db-model';
+import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
+import { CommentsDataMapper } from '../01-api/comments-data-mapper';
 
 @Injectable()
 export class CommentsRepository {
+    constructor(private commentsDataMapper: CommentsDataMapper) {}
     // async createNewComment(comment: CommentDbType): Promise<CommentDbType | string> {
     //     try {
     //         await CommentModel.insertMany(comment);
@@ -38,7 +41,14 @@ export class CommentsRepository {
     //     await CommentModel.deleteMany({});
     // }
 
-    async save(comment: CommentDocument) {
+    async save(comment: CommentDocument): Promise<CommentViewModel> {
         await comment.save();
+        return this.commentsDataMapper.getCommentViewModel(comment);
     }
+    /*
+    async save(blog: CreateBlogInputModel): Promise<BlogViewModel> {
+        const createdBlog: BlogDocument = new this.blogModel(blog);
+        await createdBlog.save();
+        return BlogsDataMapper.toBlogView(createdBlog);
+    }*/
 }

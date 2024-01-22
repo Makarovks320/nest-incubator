@@ -40,13 +40,20 @@ import { CommentsQueryRepository } from './features/comments/04-repositories/com
 import { CommentsRepository } from './features/comments/04-repositories/comments-repository';
 import { Comment, CommentSchema } from './features/comments/03-domain/comment-db-model';
 import { CommentsController } from './features/comments/01-api/comments-controller';
+import { CommentsDataMapper } from './features/comments/01-api/comments-data-mapper';
+import { CommentExistenceValidator } from './application/decorators/validation/CommentExistenceValidator';
 
 const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService, CommentService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository, CommentsQueryRepository];
 const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository, CommentsRepository];
-const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, EmailExistenceValidator];
+const customValidators = [
+    ConfirmationCodeValidator,
+    RecoveryCodeValidator,
+    EmailExistenceValidator,
+    CommentExistenceValidator,
+];
 const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
-const helpers = [AuthHelper];
+const helpers = [AuthHelper, CommentsDataMapper];
 
 @Module({
     imports: [

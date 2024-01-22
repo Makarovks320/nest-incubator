@@ -3,8 +3,18 @@ import { BlogInputQueryParams } from '../../features/blogs/types/dto';
 import { PostQueryParams } from '../../features/posts/types/post-query-params-type';
 import { PostInputQueryParams } from '../../features/posts/types/dto';
 import { UsersInputQueryParams, UsersQueryParams } from '../../features/users/types/users-query-params';
+import { CommentInputQueryParams } from '../../features/comments/01-api/models/input-models/CommentInputQueryParams';
+import { CommentQueryParams } from '../../features/comments/types/comment-query-params-type';
 
 export function getPostQueryParams(query: PostInputQueryParams): PostQueryParams {
+    return new PostQueryParams(
+        parseInt(query.pageNumber as string) || 1,
+        parseInt(query.pageSize as string) || 10,
+        (query.sortBy as string) || 'createdAt',
+        query.sortDirection === 'asc' ? 'asc' : 'desc',
+    );
+}
+export function getCommentQueryParams(query: CommentInputQueryParams): CommentQueryParams {
     return new PostQueryParams(
         parseInt(query.pageNumber as string) || 1,
         parseInt(query.pageSize as string) || 10,

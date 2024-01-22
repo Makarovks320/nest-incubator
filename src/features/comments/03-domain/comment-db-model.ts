@@ -68,6 +68,8 @@ export class Comment {
 
     @Prop({ required: true, type: DbLikesInfoSchema })
     dbLikesInfo: DbLikesInfoType;
+
+    createdAt: Date;
 }
 
 export const commentMethods = {

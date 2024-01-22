@@ -13,6 +13,7 @@ import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUse
 import { CommentViewModel } from '../../../src/features/comments/01-api/models/output-models/CommentViewModel';
 import { CreateCommentInputModel } from '../../../src/features/comments/01-api/models/input-models/CreateCommentInputModel';
 import { commentsTestManager } from '../../utils/commentsTestManager';
+import { ObjectId } from 'mongodb';
 
 describe('/comments tests', () => {
     const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
@@ -21,8 +22,8 @@ describe('/comments tests', () => {
     let user1: UserViewModel | null;
     let user2: UserViewModel | null;
     let blog: BlogViewModel | null;
-    let authJWTHeader1: {};
-    let authJWTHeader2: {};
+    let authJWTHeader1: object;
+    let authJWTHeader2: object;
 
     beforeAll(async () => {
         // Создаем блог, к которому будем прикреплять пост
@@ -94,10 +95,52 @@ describe('/comments tests', () => {
         expect(user2).not.toBeNull();
     });
 
+    it('should return 404 for not existing comment', async () => {
+        const randomId = new ObjectId().toString();
+        await testingProvider.getHttp().get(`${RouterPaths.comments}/${randomId}`).expect(HttpStatus.NOT_FOUND_404);
+    });
+
+    it('should return empty array', async () => {
+        if (!post) throw new Error('test cannot be performed.');
+
+        await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.posts}/${post.id}/comments`)
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
+
+    it('should not create comment without AUTH', async () => {
+        if (!post) throw new Error('test cannot be performed.');
+
+        const data: CreateCommentInputModel = {
+            content: 'Absolutely new comment',
+        };
+
+        await commentsTestManager.createComment(post.id, data, HttpStatus.UNAUTHORIZED_401);
+
+        await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.posts}/${post.id}/comments`)
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
+
+    it('should not create comment without content', async () => {
+        if (!post) throw new Error('test cannot be performed.');
+
+        const data: CreateCommentInputModel = {
+            content: '',
+        };
+
+        await commentsTestManager.createComment(post.id, data, HttpStatus.BAD_REQUEST_400, authJWTHeader1);
+
+        await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.posts}/${post.id}/comments`)
+            .expect(HttpStatus.OK_200, { pagesCount: 0, page: 1, pageSize: 10, totalCount: 0, items: [] });
+    });
+
     // Создаем первый коммент от первого юзера
-
     let comment_1: CommentViewModel | null = null;
-
     it('should create comment 1', async () => {
         if (!post) throw new Error('test cannot be performed');
 
