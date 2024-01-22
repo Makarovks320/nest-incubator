@@ -101,7 +101,7 @@ describe('/comments tests', () => {
     });
 
     it('should return empty array', async () => {
-        if (!post) throw new Error('test cannot be performed.');
+        if (!post) throw new Error('test cannot be performed');
 
         await testingProvider
             .getHttp()
@@ -110,7 +110,7 @@ describe('/comments tests', () => {
     });
 
     it('should not create comment without AUTH', async () => {
-        if (!post) throw new Error('test cannot be performed.');
+        if (!post) throw new Error('test cannot be performed');
 
         const data: CreateCommentInputModel = {
             content: 'Absolutely new comment',
@@ -125,7 +125,7 @@ describe('/comments tests', () => {
     });
 
     it('should not create comment without content', async () => {
-        if (!post) throw new Error('test cannot be performed.');
+        if (!post) throw new Error('test cannot be performed');
 
         const data: CreateCommentInputModel = {
             content: '',
@@ -175,6 +175,254 @@ describe('/comments tests', () => {
                     content: data.content,
                     commentatorInfo: comment_1.commentatorInfo,
                     createdAt: comment_1.createdAt,
+                    likesInfo: expect.any(Object),
+                },
+            ],
+        });
+    });
+
+    // Создаем второй коммент от первого юзера
+    let comment_2: CommentViewModel | null = null;
+    it('should create comment 2', async () => {
+        if (!post) throw new Error('test cannot be performed');
+
+        const data: CreateCommentInputModel = {
+            content: generateString(35),
+        };
+
+        const { createdComment } = await commentsTestManager.createComment(
+            post.id,
+            data,
+            HttpStatus.CREATED_201,
+            authJWTHeader2,
+        );
+
+        comment_2 = createdComment;
+
+        if (!comment_1 || !comment_2) throw new Error('test cannot be performed');
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.posts}/${post.id}/comments`)
+            .expect(HttpStatus.OK_200);
+
+        expect(response.body).toEqual({
+            pagesCount: 1,
+            page: 1,
+            pageSize: 10,
+            totalCount: 2,
+            items: [
+                {
+                    id: comment_2.id,
+                    content: data.content,
+                    commentatorInfo: comment_2.commentatorInfo,
+                    createdAt: comment_2.createdAt,
+                    likesInfo: expect.any(Object),
+                },
+                {
+                    id: comment_1.id,
+                    content: comment_1.content,
+                    commentatorInfo: comment_1.commentatorInfo,
+                    createdAt: comment_1.createdAt,
+                    likesInfo: expect.any(Object),
+                },
+            ],
+        });
+    });
+
+    it('should not update comment 1 without AUTH', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        const data: CreateCommentInputModel = {
+            content: 'NEW OUTSTANDING UPDATED COMMENT 1',
+        };
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/${comment_1.id}`)
+            .send(data)
+            .expect(HttpStatus.UNAUTHORIZED_401);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: comment_1.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+    });
+
+    it('should not update comment 1 with AUTH but incorrect body', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        const data1: CreateCommentInputModel = {
+            content: 'UPDATED COMMENT 1',
+        };
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader1)
+            .send(data1)
+            .expect(HttpStatus.BAD_REQUEST_400);
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader1)
+            .send({
+                content: generateString(401),
+            })
+            .expect(HttpStatus.BAD_REQUEST_400);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: comment_1.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+    });
+
+    it('should not update comment 2 with AUTH of another user (403)', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        const data: CreateCommentInputModel = {
+            content: 'NEW OUTSTANDING UPDATED COMMENT 1',
+        };
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader2)
+            .send(data)
+            .expect(HttpStatus.FORBIDDEN_403);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: comment_1.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+    });
+
+    it('should update comment 1 with correct AUTH', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        const data: CreateCommentInputModel = {
+            content: 'NEW OUTSTANDING UPDATED COMMENT 1',
+        };
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader1)
+            .send(data)
+            .expect(HttpStatus.NO_CONTENT_204);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: data.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+        comment_1.content = data.content;
+    });
+
+    it('DELETE/PUT should return 404 if :id from uri param not found', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        const data: CreateCommentInputModel = {
+            content: 'NEW OUTSTANDING UPDATED COMMENT 222',
+        };
+
+        await testingProvider
+            .getHttp()
+            .put(`${RouterPaths.comments}/111111111111`)
+            .set(authJWTHeader1)
+            .send(data)
+            .expect(HttpStatus.NOT_FOUND_404);
+
+        await testingProvider
+            .getHttp()
+            .delete(`${RouterPaths.comments}/111111111111`)
+            .set(authJWTHeader1)
+            .expect(HttpStatus.NOT_FOUND_404);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: comment_1.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+    });
+
+    it('should not delete comment_1 with AUTH of another user (403)', async () => {
+        if (!comment_1) throw new Error('test cannot be performed');
+        await testingProvider
+            .getHttp()
+            .delete(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader2)
+            .expect(HttpStatus.FORBIDDEN_403);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.comments}/${comment_1.id}`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            id: comment_1.id,
+            content: comment_1.content,
+            commentatorInfo: comment_1.commentatorInfo,
+            createdAt: comment_1.createdAt,
+            likesInfo: expect.any(Object),
+        });
+    });
+
+    it('should delete comment 1 with correct AUTH and path', async () => {
+        if (!comment_1 || !comment_2 || !post) throw new Error('test cannot be performed');
+
+        await testingProvider
+            .getHttp()
+            .delete(`${RouterPaths.comments}/${comment_1.id}`)
+            .set(authJWTHeader1)
+            .expect(HttpStatus.NO_CONTENT_204);
+
+        await testingProvider.getHttp().get(`${RouterPaths.comments}/${comment_1.id}`).expect(HttpStatus.NOT_FOUND_404);
+
+        const response = await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.posts}/${post.id}/comments`)
+            .expect(HttpStatus.OK_200);
+        expect(response.body).toEqual({
+            pagesCount: 1,
+            page: 1,
+            pageSize: 10,
+            totalCount: 1,
+            items: [
+                {
+                    id: comment_2.id,
+                    content: comment_2.content,
+                    commentatorInfo: comment_2.commentatorInfo,
+                    createdAt: comment_2.createdAt,
                     likesInfo: expect.any(Object),
                 },
             ],
