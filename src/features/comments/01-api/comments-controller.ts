@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { Body, Get, HttpCode, Injectable, Param, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Put, Req, UseGuards } from '@nestjs/common';
 import { UserService } from '../../users/02-services/user-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UpdateCommentInputDto } from '../05-dto/UpdateCommentInputDto';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
+import { CommentService } from '../02-services/comment-service';
 
-@Injectable()
+@Controller()
 export class CommentsController {
     constructor(
-        // private commentService: CommentService,
+        private commentService: CommentService,
         private userService: UserService,
         // private likeService: LikeService,
         // private likesQueryRepository: LikesQueryRepository,

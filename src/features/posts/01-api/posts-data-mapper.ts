@@ -1,7 +1,7 @@
 import { PostDocument } from '../03-domain/post-db-model';
 import { PostMongoType } from '../types/dto';
 import { PostViewModel } from '../types/post-view-model';
-import { LIKE_STATUS_ENUM } from '../../likes/03-domain/like-db-model';
+import { LIKE_STATUS_ENUM } from '../../likes/03-domain/types';
 
 export class PostsDataMapper {
     constructor() {}

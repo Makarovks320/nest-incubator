@@ -24,7 +24,7 @@ import { getPostQueryParams } from '../../../application/helpers/get-query-param
 import { CreatePostInputDto } from '../05-dto/CreatePostInputDto';
 import { UpdatePostInputDto } from '../05-dto/UpdatePostInputDto';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
-import { CreateCommentInputDto } from '../../comments/05-dto/CreateCommentInputDto';
+import { CreateCommentInputModel } from '../../comments/01-api/models/input-models/CreateCommentInputModel';
 import { CommentService } from '../../comments/02-services/comment-service';
 import { Request } from 'express';
 
@@ -103,7 +103,11 @@ export class PostsController {
 
     @Post('/:id/comments')
     @UseGuards(AccessTokenGuard)
-    async createCommentToPost(@Param('id') postId: string, @Body() input: CreateCommentInputDto, @Req() req: Request) {
+    async createCommentToPost(
+        @Param('id') postId: string,
+        @Body() input: CreateCommentInputModel,
+        @Req() req: Request,
+    ) {
         //todo: check post exists
         const createdComment = await this.commentService.createNewComment(postId, input.content, req.userId);
         return createdComment;

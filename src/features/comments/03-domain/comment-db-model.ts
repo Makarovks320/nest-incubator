@@ -8,28 +8,37 @@ import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-con
 export type CommentDocument = HydratedDocument<Comment>;
 export type CommentModel = Model<CommentDocument> & typeof staticMethods;
 
-@Schema({ timestamps: true })
-export class Comment {
+@Schema()
+class CommentatorInfo {
     @Prop({ required: true })
-    content: string;
-
-    @Prop({
-        type: {
-            userId: { type: String, required: true },
-            userLogin: { type: String, required: true },
-        },
-    })
-    commentatorInfo: CommentatorInfoType;
-
-    @Prop() //todo: { required: true } - можно ли не писать сюда, а оставить как опцию в поле ниже?
-    postId: { type: string; required: true }; //todo: почему где-то string, а где-то ObjectId ? Что лучше?
-
-    @Prop()
-    dbLikesInfo: DbLikesInfoType;
+    userId: string;
+    @Prop({ required: true })
+    userLogin: string;
 }
+export const CommentatorInfoSchema = SchemaFactory.createForClass(CommentatorInfo);
 
-const staticMethods: any = {
-    createComment(dto: CreateCommentDto): CommentDocument {
+@Schema()
+class DbLikesInfo {
+    @Prop({ required: true })
+    likesCount: number;
+
+    @Prop({ required: true })
+    dislikesCount: number;
+
+    @Prop({ required: true, default: [] })
+    likes: [
+        {
+            type: {
+                userId: { type: string; required: true };
+                likeStatus: { type: LIKE_STATUS_DB_ENUM; required: true };
+            };
+        },
+    ];
+}
+export const DbLikesInfoSchema = SchemaFactory.createForClass(DbLikesInfo);
+
+const staticMethods = {
+    async createComment(dto: CreateCommentDto): Promise<CommentDocument> {
         const newComment: CommentDocument = new this({
             postId: dto.postId,
             content: dto.content,
@@ -46,6 +55,20 @@ const staticMethods: any = {
         return newComment;
     },
 };
+@Schema({ timestamps: true, statics: staticMethods })
+export class Comment {
+    @Prop({ required: true })
+    content: string;
+
+    @Prop({ required: true, type: CommentatorInfoSchema })
+    commentatorInfo: CommentatorInfoType;
+
+    @Prop({ required: true })
+    postId: string;
+
+    @Prop({ required: true, type: DbLikesInfoSchema })
+    dbLikesInfo: DbLikesInfoType;
+}
 
 export const commentMethods = {
     _findLikeForUser(userId: string): LikeForCommentType | undefined {

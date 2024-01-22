@@ -35,10 +35,15 @@ import { ConfirmationCodeValidator } from './application/decorators/validation/I
 import { CryptoService } from './application/adapters/crypto/crypto-service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthHelper } from './application/helpers/auth-helper';
+import { CommentService } from './features/comments/02-services/comment-service';
+import { CommentsQueryRepository } from './features/comments/04-repositories/comments-query-repository';
+import { CommentsRepository } from './features/comments/04-repositories/comments-repository';
+import { Comment, CommentSchema } from './features/comments/03-domain/comment-db-model';
+import { CommentsController } from './features/comments/01-api/comments-controller';
 
-const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService];
-const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository];
-const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository];
+const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService, CommentService];
+const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository, CommentsQueryRepository];
+const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository, CommentsRepository];
 const customValidators = [ConfirmationCodeValidator, RecoveryCodeValidator, EmailExistenceValidator];
 const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
 const helpers = [AuthHelper];
@@ -78,8 +83,22 @@ const helpers = [AuthHelper];
                 schema: AuthSessionSchema,
             },
         ]),
+        MongooseModule.forFeature([
+            {
+                name: Comment.name,
+                schema: CommentSchema,
+            },
+        ]),
     ],
-    controllers: [AppController, AuthController, BlogsController, PostsController, UsersController, TestingController],
+    controllers: [
+        AppController,
+        AuthController,
+        BlogsController,
+        PostsController,
+        UsersController,
+        CommentsController,
+        TestingController,
+    ],
     providers: [...customValidators, ...services, ...queryRepositories, ...repositories, ...adapters, ...helpers],
 })
 export class AppModule {

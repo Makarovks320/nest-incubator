@@ -1,4 +1,4 @@
-import { LikeStatusType } from '../../likes/03-domain/like-db-model';
+import { LikeStatusType } from '../../likes/03-domain/types';
 
 export type PostViewModel = {
     id: string;
