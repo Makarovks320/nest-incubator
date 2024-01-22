@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, NotFoundException, Param, Post, Put, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    NotFoundException,
+    Param,
+    Post,
+    Put,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreatePostModel } from '../types/create-post-input-type';
 import { PostService } from '../02-services/post-service';
@@ -10,11 +23,16 @@ import { PostQueryParams } from '../types/post-query-params-type';
 import { getPostQueryParams } from '../../../application/helpers/get-query-params';
 import { CreatePostInputDto } from '../05-dto/CreatePostInputDto';
 import { UpdatePostInputDto } from '../05-dto/UpdatePostInputDto';
+import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
+import { CreateCommentInputDto } from '../../comments/05-dto/CreateCommentInputDto';
+import { CommentService } from '../../comments/02-services/comment-service';
+import { Request } from 'express';
 
 @Controller('posts')
 export class PostsController {
     constructor(
         private postService: PostService,
+        private commentService: CommentService,
         private blogsQueryRepository: BlogsQueryRepository,
         private postsQueryRepository: PostsQueryRepository,
     ) {}
@@ -73,5 +91,21 @@ export class PostsController {
         const result: boolean = await this.postService.deletePostById(postId);
         if (!result) throw new NotFoundException();
         return result;
+    }
+
+    // комментарии
+    //     postsRouter.get('/:id/comments', [
+    //         authMiddleware.lookBearerTokenForCurrentUserId.bind(authMiddleware),
+    //     postsValidations.checkPostExists.bind(postsValidations),
+    //     idFromUrlExistingValidator,
+    //     postsController.getCommentsForPost.bind(postsController)
+    // ]);
+
+    @Post('/:id/comments')
+    @UseGuards(AccessTokenGuard)
+    async createCommentToPost(@Param('id') postId: string, @Body() input: CreateCommentInputDto, @Req() req: Request) {
+        //todo: check post exists
+        const createdComment = await this.commentService.createNewComment(postId, input.content, req.userId);
+        return createdComment;
     }
 }
