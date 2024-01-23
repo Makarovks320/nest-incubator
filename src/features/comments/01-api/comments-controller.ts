@@ -31,16 +31,17 @@ export class CommentsController {
         private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
-    // @Put(':id')
-    // @UseGuards(AccessTokenGuard)
-    // @HttpCode(HttpStatus.NO_CONTENT_204)
-    // async updateComment(
-    //     @Param('id') commentId: string,
-    //     @Req() req: Request,
-    //     @Body() inputModel: UpdateCommentInputDto,
-    // ) {
-    //     return await this.commentService.updateComment(inputModel.content, commentId, req.userId);
-    // }
+    @Put(':id')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async updateComment(
+        @Param('id') commentId: string,
+        @Req() req: Request,
+        @Body() inputModel: UpdateCommentInputDto,
+    ) {
+        return await this.commentService.updateComment(inputModel.content, commentId, req.userId);
+    }
+
     @Get(':id')
     @HttpCode(HttpStatus.OK_200)
     async getCommentById(@Param() uriParam: CommentIdDto, req: Request) {

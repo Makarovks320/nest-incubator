@@ -6,7 +6,7 @@ import { LIKE_STATUS_DB_ENUM, LIKE_STATUS_ENUM, LikeStatusType } from '../../lik
 import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
 
 export type CommentDocument = HydratedDocument<Comment>;
-export type CommentModel = Model<CommentDocument> & typeof staticMethods;
+export type CommentModel = Model<CommentDocument> & typeof staticMethods & typeof commentMethods;
 
 @Schema()
 class CommentatorInfo {
@@ -55,23 +55,6 @@ const staticMethods = {
         return newComment;
     },
 };
-@Schema({ timestamps: true, statics: staticMethods })
-export class Comment {
-    @Prop({ required: true })
-    content: string;
-
-    @Prop({ required: true, type: CommentatorInfoSchema })
-    commentatorInfo: CommentatorInfoType;
-
-    @Prop({ required: true })
-    postId: string;
-
-    @Prop({ required: true, type: DbLikesInfoSchema })
-    dbLikesInfo: DbLikesInfoType;
-
-    createdAt: Date;
-}
-
 export const commentMethods = {
     _findLikeForUser(userId: string): LikeForCommentType | undefined {
         return this.dbLikesInfo.likes.find(l => l.userId.equals(userId));
@@ -125,4 +108,21 @@ export const commentMethods = {
         this._changeLike(currentLike!, convertLikeStatusToDbEnum(likeStatus));
     },
 };
+@Schema({ timestamps: true, statics: staticMethods, methods: commentMethods })
+export class Comment {
+    @Prop({ required: true })
+    content: string;
+
+    @Prop({ required: true, type: CommentatorInfoSchema })
+    commentatorInfo: CommentatorInfoType;
+
+    @Prop({ required: true })
+    postId: string;
+
+    @Prop({ required: true, type: DbLikesInfoSchema })
+    dbLikesInfo: DbLikesInfoType;
+
+    createdAt: Date;
+}
+
 export const CommentSchema = SchemaFactory.createForClass(Comment);
