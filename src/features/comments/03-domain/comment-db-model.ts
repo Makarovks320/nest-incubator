@@ -44,7 +44,7 @@ export class Comment {
 
     createdAt: Date;
 
-    updateComment(userId: string, content: string) {
+    changeCommentContent(userId: string, content: string) {
         if (this.commentatorInfo.userId.toString() != userId.toString()) {
             throw new Error('Comment does not below to the user'); //todo result object || custom error
         }
@@ -90,7 +90,7 @@ CommentSchema.methods = {
         likeForComment.likeStatus = likeStatus;
     },
 
-    updateComment: Comment.prototype.updateComment,
+    changeCommentContent: Comment.prototype.changeCommentContent,
 
     changeLikeStatusForComment(likeStatus: LikeStatusType, userId: string) {
         // если у коммента есть лайк от текущего пользователя, то изменим его, если нет - создадим

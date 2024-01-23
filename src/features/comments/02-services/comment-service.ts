@@ -38,7 +38,7 @@ export class CommentService {
     async updateComment(content: string, commentId: string, userId: string): Promise<void> {
         const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
         if (!comment) throw new InternalServerErrorException();
-        comment.updateContent(userId, content); //todo: fix error
+        comment.changeCommentContent(userId, content);
         await this.commentsRepository.save(comment);
     }
     //
