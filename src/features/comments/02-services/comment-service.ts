@@ -6,6 +6,8 @@ import { UserDocument } from '../../users/03-domain/user-db-model';
 import { CreateCommentDto } from '../05-dto/CreateCommentDto';
 import { CommentsRepository } from '../04-repositories/comments-repository';
 import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
+import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
+import { ResultObject } from '../../../application/result-object/ResultObject';
 
 export type InputCommentWithPostId = {
     content: string;
@@ -18,6 +20,7 @@ export class CommentService {
         @InjectModel(Comment.name) private commentModel: CommentModel,
         private userService: UserService,
         private commentsRepository: CommentsRepository,
+        private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
     async createNewComment(postId: string, content: string, userId: string): Promise<CommentViewModel> {
@@ -47,8 +50,36 @@ export class CommentService {
     //     comment.changeLikeStatusForComment(likeStatus, userId);
     //     await this.commentsRepository.save(comment);
     // }
-    //
-    // async deleteCommentById(commentId: string): Promise<boolean> {
-    //     return this.commentsRepository.deleteCommentById(commentId);
-    // }
+
+    async deleteCommentById(commentId: string, userId: string): Promise<ResultObject> {
+        const result = new ResultObject();
+
+        const comment: Comment | null = await this.commentsQueryRepository.getCommentById(commentId);
+        if (!comment) {
+            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            return result;
+        }
+
+        const user: UserDocument | null = await this.userService.findUserById(userId);
+        if (!user || comment!.commentatorInfo.userLogin != user.login) {
+            result.addError({
+                errorMessage: "User doesn't own the comment",
+                errorCode: CommentServiceError.COMMENT_ACCESS_DENIED,
+            });
+            return result;
+        }
+        const isDeleted = await this.commentsRepository.deleteCommentById(commentId);
+
+        if (!isDeleted) {
+            result.addError({ errorCode: CommentServiceError.COMMENT_DELETE_ERROR });
+            return result;
+        }
+        return result;
+    }
+}
+
+export enum CommentServiceError {
+    COMMENT_NOT_FOUND,
+    COMMENT_ACCESS_DENIED,
+    COMMENT_DELETE_ERROR,
 }

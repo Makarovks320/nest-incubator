@@ -37,10 +37,10 @@ export class CommentsRepository {
     async findCommentById(commentId: string): Promise<CommentDocument | null> {
         return this.commentModel.findOne({ _id: commentId }).select(WITHOUT_v_MONGOOSE_PROJECTION);
     }
-    // async deleteCommentById(_id: ObjectId): Promise<boolean> {
-    //     const result = await CommentModel.deleteOne({_id});
-    //     return result.deletedCount === 1;
-    // }
+    async deleteCommentById(commentId: string): Promise<boolean> {
+        const result = await this.commentModel.deleteOne({ commentId });
+        return result.deletedCount === 1;
+    }
     //
     // async deleteAllBlogs(): Promise<void> {
     //     await CommentModel.deleteMany({});

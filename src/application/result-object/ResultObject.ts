@@ -1,9 +1,10 @@
 import { ResultObjectError } from './ResultObjectError';
 
 type ResultErrorType = {
+    errorMessage?: string;
     errorCode: number | null;
 };
-export class ResultObject<T> {
+export class ResultObject<T = null> {
     constructor(
         private data: T | null = null,
         private errors: ResultErrorType[] = [],
