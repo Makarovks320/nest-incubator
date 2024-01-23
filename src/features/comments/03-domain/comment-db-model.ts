@@ -10,35 +10,6 @@ import { DbLikesInfoSchema } from './db-likes-info-schema';
 export type CommentDocument = HydratedDocument<Comment>;
 export type CommentModel = Model<CommentDocument> & typeof staticMethods;
 
-@Schema()
-class CommentatorInfo {
-    @Prop({ required: true })
-    userId: string;
-    @Prop({ required: true })
-    userLogin: string;
-}
-export const CommentatorInfoSchema = SchemaFactory.createForClass(CommentatorInfo);
-
-@Schema()
-class DbLikesInfo {
-    @Prop({ required: true })
-    likesCount: number;
-
-    @Prop({ required: true })
-    dislikesCount: number;
-
-    @Prop({ required: true, default: [] })
-    likes: [
-        {
-            type: {
-                userId: { type: string; required: true };
-                likeStatus: { type: LIKE_STATUS_DB_ENUM; required: true };
-            };
-        },
-    ];
-}
-export const DbLikesInfoSchema = SchemaFactory.createForClass(DbLikesInfo);
-
 const staticMethods = {
     async createComment(dto: CreateCommentDto): Promise<CommentDocument> {
         const newComment: CommentDocument = new this({
