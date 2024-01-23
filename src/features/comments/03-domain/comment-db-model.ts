@@ -4,9 +4,11 @@ import { HydratedDocument, Model } from 'mongoose';
 import { CreateCommentDto } from '../05-dto/CreateCommentDto';
 import { LIKE_STATUS_DB_ENUM, LIKE_STATUS_ENUM, LikeStatusType } from '../../likes/03-domain/types';
 import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
+import { CommentatorInfoSchema } from './commentator-info-schema';
+import { DbLikesInfoSchema } from './db-likes-info-schema';
 
 export type CommentDocument = HydratedDocument<Comment>;
-export type CommentModel = Model<CommentDocument> & typeof staticMethods & typeof commentMethods;
+export type CommentModel = Model<CommentDocument> & typeof staticMethods;
 
 @Schema()
 class CommentatorInfo {
@@ -55,7 +57,33 @@ const staticMethods = {
         return newComment;
     },
 };
-export const commentMethods = {
+@Schema({ timestamps: true, statics: staticMethods })
+export class Comment {
+    @Prop({ required: true })
+    content: string;
+
+    @Prop({ required: true, type: CommentatorInfoSchema })
+    commentatorInfo: CommentatorInfoType;
+
+    @Prop({ required: true })
+    postId: string;
+
+    @Prop({ required: true, type: DbLikesInfoSchema })
+    dbLikesInfo: DbLikesInfoType;
+
+    createdAt: Date;
+
+    updateComment(userId: string, content: string) {
+        if (this.commentatorInfo.userId.toString() != userId.toString()) {
+            throw new Error('Comment does not below to the user'); //todo result object || custom error
+        }
+        this.content = content;
+    }
+}
+
+export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+CommentSchema.methods = {
     _findLikeForUser(userId: string): LikeForCommentType | undefined {
         return this.dbLikesInfo.likes.find(l => l.userId.equals(userId));
     },
@@ -91,12 +119,7 @@ export const commentMethods = {
         likeForComment.likeStatus = likeStatus;
     },
 
-    updateContent(userId: string, content: string) {
-        if (this.commentatorInfo.userId.toString() != userId.toString()) {
-            throw new Error('Comment does not below to the user');
-        }
-        this.content = content;
-    },
+    updateComment: Comment.prototype.updateComment,
 
     changeLikeStatusForComment(likeStatus: LikeStatusType, userId: string) {
         // если у коммента есть лайк от текущего пользователя, то изменим его, если нет - создадим
@@ -108,21 +131,3 @@ export const commentMethods = {
         this._changeLike(currentLike!, convertLikeStatusToDbEnum(likeStatus));
     },
 };
-@Schema({ timestamps: true, statics: staticMethods, methods: commentMethods })
-export class Comment {
-    @Prop({ required: true })
-    content: string;
-
-    @Prop({ required: true, type: CommentatorInfoSchema })
-    commentatorInfo: CommentatorInfoType;
-
-    @Prop({ required: true })
-    postId: string;
-
-    @Prop({ required: true, type: DbLikesInfoSchema })
-    dbLikesInfo: DbLikesInfoType;
-
-    createdAt: Date;
-}
-
-export const CommentSchema = SchemaFactory.createForClass(Comment);
