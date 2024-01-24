@@ -256,10 +256,10 @@ describe('/comments tests', () => {
         });
     });
 
-    it('should not update comment 1 with AUTH but incorrect body', async () => {
+    it('should not update comment 1 with AUTH but too short/long content', async () => {
         if (!comment_1) throw new Error('test cannot be performed');
         const data1: CreateCommentInputModel = {
-            content: 'UPDATED COMMENT 1',
+            content: generateString(19),
         };
 
         await testingProvider

@@ -1,6 +1,6 @@
 import { Comment, CommentDocument, CommentModel } from '../03-domain/comment-db-model';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserService } from '../../users/02-services/user-service';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { CreateCommentDto } from '../05-dto/CreateCommentDto';
@@ -38,11 +38,17 @@ export class CommentService {
         return await this.commentsRepository.save(comment);
     }
 
-    async updateComment(content: string, commentId: string, userId: string): Promise<void> {
+    async updateComment(content: string, commentId: string, userId: string): Promise<ResultObject> {
+        const result = new ResultObject();
         const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
-        if (!comment) throw new InternalServerErrorException();
-        comment.changeCommentContent(userId, content);
+        if (!comment) {
+            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            return result;
+        }
+        comment.changeCommentContent(userId, content, result);
+        if (result.hasErrors()) return result;
         await this.commentsRepository.save(comment);
+        return result;
     }
     //
     // async changeLikeStatus(commentId: string, likeStatus: LikeStatusType, userId: string): Promise<void> {

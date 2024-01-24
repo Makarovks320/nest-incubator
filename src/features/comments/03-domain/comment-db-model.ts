@@ -6,6 +6,8 @@ import { LIKE_STATUS_DB_ENUM, LIKE_STATUS_ENUM, LikeStatusType } from '../../lik
 import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
 import { CommentatorInfoSchema } from './commentator-info-schema';
 import { DbLikesInfoSchema } from './db-likes-info-schema';
+import { ResultObject } from '../../../application/result-object/ResultObject';
+import { CommentServiceError } from '../02-services/comment-service';
 
 export type CommentDocument = HydratedDocument<Comment>;
 export type CommentModel = Model<CommentDocument> & typeof staticMethods;
@@ -44,11 +46,20 @@ export class Comment {
 
     createdAt: Date;
 
-    changeCommentContent(userId: string, content: string) {
-        if (this.commentatorInfo.userId.toString() != userId.toString()) {
-            throw new Error('Comment does not below to the user'); //todo result object || custom error
-        }
+    changeCommentContent(userId: string, content: string, result: ResultObject): ResultObject {
+        this.checkAccessToComment(userId, result);
         this.content = content;
+        return result;
+    }
+
+    private checkAccessToComment(userId: string, result: ResultObject): ResultObject {
+        if (this.commentatorInfo.userId.toString() != userId.toString()) {
+            result.addError({
+                errorMessage: "User doesn't own the comment",
+                errorCode: CommentServiceError.COMMENT_ACCESS_DENIED,
+            });
+        }
+        return result;
     }
 }
 

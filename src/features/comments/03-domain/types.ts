@@ -7,7 +7,7 @@ export type CommentatorInfoType = {
 export type DbLikesInfoType = {
     likesCount: number;
     dislikesCount: number;
-    likes: LikeForCommentType[] | [];
+    likes: LikeForCommentType[];
 };
 export type LikeForCommentType = {
     userId: string;
