@@ -349,17 +349,18 @@ describe('/comments tests', () => {
         const data: CreateCommentInputModel = {
             content: 'NEW OUTSTANDING UPDATED COMMENT 222',
         };
+        const randomId = new ObjectId().toString();
 
         await testingProvider
             .getHttp()
-            .put(`${RouterPaths.comments}/111111111111`)
+            .put(`${RouterPaths.comments}/${randomId}`)
             .set(authJWTHeader1)
             .send(data)
             .expect(HttpStatus.NOT_FOUND_404);
 
         await testingProvider
             .getHttp()
-            .delete(`${RouterPaths.comments}/111111111111`)
+            .delete(`${RouterPaths.comments}/${randomId}`)
             .set(authJWTHeader1)
             .expect(HttpStatus.NOT_FOUND_404);
 

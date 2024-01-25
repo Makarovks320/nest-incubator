@@ -62,7 +62,7 @@ export class CommentsController {
     @Delete('/:id')
     @UseGuards(AccessTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    async deleteCommentById(@Param() commentId: string, @Req() req: Request) {
+    async deleteCommentById(@Param('id') commentId: string, @Req() req: Request) {
         const result: ResultObject = await this.commentService.deleteCommentById(commentId, req.userId);
         if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) {
             throw new NotFoundException();
