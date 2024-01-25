@@ -48,11 +48,12 @@ export class Comment {
 
     changeCommentContent(userId: string, content: string, result: ResultObject): ResultObject {
         this.checkAccessToComment(userId, result);
+        if (result.hasErrors()) return result;
         this.content = content;
         return result;
     }
 
-    private checkAccessToComment(userId: string, result: ResultObject): ResultObject {
+    checkAccessToComment(userId: string, result: ResultObject): ResultObject {
         if (this.commentatorInfo.userId.toString() != userId.toString()) {
             result.addError({
                 errorMessage: "User doesn't own the comment",
@@ -102,6 +103,8 @@ CommentSchema.methods = {
     },
 
     changeCommentContent: Comment.prototype.changeCommentContent,
+
+    checkAccessToComment: Comment.prototype.checkAccessToComment,
 
     changeLikeStatusForComment(likeStatus: LikeStatusType, userId: string) {
         // если у коммента есть лайк от текущего пользователя, то изменим его, если нет - создадим

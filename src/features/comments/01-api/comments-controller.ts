@@ -6,6 +6,7 @@ import {
     ForbiddenException,
     Get,
     HttpCode,
+    InternalServerErrorException,
     NotFoundException,
     Param,
     Put,
@@ -38,7 +39,13 @@ export class CommentsController {
         @Req() req: Request,
         @Body() inputModel: UpdateCommentInputDto,
     ) {
-        return await this.commentService.updateComment(inputModel.content, commentId, req.userId);
+        const result = await this.commentService.updateComment(inputModel.content, commentId, req.userId);
+        if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) throw new NotFoundException();
+
+        if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) throw new ForbiddenException();
+
+        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        return;
     }
 
     @Get('/:id')
