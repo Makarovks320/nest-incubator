@@ -105,6 +105,9 @@ export class PostsController {
         @Query() query: CommentInputQueryParams,
         @Req() req: Request,
     ) {
+        const postExist: boolean = await this.postsQueryRepository.checkPostExists(postId);
+        if (!postExist) throw new NotFoundException();
+
         const queryParams: CommentQueryParams = getCommentQueryParams(query);
         const foundComments: WithPagination<CommentViewModel> = await this.commentsQueryRepository.getCommentsForPost(
             postId,

@@ -46,4 +46,8 @@ export class PostsQueryRepository {
             return null;
         }
     }
+    async checkPostExists(id: string): Promise<boolean> {
+        const post: PostMongoType | null = await this.postModel.findById(id).lean();
+        return !!post;
+    }
 }
