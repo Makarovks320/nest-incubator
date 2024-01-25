@@ -42,6 +42,7 @@ import { Comment, CommentSchema } from './features/comments/03-domain/comment-db
 import { CommentsController } from './features/comments/01-api/comments-controller';
 import { CommentsDataMapper } from './features/comments/01-api/comments-data-mapper';
 import { CommentExistenceValidator } from './application/decorators/validation/CommentExistenceValidator';
+import { Like, LikeSchema } from './features/likes/03-domain/like-db-model';
 
 const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService, CommentService];
 const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository, CommentsQueryRepository];
@@ -94,6 +95,12 @@ const helpers = [AuthHelper, CommentsDataMapper];
             {
                 name: Comment.name,
                 schema: CommentSchema,
+            },
+        ]),
+        MongooseModule.forFeature([
+            {
+                name: Like.name,
+                schema: LikeSchema,
             },
         ]),
     ],

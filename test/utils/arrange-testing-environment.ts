@@ -10,6 +10,8 @@ import { Blog, BlogSchema } from '../../src/features/blogs/03-domain/blog-db-mod
 import { Post, PostSchema } from '../../src/features/posts/03-domain/post-db-model';
 import { JwtService } from '../../src/application/adapters/jwt/jwt-service';
 import { UsersRepository } from '../../src/features/users/04-repositories/users-repository';
+import { Comment, CommentSchema } from '../../src/features/comments/03-domain/comment-db-model';
+import { Like, LikeSchema } from '../../src/features/likes/03-domain/like-db-model';
 
 export type AppE2eTestingProvider = {
     getApp(): INestApplication;
@@ -27,24 +29,11 @@ export function arrangeTestingEnvironment(): AppE2eTestingProvider {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [
                 AppModule,
-                MongooseModule.forFeature([
-                    {
-                        name: Blog.name,
-                        schema: BlogSchema,
-                    },
-                ]),
-                MongooseModule.forFeature([
-                    {
-                        name: Post.name,
-                        schema: PostSchema,
-                    },
-                ]),
-                MongooseModule.forFeature([
-                    {
-                        name: User.name,
-                        schema: UserSchema,
-                    },
-                ]),
+                MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+                MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+                MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+                MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+                MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
             ],
             providers: [JwtService, UsersRepository],
         }).compile();
