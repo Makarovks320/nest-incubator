@@ -8,6 +8,8 @@ import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/ar
 import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
 import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
 import { ConfirmationCode } from '../../../src/features/auth/05-dto/ConfirmationCode';
+import { AuthLoginInputDto } from '../../../src/features/auth/05-dto/AuthLoginInputDto';
+import { authTestManager } from '../../utils/authTestManager';
 
 // const emailAdapter = {
 //     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
@@ -224,26 +226,20 @@ describe('testing auth flow', () => {
             password: passwordBeforeChanging,
         };
 
-        await testingProvider
-            .getHttp()
-            .post(`${RouterPaths.auth}/login`)
-            .send(data)
-            .expect(HttpStatus.UNAUTHORIZED_401);
+        authTestManager.loginUser(data, HttpStatus.UNAUTHORIZED_401);
     });
 
-    it('should sign in user with new password; status 200; content: JWT token;', async () => {
-        const data = {
-            loginOrEmail: email,
-            password: newPassword,
-        };
-
-        const response = await testingProvider
-            .getHttp()
-            .post(`${RouterPaths.auth}/login`)
-            .send(data)
-            .expect(HttpStatus.OK_200);
-        expect(response.body.accessToken).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
-    });
+    it(
+        'should sign in user with new password; status 200; content: JWT token;' +
+            "JWT 'refresh' token in cookie (http only, secure)",
+        async () => {
+            const data: AuthLoginInputDto = {
+                loginOrEmail: email,
+                password: newPassword,
+            };
+            authTestManager.loginUser(data, HttpStatus.OK_200);
+        },
+    );
 });
 
 // todo:
