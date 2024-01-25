@@ -70,6 +70,8 @@ export class CommentsController {
         if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) {
             throw new ForbiddenException();
         }
+        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        return;
     }
 
     // async changeLikeStatus(req: Request, res: Response) {
