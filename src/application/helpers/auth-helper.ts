@@ -1,8 +1,8 @@
 import { Response, Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 export class AuthHelper {
-    private refreshTokenOptions: { httpOnly: true; secure: true };
-    private refreshTokenName: 'refreshToken';
+    private refreshTokenOptions = { httpOnly: true, secure: true };
+    private refreshTokenName = 'refreshToken';
 
     getIp(req: Request): string | undefined {
         return (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;

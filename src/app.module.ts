@@ -58,51 +58,15 @@ const helpers = [AuthHelper, CommentsDataMapper];
 
 @Module({
     imports: [
-        ThrottlerModule.forRoot([
-            {
-                ttl: 10000,
-                limit: 5,
-            },
-        ]),
+        ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
         MongooseModule.forRoot(appConfig.mongoUrl, {
             dbName: appConfig.dbName,
         }),
-        MongooseModule.forFeature([
-            {
-                name: Blog.name,
-                schema: BlogSchema,
-            },
-        ]),
-        MongooseModule.forFeature([
-            {
-                name: Post.name,
-                schema: PostSchema,
-            },
-        ]),
-        MongooseModule.forFeature([
-            {
-                name: User.name,
-                schema: UserSchema,
-            },
-        ]),
-        MongooseModule.forFeature([
-            {
-                name: AuthSession.name,
-                schema: AuthSessionSchema,
-            },
-        ]),
-        MongooseModule.forFeature([
-            {
-                name: Comment.name,
-                schema: CommentSchema,
-            },
-        ]),
-        MongooseModule.forFeature([
-            {
-                name: Like.name,
-                schema: LikeSchema,
-            },
-        ]),
+        MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
+        MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([{ name: AuthSession.name, schema: AuthSessionSchema }]),
+        MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     ],
     controllers: [
         AppController,
