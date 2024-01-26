@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreatePostModel } from '../types/create-post-input-type';
-import { PostService } from '../02-services/post-service';
+import { PostLikeServiceError, PostService } from '../02-services/post-service';
 import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
 import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
@@ -31,6 +31,8 @@ import { CommentInputQueryParams } from '../../comments/01-api/models/input-mode
 import { CommentViewModel } from '../../comments/01-api/models/output-models/CommentViewModel';
 import { CommentsQueryRepository } from '../../comments/04-repositories/comments-query-repository';
 import { CommentQueryParams } from '../../comments/types/comment-query-params-type';
+import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
+import { ResultObject } from '../../../application/result-object/ResultObject';
 
 @Controller('posts')
 export class PostsController {
@@ -127,5 +129,22 @@ export class PostsController {
         //todo: check post exists
         const createdComment = await this.commentService.createNewComment(postId, input.content, req.userId);
         return createdComment;
+    }
+
+    @Put('/:id/like-status')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async changeLikeStatus(@Param('id') postId: string, @Body() input: LikeStatusUpdateDto, @Req() req: Request) {
+        const result: ResultObject = await this.postService.CreateOrUpdateLike({
+            postId: postId,
+            userId: req.userId,
+            status: input.likeStatus,
+        });
+        if (result.hasErrorCode(PostLikeServiceError.POST_NO_FOUND)) {
+            throw new NotFoundException();
+        }
+        if (result.hasErrorCode(PostLikeServiceError.UNAUTHORIZED)) {
+            throw new NotFoundException();
+        }
     }
 }

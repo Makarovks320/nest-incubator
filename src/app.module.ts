@@ -43,10 +43,35 @@ import { CommentsController } from './features/comments/01-api/comments-controll
 import { CommentsDataMapper } from './features/comments/01-api/comments-data-mapper';
 import { CommentExistenceValidator } from './application/decorators/validation/CommentExistenceValidator';
 import { Like, LikeSchema } from './features/likes/03-domain/like-db-model';
+import { LikesQueryRepository } from './features/likes/04-repositories/likes-query-repository';
+import { LikesRepository } from './features/likes/04-repositories/likes-repository';
+import { LikeService } from './features/likes/02-services/like-service';
 
-const services = [AppService, AuthService, BlogService, PostService, SessionService, UserService, CommentService];
-const queryRepositories = [BlogsQueryRepository, PostsQueryRepository, UsersQueryRepository, CommentsQueryRepository];
-const repositories = [BlogsRepository, PostsRepository, SessionsRepository, UsersRepository, CommentsRepository];
+const services = [
+    AppService,
+    AuthService,
+    BlogService,
+    PostService,
+    SessionService,
+    UserService,
+    CommentService,
+    LikeService,
+];
+const queryRepositories = [
+    BlogsQueryRepository,
+    PostsQueryRepository,
+    UsersQueryRepository,
+    CommentsQueryRepository,
+    LikesQueryRepository,
+];
+const repositories = [
+    BlogsRepository,
+    PostsRepository,
+    SessionsRepository,
+    UsersRepository,
+    CommentsRepository,
+    LikesRepository,
+];
 const customValidators = [
     ConfirmationCodeValidator,
     RecoveryCodeValidator,
@@ -67,6 +92,7 @@ const helpers = [AuthHelper, CommentsDataMapper];
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([{ name: AuthSession.name, schema: AuthSessionSchema }]),
         MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
+        MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
     ],
     controllers: [
         AppController,

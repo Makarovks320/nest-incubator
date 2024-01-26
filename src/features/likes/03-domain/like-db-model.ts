@@ -1,24 +1,38 @@
-import { ObjectId } from 'mongodb';
 import { LIKE_STATUS_DB_ENUM, PARENT_TYPE_DB_ENUM } from './types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Model } from 'mongoose';
+import { UpdateLikeForPostDto } from '../05-dto/UpdateLikeForPostDto';
+import { convertLikeStatusToDbEnum } from './like-status-converters';
+import { CreateLikeDto } from '../02-services/types/CreateLikeDto';
 
 export type LikeDocument = HydratedDocument<Like>;
-export type LikeModel = Model<LikeDocument>;
+export type LikeModel = Model<LikeDocument> & typeof staticMethods;
 
-@Schema({ timestamps: true })
+const staticMethods = {
+    createLike(dto: CreateLikeDto): LikeDocument {
+        return new this(dto);
+    },
+};
+@Schema({ timestamps: true, statics: staticMethods })
 export class Like {
     @Prop({ required: true })
     parent_type: PARENT_TYPE_DB_ENUM;
 
     @Prop({ required: true })
-    parent_id: ObjectId;
+    parent_id: string;
 
     @Prop({ required: true })
     type: LIKE_STATUS_DB_ENUM;
 
     @Prop({ required: true })
-    user_id: ObjectId;
+    user_id: string;
+
+    createdAt: Date;
+    updatedAt: Date;
+    updateLike(likeNewData: UpdateLikeForPostDto) {
+        //todo: нужна проверка, что текущий пользователь владеет блогом, к которому относится пост
+        this.type = convertLikeStatusToDbEnum(likeNewData.status);
+    }
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Like, LikeModel } from '../03-domain/like-db-model';
+import { Like, LikeDocument, LikeModel } from '../03-domain/like-db-model';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class LikesRepository {
     constructor(@InjectModel(Like.name) private likeModel: LikeModel) {}
-    async createNewLike(like: Like): Promise<Like> {
+    async save(like: LikeDocument): Promise<void> {
         await this.likeModel.insertMany(like);
-        return like;
     }
 
     // async updateLike(like: Like): Promise<boolean> {
