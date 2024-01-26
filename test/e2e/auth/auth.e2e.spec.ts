@@ -5,7 +5,7 @@ import { usersTestManager } from '../../utils/usersTestManager';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { authBasicHeader } from '../../utils/test_utilities';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
-import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
 import { ConfirmationCode } from '../../../src/features/auth/05-dto/ConfirmationCode';
 import { AuthLoginInputDto } from '../../../src/features/auth/05-dto/AuthLoginInputDto';
@@ -33,7 +33,7 @@ describe('testing auth flow', () => {
 
     beforeAll(async () => {
         // Создаем юзера
-        const userData: CreateUserInputDto = {
+        const userData: CreateUserInputModel = {
             login: login,
             password: passwordBeforeChanging,
             email: email,
@@ -60,7 +60,7 @@ describe('testing auth flow', () => {
     });
 
     it('registration: should return error if email or login already exist; status 400;', async () => {
-        const userData: CreateUserInputDto = {
+        const userData: CreateUserInputModel = {
             login: login + 'x', // addition to login
             password: passwordBeforeChanging,
             email: email, // email already exist
@@ -75,7 +75,7 @@ describe('testing auth flow', () => {
             errorsMessages: [{ message: expect.any(String), field: 'email' }],
         });
 
-        const userData2: CreateUserInputDto = {
+        const userData2: CreateUserInputModel = {
             login: login, // login already exist
             password: passwordBeforeChanging,
             email: 'x' + email, // addition to email

@@ -3,7 +3,7 @@ import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
 import { HydratedDocument, Model } from 'mongoose';
 import { WithId } from '../../../application/types/types';
-import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../05-dto/CreateUserInputModel';
 
 export type UserDocument = HydratedDocument<User>;
 export type UserModel = Model<UserDocument> & typeof staticMethods;
@@ -11,7 +11,7 @@ export type UserModel = Model<UserDocument> & typeof staticMethods;
 export type UserMongoType = WithId<User>;
 
 const staticMethods = {
-    async createUser(userInputData: CreateUserInputDto, cryptedData: CryptedDataType): Promise<UserDocument> {
+    async createUser(userInputData: CreateUserInputModel, cryptedData: CryptedDataType): Promise<UserDocument> {
         const newUser: UserDocument = new this({
             login: userInputData.login,
             email: userInputData.email,

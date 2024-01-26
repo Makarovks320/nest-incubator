@@ -6,7 +6,7 @@ import { UsersRepository } from '../../users/04-repositories/users-repository';
 import { JwtService, AuthTokenPair, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { EmailManager } from '../../../application/adapters/email-adapter/emailManager';
 import { EmailConfirmationType, User, UserDocument, UserModel } from '../../users/03-domain/user-db-model';
-import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../../users/05-dto/CreateUserInputModel';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { InjectModel } from '@nestjs/mongoose';
 import { CryptoService } from '../../../application/adapters/crypto/crypto-service';
@@ -27,7 +27,7 @@ export class AuthService {
         @InjectModel(User.name) private userModel: UserModel,
     ) {}
 
-    async createUser(userInput: CreateUserInputDto): Promise<UserViewModel | null> {
+    async createUser(userInput: CreateUserInputModel): Promise<UserViewModel | null> {
         const cryptedData = await this.cryptoService.getCryptedData(userInput.password);
         const user = await this.userModel.createUser(userInput, cryptedData);
         const result = await this.usersRepository.save(user);

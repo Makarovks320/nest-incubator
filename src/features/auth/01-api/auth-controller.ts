@@ -21,7 +21,7 @@ import { HttpStatus } from '../../../application/types/types';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
 import { RefreshTokenGuard } from '../../../application/guards/RefreshTokenGuard';
-import { CreateUserInputDto } from '../../users/05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../../users/05-dto/CreateUserInputModel';
 import { UserViewModel } from '../../users/types/user-view-model';
 import { LoginOrEmailExistenceGuard } from '../../../application/guards/Login-or-email-existence-guard.service';
 import { SaveNewPasswordInputDto } from '../05-dto/SaveNewPasswordInputDto';
@@ -109,7 +109,7 @@ export class AuthController {
     @Post('registration')
     @UseGuards(ThrottlerGuard, LoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
-    async registerNewUser(@Body() inputModel: CreateUserInputDto) {
+    async registerNewUser(@Body() inputModel: CreateUserInputModel) {
         const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
         if (!createdUser) throw new BadRequestException();
         return;

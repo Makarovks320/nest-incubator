@@ -19,7 +19,7 @@ import { UsersInputQueryParams, UsersQueryParams } from '../types/users-query-pa
 import { getQueryParamsForUsers } from '../../../application/helpers/get-query-params';
 import { UserDocument } from '../03-domain/user-db-model';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
-import { CreateUserInputDto } from '../05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../05-dto/CreateUserInputModel';
 
 @Controller('users')
 @UseGuards(BasicAuthGuard)
@@ -31,7 +31,7 @@ export class UsersController {
 
     @Post()
     @HttpCode(HttpStatus.CREATED_201)
-    async createNewUser(@Body() inputModel: CreateUserInputDto) {
+    async createNewUser(@Body() inputModel: CreateUserInputModel) {
         const createdUser: UserViewModel = await this.userService.createUser(inputModel);
         return createdUser;
     }

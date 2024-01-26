@@ -9,7 +9,7 @@ import { UserViewModel } from '../../../src/features/users/types/user-view-model
 import { postsTestManager } from '../../utils/postsTestManager';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { CreatePostInputModel } from '../../../src/features/posts/types/create-post-input-type';
-import { CreateUserInputDto } from '../../../src/features/users/05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 import { CommentViewModel } from '../../../src/features/comments/01-api/models/output-models/CommentViewModel';
 import { CreateCommentInputModel } from '../../../src/features/comments/01-api/models/input-models/CreateCommentInputModel';
 import { commentsTestManager } from '../../utils/commentsTestManager';
@@ -51,7 +51,7 @@ describe('/comments tests', () => {
 
         //Создаем юзера1, чтобы оставлять комменты
 
-        const dataUser: CreateUserInputDto = {
+        const dataUser: CreateUserInputModel = {
             login: 'User01',
             password: 'Password01',
             email: 'email01@fishmail2dd.com',
@@ -70,7 +70,7 @@ describe('/comments tests', () => {
 
         //Создаем юзера2, чтобы оставлять комменты
 
-        const dataUser2: CreateUserInputDto = {
+        const dataUser2: CreateUserInputModel = {
             login: 'User02',
             password: 'Password02',
             email: 'email02@fishmail3dd.com',

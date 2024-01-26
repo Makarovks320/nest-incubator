@@ -4,7 +4,7 @@ import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { RouterPaths } from '../../src/application/types/router-paths';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 import { UserViewModel } from '../../src/features/users/types/user-view-model';
-import { CreateUserInputDto } from '../../src/features/users/05-dto/CreateUserInputDto';
+import { CreateUserInputModel } from '../../src/features/users/05-dto/CreateUserInputModel';
 
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 export const usersTestManager = {
@@ -13,10 +13,10 @@ export const usersTestManager = {
      * Если ожидаем успешное создание, метод выполнит проверку тела ответа.
      * */
     async createUser(
-        data: CreateUserInputDto,
+        data: CreateUserInputModel,
         expectedStatusCode: HttpStatusType = HttpStatus.CREATED_201,
         headers = {},
-        errorField?: keyof CreateUserInputDto,
+        errorField?: keyof CreateUserInputModel,
     ): Promise<{ response: supertest.Response; createdUser: UserViewModel | null }> {
         const response: request.Response = await testingProvider
             .getHttp()
