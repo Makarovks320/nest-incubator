@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostModel, UpdatePostInputModel } from '../types/create-post-input-type';
 import { PostsRepository } from '../04-repositories/posts-repository';
-import { Post, PostDocument } from '../03-domain/post-db-model';
+import { Post, PostDocument, PostModel } from '../03-domain/post-db-model';
 import { PostViewModel } from '../types/post-view-model';
 import { LikeForPostInputModel } from '../../likes/01-api/models/input-models/LikeForPostInputModel';
 import { ResultObject } from '../../../application/result-object/ResultObject';
@@ -11,6 +11,8 @@ import { Like } from '../../likes/03-domain/like-db-model';
 import { LikesQueryRepository } from '../../likes/04-repositories/likes-query-repository';
 import { LikeService } from '../../likes/02-services/like-service';
 import { LIKE_STATUS_ENUM, PARENT_TYPE_DB_ENUM } from '../../likes/03-domain/types';
+import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class PostService {
@@ -19,6 +21,7 @@ export class PostService {
         private usersRepo: UsersRepository,
         private likesQueryRepository: LikesQueryRepository,
         private likeService: LikeService,
+        @InjectModel(Post.name) private postModel: PostModel,
     ) {}
 
     // async getPosts(userId: ObjectId, queryParams: PostQueryParams, blogId?: string ): Promise<WithPagination<PostViewModel>> {
@@ -72,7 +75,7 @@ export class PostService {
     // }
 
     async createNewPost(p: CreatePostModel): Promise<PostViewModel> {
-        const post: Post = Post.createPost(p);
+        const post: Post = this.postModel.createPost(p);
         return await this.postsRepository.save(post);
     }
 

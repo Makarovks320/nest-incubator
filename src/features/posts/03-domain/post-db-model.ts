@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { CreatePostModel, UpdatePostInputModel } from '../types/create-post-input-type';
 import { NewestLikesType } from '../types/post-view-model';
 import { LIKE_STATUS_DB_ENUM, LIKE_STATUS_ENUM, LikeStatusType } from '../../likes/03-domain/types';
@@ -7,22 +7,15 @@ import { convertDbEnumToLikeStatus } from '../../likes/03-domain/like-status-con
 import { Like } from '../../likes/03-domain/like-db-model';
 
 export type PostDocument = HydratedDocument<Post>;
+export type PostModel = Model<Post> & typeof staticMethods;
 
-@Schema()
+const staticMethods = {
+    createPost(post: CreatePostModel): Post {
+        return new this({ ...post, likesCount: 0, dislikesCount: 0, newestLikes: [] });
+    },
+};
+@Schema({ timestamps: true, statics: staticMethods })
 export class Post {
-    //todo: удалить конструктор, если не нужен
-    constructor(inputPost: CreatePostModel) {
-        this.title = inputPost.title;
-        this.shortDescription = inputPost.shortDescription;
-        this.content = inputPost.content;
-        this.blogId = inputPost.blogId;
-        this.blogName = inputPost.blogName;
-        this.likesCount = 0;
-        this.dislikesCount = 0;
-        this.newestLikes = [];
-        this.createdAt = new Date();
-    }
-
     @Prop({ required: true })
     title: string;
     @Prop({ required: true })
@@ -34,17 +27,13 @@ export class Post {
     @Prop({ default: false })
     blogName: string;
     @Prop({ required: true })
-    createdAt: Date;
-    @Prop({ required: true })
     likesCount: number;
     @Prop({ required: true })
     dislikesCount: number;
-    @Prop({ required: true })
+    @Prop({ required: true, default: [] })
     newestLikes: NewestLikesType[];
 
-    static createPost(post: CreatePostModel): Post {
-        return new this(post);
-    }
+    createdAt: Date;
 
     updatePost(postNewData: UpdatePostInputModel) {
         //todo: нужна проверка, что текущий пользователь владеет блогом, к которому относится пост
@@ -85,8 +74,7 @@ export const PostSchema = SchemaFactory.createForClass(Post);
 
 PostSchema.methods = {
     updatePost: Post.prototype.updatePost,
-};
-
-PostSchema.statics = {
-    createPost: Post.createPost,
+    recalculateLikesCount: Post.prototype.recalculateLikesCount,
+    insertNewLikeToList: Post.prototype.insertNewLikeToList,
+    extractLikeFromList: Post.prototype.extractLikeFromList,
 };
