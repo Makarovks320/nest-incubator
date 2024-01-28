@@ -10,7 +10,10 @@ export type LikeModel = Model<LikeDocument> & typeof staticMethods;
 
 const staticMethods = {
     createLike(dto: CreateLikeDto): LikeDocument {
-        return new this(dto);
+        const newLike = new this(dto);
+        //todo: почему не создает свойства createdAt и updatedAt?
+        newLike.updatedAt = new Date();
+        return newLike;
     },
 };
 @Schema({ timestamps: true, statics: staticMethods })
@@ -29,10 +32,15 @@ export class Like {
 
     createdAt: Date;
     updatedAt: Date;
-    updateLike(likeNewData: UpdateLikeForPostDto) {
+
+    updateLike(likeNewData: UpdateLikeForPostDto): void {
         //todo: нужна проверка, что текущий пользователь владеет блогом, к которому относится пост
         this.like_status = convertLikeStatusToDbEnum(likeNewData.status);
     }
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);
+
+LikeSchema.methods = {
+    updateLike: Like.prototype.updateLike,
+};
