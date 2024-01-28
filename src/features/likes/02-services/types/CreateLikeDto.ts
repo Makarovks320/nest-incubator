@@ -1,8 +1,8 @@
-import { LikeStatusType, PARENT_TYPE_DB_ENUM } from '../../03-domain/types';
+import { LIKE_STATUS_DB_ENUM, PARENT_TYPE_DB_ENUM } from '../../03-domain/types';
 
 export type CreateLikeDto = {
-    parentId: string;
-    likeStatus: LikeStatusType;
-    userId: string;
+    parent_id: string;
+    like_status: LIKE_STATUS_DB_ENUM;
+    user_id: string;
     parent_type: PARENT_TYPE_DB_ENUM;
 };

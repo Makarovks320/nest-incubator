@@ -114,12 +114,12 @@ export class PostService {
         if (previousLike) {
             newOrUpdatedLike = await this.likeService.changeLikeStatus(previousLike, input.status);
             post.extractLikeFromList(previousLike);
-            post.recalculateLikesCount(input.status, previousLike.type);
+            post.recalculateLikesCount(input.status, previousLike.like_status);
         } else {
             newOrUpdatedLike = await this.likeService.createNewLike({
-                parentId: input.postId,
-                likeStatus: input.status,
-                userId: input.userId,
+                parent_id: input.postId,
+                like_status: convertLikeStatusToDbEnum(input.status),
+                user_id: input.userId,
                 parent_type: PARENT_TYPE_DB_ENUM.POST,
             });
             post.recalculateLikesCount(input.status);

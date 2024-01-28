@@ -13,6 +13,7 @@ export type CommentDocument = HydratedDocument<Comment>;
 export type CommentModel = Model<CommentDocument> & typeof staticMethods;
 
 const staticMethods = {
+    //todo: разве асинхронность нужна?
     async createComment(dto: CreateCommentDto): Promise<CommentDocument> {
         const newComment: CommentDocument = new this({
             postId: dto.postId,

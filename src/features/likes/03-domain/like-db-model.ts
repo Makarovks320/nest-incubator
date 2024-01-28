@@ -22,7 +22,7 @@ export class Like {
     parent_id: string;
 
     @Prop({ required: true })
-    type: LIKE_STATUS_DB_ENUM;
+    like_status: LIKE_STATUS_DB_ENUM;
 
     @Prop({ required: true })
     user_id: string;
@@ -31,7 +31,7 @@ export class Like {
     updatedAt: Date;
     updateLike(likeNewData: UpdateLikeForPostDto) {
         //todo: нужна проверка, что текущий пользователь владеет блогом, к которому относится пост
-        this.type = convertLikeStatusToDbEnum(likeNewData.status);
+        this.like_status = convertLikeStatusToDbEnum(likeNewData.status);
     }
 }
 

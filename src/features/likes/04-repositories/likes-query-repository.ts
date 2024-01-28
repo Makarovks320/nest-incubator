@@ -13,13 +13,13 @@ export class LikesQueryRepository {
             const likesCount = await this.likeModel
                 .countDocuments({
                     parent_id: parentId,
-                    type: LIKE_STATUS_DB_ENUM.LIKE,
+                    like_status: LIKE_STATUS_DB_ENUM.LIKE,
                 })
                 .lean();
             const dislikesCount = await this.likeModel
                 .countDocuments({
                     parent_id: parentId,
-                    type: LIKE_STATUS_DB_ENUM.DISLIKE,
+                    like_status: LIKE_STATUS_DB_ENUM.DISLIKE,
                 })
                 .lean();
 
@@ -39,7 +39,7 @@ export class LikesQueryRepository {
         const myLike: Like | null = await this.getLikeForParentForCurrentUser(parentId, userId);
         let myStatus: LikeStatusType = LIKE_STATUS_ENUM.NONE;
         if (myLike) {
-            myStatus = convertDbEnumToLikeStatus(myLike!.type);
+            myStatus = convertDbEnumToLikeStatus(myLike!.like_status);
         }
         const likesInfo: LikesInfo = { ...likesCountInfo, myStatus };
         return likesInfo;
