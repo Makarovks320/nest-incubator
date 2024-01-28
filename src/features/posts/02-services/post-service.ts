@@ -11,16 +11,17 @@ import { Like } from '../../likes/03-domain/like-db-model';
 import { LikesQueryRepository } from '../../likes/04-repositories/likes-query-repository';
 import { LikeService } from '../../likes/02-services/like-service';
 import { LIKE_STATUS_ENUM, PARENT_TYPE_DB_ENUM } from '../../likes/03-domain/types';
-import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
+import { convertDbEnumToLikeStatus, convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-converters';
 import { InjectModel } from '@nestjs/mongoose';
+import { PostsDataMapper } from '../01-api/posts-data-mapper';
 
 @Injectable()
 export class PostService {
     constructor(
-        private postsRepository: PostsRepository,
-        private usersRepo: UsersRepository,
-        private likesQueryRepository: LikesQueryRepository,
         private likeService: LikeService,
+        private usersRepository: UsersRepository,
+        private postsRepository: PostsRepository,
+        private likesQueryRepository: LikesQueryRepository,
         @InjectModel(Post.name) private postModel: PostModel,
     ) {}
 
@@ -61,18 +62,23 @@ export class PostService {
     //
     // }
 
-    // async getPostById(id: string, userId: ObjectId): Promise<PostViewModel | null> {
-    //     const postObjectId = stringToObjectIdMapper(id);
-    //     const posts = await this.postsRepository.findPostById(postObjectId);
-    //     // сходим за статусом лайка от текущего юзера, если текущий юзер авторизован
-    //     let myStatus: LIKE_STATUS_ENUM | null = null;
-    //     if (userId) {
-    //         const myLike: LikeDbModel | null = await this.likesQueryRepository.getLikeForParentForCurrentUser(postObjectId, userId);
-    //         if (myLike) myStatus = convertDbEnumToLikeStatus(myLike.type);
-    //     }
-    //
-    //     return getPostViewModel(posts, myStatus)
-    // }
+    async getPostById(postId: string, userId: string): Promise<ResultObject<PostViewModel>> {
+        const result = new ResultObject<PostViewModel>();
+        const post: PostDocument | null = await this.postsRepository.findPostById(postId);
+        if (!post) {
+            result.addError({ errorCode: PostServiceError.POST_NO_FOUND });
+            return result;
+        }
+        // сходим за статусом лайка от текущего юзера, если текущий юзер авторизован
+        let myStatus: LIKE_STATUS_ENUM | null = null;
+        if (userId) {
+            const myLike: Like | null = await this.likesQueryRepository.getLikeForParentForCurrentUser(postId, userId);
+            if (myLike) myStatus = convertDbEnumToLikeStatus(myLike.like_status);
+        }
+        const preparedPost: PostViewModel = PostsDataMapper.toPostView(post!, myStatus);
+        result.setData(preparedPost);
+        return result;
+    }
 
     async createNewPost(p: CreatePostModel): Promise<PostViewModel> {
         const post: Post = this.postModel.createPost(p);
@@ -89,15 +95,15 @@ export class PostService {
     async CreateOrUpdateLike(input: LikeForPostInputModel): Promise<ResultObject> {
         const result = new ResultObject();
 
-        const user: UserDocument | null = await this.usersRepo.findUserById(input.userId);
+        const user: UserDocument | null = await this.usersRepository.findUserById(input.userId);
         if (user == null) {
-            result.addError({ errorCode: PostLikeServiceError.UNAUTHORIZED });
+            result.addError({ errorCode: PostServiceError.UNAUTHORIZED });
             return result;
         }
 
         const post: PostDocument | null = await this.postsRepository.findPostById(input.postId);
         if (post === null) {
-            result.addError({ errorCode: PostLikeServiceError.POST_NO_FOUND });
+            result.addError({ errorCode: PostServiceError.POST_NO_FOUND });
             return result;
         }
 
@@ -139,7 +145,7 @@ export class PostService {
     }
 }
 
-export enum PostLikeServiceError {
+export enum PostServiceError {
     UNAUTHORIZED,
     POST_NO_FOUND,
 }

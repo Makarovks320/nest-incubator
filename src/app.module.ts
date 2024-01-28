@@ -28,7 +28,7 @@ import { EmailManager } from './application/adapters/email-adapter/emailManager'
 import { EmailAdapter } from './application/adapters/email-adapter/email-adapter';
 import { SessionsRepository } from './features/auth/04-repositories/sessions-repository';
 import { RecoveryCodeValidator } from './application/decorators/validation/IsRecoveryCodeValid';
-import { UserIdMiddleware } from './middlewares/user-id-middleware.service';
+import { UserIdMiddleware } from './middlewares/user-id-middleware';
 import { RouterPaths } from './application/types/router-paths';
 import { EmailExistenceValidator } from './application/decorators/validation/EmailExistenceValidator';
 import { ConfirmationCodeValidator } from './application/decorators/validation/IsConfirmationCodeValid';
@@ -46,6 +46,7 @@ import { Like, LikeSchema } from './features/likes/03-domain/like-db-model';
 import { LikesQueryRepository } from './features/likes/04-repositories/likes-query-repository';
 import { LikesRepository } from './features/likes/04-repositories/likes-repository';
 import { LikeService } from './features/likes/02-services/like-service';
+import { GetUserIdFromAccessToken } from './middlewares/GetUserIdFromAccessToken';
 
 const services = [
     AppService,
@@ -110,5 +111,8 @@ export class AppModule {
         consumer
             .apply(UserIdMiddleware)
             .forRoutes({ path: RouterPaths.auth + '/new-password', method: RequestMethod.POST });
+        consumer
+            .apply(GetUserIdFromAccessToken)
+            .forRoutes({ path: RouterPaths.posts + '/:id', method: RequestMethod.GET });
     }
 }

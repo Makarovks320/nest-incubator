@@ -1,7 +1,6 @@
 import { FilterQuery, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { Post, PostDocument } from '../03-domain/post-db-model';
-import { PostMongoType } from '../types/dto';
 import { PostViewModel } from '../types/post-view-model';
 import { PostsDataMapper } from '../01-api/posts-data-mapper';
 import { InjectModel } from '@nestjs/mongoose';
@@ -38,7 +37,7 @@ export class PostsQueryRepository {
     }
     async getPostById(id: string): Promise<PostViewModel | null> {
         try {
-            const post: PostMongoType | null = await this.postModel.findById(id).lean();
+            const post: PostDocument | null = await this.postModel.findById(id).lean();
             if (!post) return null;
             return PostsDataMapper.toPostView(post, null);
         } catch (e) {
@@ -47,7 +46,7 @@ export class PostsQueryRepository {
         }
     }
     async checkPostExists(id: string): Promise<boolean> {
-        const post: PostMongoType | null = await this.postModel.findById(id).lean();
+        const post: PostDocument | null = await this.postModel.findById(id).lean();
         return !!post;
     }
 }

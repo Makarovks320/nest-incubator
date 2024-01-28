@@ -1,11 +1,10 @@
 import { PostDocument } from '../03-domain/post-db-model';
-import { PostMongoType } from '../types/dto';
 import { PostViewModel } from '../types/post-view-model';
 import { LIKE_STATUS_ENUM } from '../../likes/03-domain/types';
 
 export class PostsDataMapper {
     constructor() {}
-    static toPostView(postDoc: PostMongoType | PostDocument, myStatus: LIKE_STATUS_ENUM | null): PostViewModel {
+    static toPostView(postDoc: PostDocument, myStatus: LIKE_STATUS_ENUM | null): PostViewModel {
         return {
             id: postDoc._id.toString(),
             title: postDoc.title,

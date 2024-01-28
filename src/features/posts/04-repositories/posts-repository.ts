@@ -30,7 +30,6 @@ export class PostsRepository {
     //     async updatePostById(_id: ObjectId, post: InputPost): Promise<boolean> {
     //     const result = await PostModel.updateOne({_id}, post);
     //     return result.matchedCount === 1;
-    //
     // }
     async clear(): Promise<void> {
         await this.postModel.deleteMany({});

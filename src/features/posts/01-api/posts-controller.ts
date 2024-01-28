@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreatePostModel } from '../types/create-post-input-type';
-import { PostLikeServiceError, PostService } from '../02-services/post-service';
+import { PostServiceError, PostService } from '../02-services/post-service';
 import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
 import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
@@ -66,17 +66,17 @@ export class PostsController {
         return posts;
     }
 
-    @Get(':id')
+    @Get('/:id')
     @HttpCode(HttpStatus.OK_200)
-    async getPostById(@Param('id') postId: string) {
-        const post: PostViewModel | null = await this.postsQueryRepository.getPostById(postId);
-        if (!post) {
+    async getPostById(@Param('id') postId: string, @Req() req: Request) {
+        const result = await this.postService.getPostById(postId, req.userId);
+        if (result.hasErrorCode(PostServiceError.POST_NO_FOUND)) {
             throw new NotFoundException();
         }
-        return post;
+        return result.getData();
     }
 
-    @Put(':id')
+    @Put('/:id')
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async updatePost(@Param('id') postId: string, @Body() inputModel: UpdatePostInputDto) {
         const updatedPost = await this.postService.updatePostById(postId, inputModel);
@@ -92,7 +92,7 @@ export class PostsController {
         return await this.postService.deleteAllPosts();
     }
 
-    @Delete(':id')
+    @Delete('/:id')
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deletePostById(@Param('id') postId: string) {
         const result: boolean = await this.postService.deletePostById(postId);
@@ -140,10 +140,10 @@ export class PostsController {
             userId: req.userId,
             status: input.likeStatus,
         });
-        if (result.hasErrorCode(PostLikeServiceError.POST_NO_FOUND)) {
+        if (result.hasErrorCode(PostServiceError.POST_NO_FOUND)) {
             throw new NotFoundException();
         }
-        if (result.hasErrorCode(PostLikeServiceError.UNAUTHORIZED)) {
+        if (result.hasErrorCode(PostServiceError.UNAUTHORIZED)) {
             throw new NotFoundException();
         }
     }
