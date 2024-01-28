@@ -20,7 +20,7 @@ export class LikeService {
     }
 
     async changeLikeStatus(currentLike: Like, updateLikeStatus: LikeStatusType): Promise<Like> {
-        const like: Like | null = await this.likesQueryRepository.getLikeForParentForCurrentUser(
+        const like: LikeDocument | null = await this.likesRepository.getLikeDocumentForParentForUser(
             currentLike.parent_id,
             currentLike.user_id,
         );

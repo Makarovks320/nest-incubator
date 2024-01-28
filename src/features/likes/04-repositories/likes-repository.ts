@@ -9,6 +9,9 @@ export class LikesRepository {
         await this.likeModel.insertMany(like);
     }
 
+    async getLikeDocumentForParentForUser(parent_id: string, user_id: string): Promise<LikeDocument | null> {
+        return this.likeModel.findOne({ parent_id, user_id });
+    }
     // async updateLike(like: Like): Promise<boolean> {
     //     const result = await this.likeModel.updateOne().updateOne({ _id: like._id }, like);
     //     return result.modifiedCount === 1;
