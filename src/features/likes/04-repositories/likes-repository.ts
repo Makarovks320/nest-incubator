@@ -5,8 +5,9 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class LikesRepository {
     constructor(@InjectModel(Like.name) private likeModel: LikeModel) {}
-    async save(like: LikeDocument): Promise<void> {
-        await this.likeModel.insertMany(like);
+    async save(like: LikeDocument): Promise<LikeDocument> {
+        await like.save();
+        return like;
     }
 
     async getLikeDocumentForParentForUser(parent_id: string, user_id: string): Promise<LikeDocument | null> {

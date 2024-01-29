@@ -26,9 +26,7 @@ export class LikeService {
         );
         if (!like) throw new NotFoundException();
         like.updateLike({ status: updateLikeStatus });
-        /* todo: сделать апдейт через save сущности LikeModel
-            const like: LikeDocument | null = await this.likeModel.findOne({ _id });
-            */
+        await this.likesRepository.save(like);
         return like;
     }
 }

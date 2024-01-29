@@ -117,7 +117,7 @@ export const likeTestManager = {
             .expect(expectedStatusCode);
     },
 
-    async checkLikeStatusForPostById(
+    async getLikeStatusForPostById(
         post_id: string,
         likesCount: number,
         dislikesCount: number,

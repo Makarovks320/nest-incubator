@@ -143,16 +143,9 @@ describe('testing likes for posts', () => {
         // добавим один лайк от юзера_1
         await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
         // без заголовка авторизации не должен возвращать статус текущего юзера
-        await likeTestManager.checkLikeStatusForPostById(post.id, 1, 0, [user_1]);
+        await likeTestManager.getLikeStatusForPostById(post.id, 1, 0, [user_1]);
         // с заголовком авторизации должен вернуть статус текущего юзера
-        await likeTestManager.checkLikeStatusForPostById(
-            post.id,
-            1,
-            0,
-            [user_1],
-            LIKE_STATUS_ENUM.LIKE,
-            authJWTHeader1,
-        );
+        await likeTestManager.getLikeStatusForPostById(post.id, 1, 0, [user_1], LIKE_STATUS_ENUM.LIKE, authJWTHeader1);
     });
 
     it('should change like to dislike for post', async () => {
@@ -161,7 +154,7 @@ describe('testing likes for posts', () => {
 
         await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader1, LIKE_STATUS_ENUM.DISLIKE);
 
-        await likeTestManager.checkLikeStatusForPostById(post.id, 0, 1, [], LIKE_STATUS_ENUM.DISLIKE, authJWTHeader1);
+        await likeTestManager.getLikeStatusForPostById(post.id, 0, 1, [], LIKE_STATUS_ENUM.DISLIKE, authJWTHeader1);
     });
 
     it('should remove dislike for post', async () => {
@@ -170,7 +163,7 @@ describe('testing likes for posts', () => {
 
         await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader1, LIKE_STATUS_ENUM.NONE);
 
-        await likeTestManager.checkLikeStatusForPostById(post.id, 0, 0, [], LIKE_STATUS_ENUM.NONE, authJWTHeader1);
+        await likeTestManager.getLikeStatusForPostById(post.id, 0, 0, [], LIKE_STATUS_ENUM.NONE, authJWTHeader1);
     });
 
     it(
@@ -181,7 +174,7 @@ describe('testing likes for posts', () => {
             // like the post by user_1
             await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
 
-            await likeTestManager.checkLikeStatusForPostById(
+            await likeTestManager.getLikeStatusForPostById(
                 post.id,
                 1,
                 0,
@@ -191,7 +184,7 @@ describe('testing likes for posts', () => {
             );
             // like the post by user_2
             await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader2, LIKE_STATUS_ENUM.LIKE);
-            await likeTestManager.checkLikeStatusForPostById(
+            await likeTestManager.getLikeStatusForPostById(
                 post.id,
                 2,
                 0,
@@ -201,7 +194,7 @@ describe('testing likes for posts', () => {
             );
             // like the post by user_3
             await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader3, LIKE_STATUS_ENUM.LIKE);
-            await likeTestManager.checkLikeStatusForPostById(
+            await likeTestManager.getLikeStatusForPostById(
                 post.id,
                 3,
                 0,
@@ -211,7 +204,7 @@ describe('testing likes for posts', () => {
             );
             // like the post by user_4
             await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader4, LIKE_STATUS_ENUM.LIKE);
-            await likeTestManager.checkLikeStatusForPostById(
+            await likeTestManager.getLikeStatusForPostById(
                 post.id,
                 4,
                 0,
