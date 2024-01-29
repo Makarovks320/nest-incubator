@@ -10,6 +10,7 @@ import {
     Put,
     Query,
     Req,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
@@ -144,7 +145,7 @@ export class PostsController {
             throw new NotFoundException();
         }
         if (result.hasErrorCode(PostServiceError.UNAUTHORIZED)) {
-            throw new NotFoundException();
+            throw new UnauthorizedException();
         }
     }
 }

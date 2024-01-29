@@ -21,6 +21,7 @@ import { CommentService, CommentServiceError } from '../02-services/comment-serv
 import { CommentIdDto } from '../05-dto/CommentIdDto';
 import { CommentViewModel } from './models/output-models/CommentViewModel';
 import { ResultObject } from '../../../application/result-object/ResultObject';
+import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
 
 @Controller('comments')
 export class CommentsController {
@@ -73,15 +74,23 @@ export class CommentsController {
         if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
         return;
     }
+    @Put('/:id/like-status')
+    @UseGuards(AccessTokenGuard)
+    @HttpCode(HttpStatus.NO_CONTENT_204)
+    async changeLikeStatus(@Param('id') commentId: string, @Body() input: LikeStatusUpdateDto, @Req() req: Request) {
+        const result: ResultObject = await this.commentService.changeLikeStatus(
+            commentId,
+            input.likeStatus,
+            req.userId,
+        );
 
-    // async changeLikeStatus(req: Request, res: Response) {
-    //     try {
-    //         await this.commentService.changeLikeStatus(req.params.id, req.body.likeStatus, req.userId);
-    //         // await this.likeService.changeLikeStatus(req.params.id, req.body.likeStatus, req.userId);
-    //         res.sendStatus(HttpStatus.NO_CONTENT_204);
-    //     } catch (e) {
-    //         if (e instanceof mongoose.Error) res.status(HttpStatus.SERVER_ERROR_500).send('Db error');
-    //         res.status(HttpStatus.SERVER_ERROR_500).send('Something went wrong');
-    //     }
-    // }
+        if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) {
+            throw new NotFoundException();
+        }
+        if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) {
+            throw new ForbiddenException();
+        }
+        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        return;
+    }
 }

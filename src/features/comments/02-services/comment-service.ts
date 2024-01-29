@@ -8,6 +8,7 @@ import { CommentsRepository } from '../04-repositories/comments-repository';
 import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
 import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
 import { ResultObject } from '../../../application/result-object/ResultObject';
+import { LikeStatusType } from '../../likes/03-domain/types';
 
 export type InputCommentWithPostId = {
     content: string;
@@ -50,12 +51,19 @@ export class CommentService {
         await this.commentsRepository.save(comment);
         return result;
     }
-    //
-    // async changeLikeStatus(commentId: string, likeStatus: LikeStatusType, userId: string): Promise<void> {
-    //     const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
-    //     comment.changeLikeStatusForComment(likeStatus, userId);
-    //     await this.commentsRepository.save(comment);
-    // }
+
+    async changeLikeStatus(commentId: string, likeStatus: LikeStatusType, userId: string): Promise<ResultObject> {
+        const result = new ResultObject();
+        const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
+        if (!comment) {
+            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            return result;
+        }
+        comment.changeLikeStatusForComment(likeStatus, userId);
+        await this.commentsRepository.save(comment);
+
+        return result;
+    }
 
     async deleteCommentById(commentId: string, userId: string): Promise<ResultObject> {
         const result = new ResultObject();

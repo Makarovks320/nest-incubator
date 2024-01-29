@@ -53,7 +53,6 @@ export class Comment {
         this.content = content;
         return result;
     }
-
     checkAccessToComment(userId: string, result: ResultObject): ResultObject {
         if (this.commentatorInfo.userId.toString() != userId.toString()) {
             result.addError({
@@ -63,16 +62,10 @@ export class Comment {
         }
         return result;
     }
-}
-
-export const CommentSchema = SchemaFactory.createForClass(Comment);
-
-CommentSchema.methods = {
-    _findLikeForUser(userId: string): LikeForCommentType | undefined {
-        return this.dbLikesInfo.likes.find(l => l.userId.equals(userId));
-    },
-
-    _createNewLike(likeStatus: LikeStatusType, userId: string) {
+    findLikeForUser(userId: string): LikeForCommentType | undefined {
+        return this.dbLikesInfo.likes.find(l => l.userId === userId);
+    }
+    createNewLike(likeStatus: LikeStatusType, userId: string) {
         const reaction: LikeForCommentType = {
             userId,
             likeStatus: convertLikeStatusToDbEnum(likeStatus),
@@ -86,9 +79,8 @@ CommentSchema.methods = {
                 this.dbLikesInfo.dislikesCount++;
                 break;
         }
-    },
-
-    _changeLike(likeForComment: LikeForCommentType, likeStatus: LIKE_STATUS_DB_ENUM) {
+    }
+    changeLike(likeForComment: LikeForCommentType, likeStatus: LIKE_STATUS_DB_ENUM) {
         // если нет смысла менять
         if (likeForComment.likeStatus === likeStatus) return;
 
@@ -101,19 +93,25 @@ CommentSchema.methods = {
 
         // меняем статус лайка
         likeForComment.likeStatus = likeStatus;
-    },
-
-    changeCommentContent: Comment.prototype.changeCommentContent,
-
-    checkAccessToComment: Comment.prototype.checkAccessToComment,
-
+    }
     changeLikeStatusForComment(likeStatus: LikeStatusType, userId: string) {
         // если у коммента есть лайк от текущего пользователя, то изменим его, если нет - создадим
-        const currentLike = this._findLikeForUser(userId);
+        const currentLike = this.findLikeForUser(userId);
         if (!currentLike) {
-            this._createNewLike(likeStatus, userId);
+            this.createNewLike(likeStatus, userId);
             return;
         }
-        this._changeLike(currentLike!, convertLikeStatusToDbEnum(likeStatus));
-    },
+        this.changeLike(currentLike!, convertLikeStatusToDbEnum(likeStatus));
+    }
+}
+
+export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+CommentSchema.methods = {
+    changeCommentContent: Comment.prototype.changeCommentContent,
+    checkAccessToComment: Comment.prototype.checkAccessToComment,
+    findLikeForUser: Comment.prototype.findLikeForUser,
+    createNewLike: Comment.prototype.createNewLike,
+    changeLike: Comment.prototype.changeLike,
+    changeLikeStatusForComment: Comment.prototype.changeLikeStatusForComment,
 };

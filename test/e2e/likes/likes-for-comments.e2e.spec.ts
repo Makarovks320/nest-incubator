@@ -16,7 +16,7 @@ import { CreateCommentInputModel } from '../../../src/features/comments/01-api/m
 import { LIKE_STATUS_ENUM } from '../../../src/features/likes/03-domain/types';
 import { CommentWithLikeInfo, likeTestManager } from '../../utils/likeTestManager';
 
-describe('/likes tests ', () => {
+describe('/testing likes for comments', () => {
     arrangeTestingEnvironment();
 
     const email1: string = 'email-1@mail.com';
