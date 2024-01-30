@@ -113,6 +113,10 @@ export class AppModule {
             .forRoutes({ path: RouterPaths.auth + '/new-password', method: RequestMethod.POST });
         consumer
             .apply(GetUserIdFromAccessToken)
-            .forRoutes({ path: RouterPaths.posts + '/:id', method: RequestMethod.GET });
+            .forRoutes(
+                { path: RouterPaths.posts + '/:id', method: RequestMethod.GET },
+                { path: RouterPaths.posts + '/:id' + '/comments', method: RequestMethod.GET },
+                { path: RouterPaths.comments + '/:id', method: RequestMethod.GET },
+            );
     }
 }

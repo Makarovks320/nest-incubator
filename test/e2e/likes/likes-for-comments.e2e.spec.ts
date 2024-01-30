@@ -250,10 +250,9 @@ describe('/testing likes for comments', () => {
         if (!comment2) throw new Error('test cannot be performed.');
         if (!comment3) throw new Error('test cannot be performed.');
 
-        //проверим, что на данный момент у comment1 нет лайков
-        //await likeTestManager.checkLikeStatusForCommentById(comment1.id, 0, 0, LIKE_STATUS_ENUM.NONE);
+        //на данный момент у comment1 три лайка
 
-        // ставим 2 лайка  и один дизлайк от трех разных юзеров для comment1
+        // ставим 2 лайка и один дизлайк от трех разных юзеров для comment1
         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader2, LIKE_STATUS_ENUM.LIKE);
         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader3, LIKE_STATUS_ENUM.DISLIKE);
