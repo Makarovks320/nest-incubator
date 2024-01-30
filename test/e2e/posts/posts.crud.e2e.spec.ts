@@ -129,6 +129,14 @@ describe('CRUD tests for /posts', () => {
         createdPost1 = body.items[1];
     });
 
+    it('should return error if :id from uri param not found; status 404;', async () => {
+        const wrongBlogId = new ObjectId().toString();
+        await testingProvider
+            .getHttp()
+            .get(`${RouterPaths.blogs}/${wrongBlogId}/posts`)
+            .expect(HttpStatus.NOT_FOUND_404);
+    });
+
     // create another blog + post
     let createdBlogForPost2: BlogViewModel | null = null;
     let createdPost3: PostViewModel | null = null;
@@ -187,4 +195,6 @@ describe('CRUD tests for /posts', () => {
                 items: [createdPost3],
             });
     });
+    // todo: PUT, POST, DELETE -> "/posts":
+    //  should return error if auth credentials is incorrect; status 401; used additional methods: POST -> /blogs;
 });

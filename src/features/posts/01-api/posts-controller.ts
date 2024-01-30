@@ -34,6 +34,7 @@ import { CommentsQueryRepository } from '../../comments/04-repositories/comments
 import { CommentQueryParams } from '../../comments/types/comment-query-params-type';
 import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
 import { ResultObject } from '../../../application/result-object/ResultObject';
+import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
 
 @Controller('posts')
 export class PostsController {
@@ -46,6 +47,7 @@ export class PostsController {
     ) {}
 
     @Post()
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.CREATED_201)
     async createNewPost(@Body() inputModel: CreatePostInputDto): Promise<PostViewModel> {
         const blog = await this.blogsQueryRepository.getBlogById(inputModel.blogId);
@@ -61,9 +63,9 @@ export class PostsController {
 
     @Get()
     @HttpCode(HttpStatus.OK_200)
-    async getPosts(@Query() query: PostInputQueryParams): Promise<WithPagination<PostViewModel>> {
+    async getPosts(@Query() query: PostInputQueryParams, @Req() req: Request): Promise<WithPagination<PostViewModel>> {
         const queryParams: PostQueryParams = getPostQueryParams(query);
-        const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams);
+        const posts: WithPagination<PostViewModel> = await this.postService.getPosts(req.userId, queryParams);
         return posts;
     }
 
@@ -78,6 +80,7 @@ export class PostsController {
     }
 
     @Put('/:id')
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async updatePost(@Param('id') postId: string, @Body() inputModel: UpdatePostInputDto) {
         const updatedPost = await this.postService.updatePostById(postId, inputModel);
@@ -88,12 +91,14 @@ export class PostsController {
     }
 
     @Delete()
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAllPosts() {
         return await this.postService.deleteAllPosts();
     }
 
     @Delete('/:id')
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deletePostById(@Param('id') postId: string) {
         const result: boolean = await this.postService.deletePostById(postId);
@@ -121,7 +126,7 @@ export class PostsController {
     }
 
     @Post('/:id/comments')
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(BasicAuthGuard)
     async createCommentToPost(
         @Param('id') postId: string,
         @Body() input: CreateCommentInputModel,
@@ -133,7 +138,7 @@ export class PostsController {
     }
 
     @Put('/:id/like-status')
-    @UseGuards(AccessTokenGuard)
+    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async changeLikeStatus(@Param('id') postId: string, @Body() input: LikeStatusUpdateDto, @Req() req: Request) {
         const result: ResultObject = await this.postService.CreateOrUpdateLike({

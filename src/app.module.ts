@@ -114,6 +114,8 @@ export class AppModule {
         consumer
             .apply(GetUserIdFromAccessToken)
             .forRoutes(
+                { path: RouterPaths.blogs + '/:id' + '/posts', method: RequestMethod.GET },
+                { path: RouterPaths.posts, method: RequestMethod.GET },
                 { path: RouterPaths.posts + '/:id', method: RequestMethod.GET },
                 { path: RouterPaths.posts + '/:id' + '/comments', method: RequestMethod.GET },
                 { path: RouterPaths.comments + '/:id', method: RequestMethod.GET },
