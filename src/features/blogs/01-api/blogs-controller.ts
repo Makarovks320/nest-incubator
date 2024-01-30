@@ -9,6 +9,7 @@ import {
     Post,
     Put,
     Query,
+    Req,
     UseGuards,
 } from '@nestjs/common';
 import { BlogService } from '../02-services/blog-service';
@@ -26,6 +27,8 @@ import { PostService } from '../../posts/02-services/post-service';
 import { CreateBlogInputDto } from '../05-dto/CreateBlogInputDto';
 import { UpdateBlogInputDto } from '../05-dto/UpdateBlogInputDto';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
+import { Request } from 'express';
+import { CreatePostFromBlogsEndPointInputDto } from '../../posts/05-dto/CreatePostFromBlogsEndPointInputDto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -95,13 +98,12 @@ export class BlogsController {
     async getPosts(
         @Param('id') blogId: string,
         @Query() query: PostInputQueryParams,
+        @Req() req: Request,
     ): Promise<WithPagination<PostViewModel>> {
         const blog = await this.blogsQueryRepository.getBlogById(blogId);
-        if (!blog) {
-            throw new NotFoundException();
-        }
+        if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');
         const queryParams: PostQueryParams = getPostQueryParams(query);
-        const posts: WithPagination<PostViewModel> = await this.postsQueryRepository.getPosts(queryParams, blogId);
+        const posts: WithPagination<PostViewModel> = await this.postService.getPosts(req.userId, queryParams, blogId);
         return posts;
     }
 
@@ -110,7 +112,7 @@ export class BlogsController {
     @HttpCode(HttpStatus.CREATED_201)
     async createPostForExistingBlog(
         @Param('id') blogId: string,
-        @Body() inputModel: CreatePostByBlogsRouterInputModel,
+        @Body() inputModel: CreatePostFromBlogsEndPointInputDto,
     ): Promise<PostViewModel> {
         const blog = await this.blogsQueryRepository.getBlogById(blogId);
         if (!blog) throw new NotFoundException('Incorrect blog id: blog is not found');

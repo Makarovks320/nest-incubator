@@ -41,6 +41,8 @@ export class CommentsController {
         @Body() inputModel: UpdateCommentInputDto,
     ) {
         const result = await this.commentService.updateComment(inputModel.content, commentId, req.userId);
+        // todo: вынести в хелпер, который все кейсы рассмотрит конструкцией switch case /
+        //  либо выкидывать кастомную ошибку, и для ней будет свой эксепшен фильтр тоже со switch case
         if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) throw new NotFoundException();
 
         if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) throw new ForbiddenException();

@@ -47,6 +47,7 @@ import { LikesQueryRepository } from './features/likes/04-repositories/likes-que
 import { LikesRepository } from './features/likes/04-repositories/likes-repository';
 import { LikeService } from './features/likes/02-services/like-service';
 import { GetUserIdFromAccessToken } from './middlewares/GetUserIdFromAccessToken';
+import { IsBlogIdExistValidator } from './application/decorators/validation/IsBlogExist';
 
 const services = [
     AppService,
@@ -78,6 +79,7 @@ const customValidators = [
     RecoveryCodeValidator,
     EmailExistenceValidator,
     CommentExistenceValidator,
+    IsBlogIdExistValidator,
 ];
 const adapters = [EmailAdapter, EmailManager, JwtService, CryptoService];
 const helpers = [AuthHelper, CommentsDataMapper];

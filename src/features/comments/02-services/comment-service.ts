@@ -44,7 +44,7 @@ export class CommentService {
         const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
         if (!comment) {
             result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
-            return result;
+            return result; // здесь можно генерировать new ResultObject({errorCode: ....})
         }
         comment.changeCommentContent(userId, content, result);
         if (result.hasErrors()) return result;
@@ -91,7 +91,8 @@ export class CommentService {
         return result;
     }
 }
-
+// с 10 по 20 - ошибки для мэйлера, например. А общие ошибки вынести куда-то в общую папку. Нот фаунд будет
+// одинаковым и для постов
 export enum CommentServiceError {
     COMMENT_NOT_FOUND,
     COMMENT_ACCESS_DENIED,
