@@ -5,15 +5,13 @@ import { UserService } from '../../users/02-services/user-service';
 import { UserDocument } from '../../users/03-domain/user-db-model';
 import { CreateCommentDto } from '../05-dto/CreateCommentDto';
 import { CommentsRepository } from '../04-repositories/comments-repository';
-import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
 import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
 import { ResultObject } from '../../../application/result-object/ResultObject';
 import { LikeStatusType } from '../../likes/03-domain/types';
-
-export type InputCommentWithPostId = {
-    content: string;
-    postId: string;
-};
+import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
+import { CommentViewModel } from '../01-api/models/output-models/CommentViewModel';
+import { PostsQueryRepository } from '../../posts/04-repositories/posts-query-repository';
+import { CommentsDataMapper } from '../01-api/comments-data-mapper';
 
 @Injectable()
 export class CommentService {
@@ -22,12 +20,23 @@ export class CommentService {
         private userService: UserService,
         private commentsRepository: CommentsRepository,
         private commentsQueryRepository: CommentsQueryRepository,
+        private postsQueryRepository: PostsQueryRepository,
+        private commentsDataMapper: CommentsDataMapper,
     ) {}
 
-    async createNewComment(postId: string, content: string, userId: string): Promise<CommentViewModel> {
-        // найдем userLogin
+    async createNewComment(postId: string, content: string, userId: string): Promise<ResultObject<CommentViewModel>> {
+        const result = new ResultObject<CommentViewModel>();
+
         const user: UserDocument | null = await this.userService.findUserById(userId);
-        if (!user) throw new Error('user is not found');
+        if (!user) {
+            result.addError({ errorCode: ServiceErrorList.USER_NOT_FOUND });
+            return result;
+        }
+        const post = await this.postsQueryRepository.checkPostExists(postId);
+        if (!post) {
+            result.addError({ errorCode: ServiceErrorList.POST_NOT_FOUND });
+            return result;
+        }
 
         const commentDto: CreateCommentDto = {
             postId: postId,
@@ -36,14 +45,17 @@ export class CommentService {
             userLogin: user.login,
         };
         const comment: CommentDocument = await this.commentModel.createComment(commentDto);
-        return await this.commentsRepository.save(comment);
+        await this.commentsRepository.save(comment);
+        result.setData(this.commentsDataMapper.getCommentViewModel(comment, userId));
+
+        return result;
     }
 
     async updateComment(content: string, commentId: string, userId: string): Promise<ResultObject> {
         const result = new ResultObject();
         const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
         if (!comment) {
-            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            result.addError({ errorCode: ServiceErrorList.COMMENT_NOT_FOUND });
             return result; // здесь можно генерировать new ResultObject({errorCode: ....})
         }
         comment.changeCommentContent(userId, content, result);
@@ -56,7 +68,7 @@ export class CommentService {
         const result = new ResultObject();
         const comment: CommentDocument | null = await this.commentsRepository.findCommentById(commentId);
         if (!comment) {
-            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            result.addError({ errorCode: ServiceErrorList.COMMENT_NOT_FOUND });
             return result;
         }
         comment.changeLikeStatusForComment(likeStatus, userId);
@@ -70,7 +82,7 @@ export class CommentService {
 
         const comment: Comment | null = await this.commentsQueryRepository.getCommentById(commentId);
         if (!comment) {
-            result.addError({ errorCode: CommentServiceError.COMMENT_NOT_FOUND });
+            result.addError({ errorCode: ServiceErrorList.COMMENT_NOT_FOUND });
             return result;
         }
 
@@ -78,23 +90,16 @@ export class CommentService {
         if (!user || comment!.commentatorInfo.userLogin != user.login) {
             result.addError({
                 errorMessage: "User doesn't own the comment",
-                errorCode: CommentServiceError.COMMENT_ACCESS_DENIED,
+                errorCode: ServiceErrorList.COMMENT_ACCESS_DENIED,
             });
             return result;
         }
         const isDeleted = await this.commentsRepository.deleteCommentById(commentId);
 
         if (!isDeleted) {
-            result.addError({ errorCode: CommentServiceError.COMMENT_DELETE_ERROR });
+            result.addError({ errorCode: ServiceErrorList.COMMENT_DELETE_ERROR });
             return result;
         }
         return result;
     }
-}
-// с 10 по 20 - ошибки для мэйлера, например. А общие ошибки вынести куда-то в общую папку. Нот фаунд будет
-// одинаковым и для постов
-export enum CommentServiceError {
-    COMMENT_NOT_FOUND,
-    COMMENT_ACCESS_DENIED,
-    COMMENT_DELETE_ERROR,
 }

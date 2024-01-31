@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
 import { CreatePostModel } from '../types/create-post-input-type';
-import { PostServiceError, PostService } from '../02-services/post-service';
+import { PostService } from '../02-services/post-service';
 import { BlogsQueryRepository } from '../../blogs/04-repositories/blogs-query-repository';
 import { PostViewModel } from '../types/post-view-model';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
@@ -35,6 +35,7 @@ import { CommentQueryParams } from '../../comments/types/comment-query-params-ty
 import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
 import { ResultObject } from '../../../application/result-object/ResultObject';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
+import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
 
 @Controller('posts')
 export class PostsController {
@@ -73,7 +74,7 @@ export class PostsController {
     @HttpCode(HttpStatus.OK_200)
     async getPostById(@Param('id') postId: string, @Req() req: Request) {
         const result = await this.postService.getPostById(postId, req.userId);
-        if (result.hasErrorCode(PostServiceError.POST_NO_FOUND)) {
+        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
             throw new NotFoundException();
         }
         return result.getData();
@@ -131,9 +132,15 @@ export class PostsController {
         @Body() input: CreateCommentInputModel,
         @Req() req: Request,
     ) {
-        //todo: check post exists
-        const createdComment = await this.commentService.createNewComment(postId, input.content, req.userId);
-        return createdComment;
+        const result: ResultObject<CommentViewModel> = await this.commentService.createNewComment(
+            postId,
+            input.content,
+            req.userId,
+        );
+        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
+            throw new NotFoundException();
+        }
+        return result.getData();
     }
 
     @Put('/:id/like-status')
@@ -145,10 +152,10 @@ export class PostsController {
             userId: req.userId,
             status: input.likeStatus,
         });
-        if (result.hasErrorCode(PostServiceError.POST_NO_FOUND)) {
+        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
             throw new NotFoundException();
         }
-        if (result.hasErrorCode(PostServiceError.UNAUTHORIZED)) {
+        if (result.hasErrorCode(ServiceErrorList.UNAUTHORIZED)) {
             throw new UnauthorizedException();
         }
     }

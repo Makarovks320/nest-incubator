@@ -17,11 +17,12 @@ import { HttpStatus } from '../../../application/types/types';
 import { UpdateCommentInputDto } from '../05-dto/UpdateCommentInputDto';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 import { CommentsQueryRepository } from '../04-repositories/comments-query-repository';
-import { CommentService, CommentServiceError } from '../02-services/comment-service';
+import { CommentService } from '../02-services/comment-service';
 import { CommentIdDto } from '../05-dto/CommentIdDto';
 import { CommentViewModel } from './models/output-models/CommentViewModel';
 import { ResultObject } from '../../../application/result-object/ResultObject';
 import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
+import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
 
 @Controller('comments')
 export class CommentsController {
@@ -43,11 +44,11 @@ export class CommentsController {
         const result = await this.commentService.updateComment(inputModel.content, commentId, req.userId);
         // todo: вынести в хелпер, который все кейсы рассмотрит конструкцией switch case /
         //  либо выкидывать кастомную ошибку, и для ней будет свой эксепшен фильтр тоже со switch case
-        if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) throw new NotFoundException();
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_NOT_FOUND)) throw new NotFoundException();
 
-        if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) throw new ForbiddenException();
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_ACCESS_DENIED)) throw new ForbiddenException();
 
-        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
         return;
     }
 
@@ -67,13 +68,13 @@ export class CommentsController {
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteCommentById(@Param('id') commentId: string, @Req() req: Request) {
         const result: ResultObject = await this.commentService.deleteCommentById(commentId, req.userId);
-        if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) {
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_NOT_FOUND)) {
             throw new NotFoundException();
         }
-        if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) {
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_ACCESS_DENIED)) {
             throw new ForbiddenException();
         }
-        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
         return;
     }
     @Put('/:id/like-status')
@@ -86,13 +87,13 @@ export class CommentsController {
             req.userId,
         );
 
-        if (result.hasErrorCode(CommentServiceError.COMMENT_NOT_FOUND)) {
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_NOT_FOUND)) {
             throw new NotFoundException();
         }
-        if (result.hasErrorCode(CommentServiceError.COMMENT_ACCESS_DENIED)) {
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_ACCESS_DENIED)) {
             throw new ForbiddenException();
         }
-        if (result.hasErrorCode(CommentServiceError.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
+        if (result.hasErrorCode(ServiceErrorList.COMMENT_DELETE_ERROR)) throw new InternalServerErrorException();
         return;
     }
 }

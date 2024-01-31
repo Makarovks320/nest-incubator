@@ -17,6 +17,7 @@ import { PostsDataMapper } from '../01-api/posts-data-mapper';
 import { PostQueryParams } from '../types/post-query-params-type';
 import { WithPagination } from '../../../application/types/types';
 import { PostsQueryRepository } from '../04-repositories/posts-query-repository';
+import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
 
 @Injectable()
 export class PostService {
@@ -80,7 +81,7 @@ export class PostService {
         const result = new ResultObject<PostViewModel>();
         const post: PostDocument | null = await this.postsRepository.findPostById(postId);
         if (!post) {
-            result.addError({ errorCode: PostServiceError.POST_NO_FOUND });
+            result.addError({ errorCode: ServiceErrorList.POST_NOT_FOUND });
             return result;
         }
         // сходим за статусом лайка от текущего юзера, если текущий юзер авторизован
@@ -111,13 +112,13 @@ export class PostService {
 
         const post: PostDocument | null = await this.postsRepository.findPostById(input.postId);
         if (post === null) {
-            result.addError({ errorCode: PostServiceError.POST_NO_FOUND });
+            result.addError({ errorCode: ServiceErrorList.POST_NOT_FOUND });
             return result;
         }
 
         const user: UserDocument | null = await this.usersRepository.findUserById(input.userId);
         if (user == null) {
-            result.addError({ errorCode: PostServiceError.UNAUTHORIZED });
+            result.addError({ errorCode: ServiceErrorList.UNAUTHORIZED });
             return result;
         }
 
@@ -157,9 +158,4 @@ export class PostService {
     async deletePostById(postId: string): Promise<boolean> {
         return await this.postsRepository.deletePostById(postId);
     }
-}
-
-export enum PostServiceError {
-    UNAUTHORIZED,
-    POST_NO_FOUND,
 }

@@ -7,7 +7,8 @@ import { convertLikeStatusToDbEnum } from '../../likes/03-domain/like-status-con
 import { CommentatorInfoSchema } from './commentator-info-schema';
 import { DbLikesInfoSchema } from './db-likes-info-schema';
 import { ResultObject } from '../../../application/result-object/ResultObject';
-import { CommentServiceError } from '../02-services/comment-service';
+
+import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
 
 export type CommentDocument = HydratedDocument<Comment>;
 export type CommentModel = Model<CommentDocument> & typeof staticMethods;
@@ -57,7 +58,7 @@ export class Comment {
         if (this.commentatorInfo.userId.toString() != userId.toString()) {
             result.addError({
                 errorMessage: "User doesn't own the comment",
-                errorCode: CommentServiceError.COMMENT_ACCESS_DENIED,
+                errorCode: ServiceErrorList.COMMENT_ACCESS_DENIED,
             });
         }
         return result;
