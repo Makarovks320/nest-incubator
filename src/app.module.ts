@@ -86,7 +86,7 @@ const helpers = [AuthHelper, CommentsDataMapper];
 
 @Module({
     imports: [
-        ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
+        ThrottlerModule.forRoot([{ ttl: 5000, limit: 10 }]),
         MongooseModule.forRoot(appConfig.mongoUrl, {
             dbName: appConfig.dbName,
         }),
@@ -120,6 +120,7 @@ export class AppModule {
                 { path: RouterPaths.posts, method: RequestMethod.GET },
                 { path: RouterPaths.posts + '/:id', method: RequestMethod.GET },
                 { path: RouterPaths.posts + '/:id' + '/comments', method: RequestMethod.GET },
+                { path: RouterPaths.posts + '/:id' + '/like-status', method: RequestMethod.GET },
                 { path: RouterPaths.comments + '/:id', method: RequestMethod.GET },
             );
     }

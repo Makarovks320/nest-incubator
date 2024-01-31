@@ -1,5 +1,5 @@
 import { HttpStatus } from '../../../src/application/types/types';
-import { authBasicHeader } from '../../utils/test_utilities';
+import { authBasicHeader, generateString } from '../../utils/test_utilities';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { postsTestManager } from '../../utils/postsTestManager';
@@ -215,128 +215,61 @@ describe('testing likes for posts', () => {
         },
     );
 
-    //
-    //     it('should add dislike for comment', async () => {
-    //         if (!comment1) throw new Error('test cannot be performed.');
-    //
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader1, LIKE_STATUS_ENUM.DISLIKE)
-    //
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 0, 1, LIKE_STATUS_ENUM.DISLIKE, authJWTHeader1);
-    //
-    //     });
-    //
-    //
-    //     it('should remove dislike for comment', async () => {
-    //         if (!comment1) throw new Error('test cannot be performed.');
-    //
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader1, LIKE_STATUS_ENUM.NONE);
-    //
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 0, 0, LIKE_STATUS_ENUM.NONE, authJWTHeader1);
-    //
-    //     });
-    //
-    //
-    //     it('should add likes and dislikes from several users for the comment', async () => {
-    //         if (!comment1) throw new Error('test cannot be performed.');
-    //
-    //         // залогинимся под user_2
-    //         const user_2_authorizationResult: { accessToken: string; refreshToken: string } | null = await authTestManager.loginUser({loginOrEmail: user_2!.email, password: password});
-    //         authJWTHeader2 = {Authorization: `Bearer ${user_2_authorizationResult!.accessToken}`}
-    //
-    //         // залогинимся под user_3
-    //         const user_3_authorizationResult: { accessToken: string; refreshToken: string } | null = await authTestManager.loginUser({loginOrEmail: user_3!.email, password: password});
-    //         authJWTHeader3 = {Authorization: `Bearer ${user_3_authorizationResult!.accessToken}`}
-    //
-    //         //проверим, что на данный момент у коммента нет лайков
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 0, 0, LIKE_STATUS_ENUM.NONE);
-    //
-    //         // ставим 2 лайка  и один дизлайк от трех разных юзеров
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader2, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader3, LIKE_STATUS_ENUM.DISLIKE);
-    //
-    //         // проверяем likesInfo коммента, включая статус текущего юзера
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 2, 1, LIKE_STATUS_ENUM.DISLIKE, authJWTHeader3);
-    //         // проверяем likesInfo коммента анонимно
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 2, 1, LIKE_STATUS_ENUM.NONE);
-    //
-    //         // поменяем на 3 лайка
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader3, LIKE_STATUS_ENUM.LIKE);
-    //
-    //         // снова проверим likesInfo коммента, от авторизованного user_3
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 3, 0, LIKE_STATUS_ENUM.LIKE, authJWTHeader3);
-    //     });
-    //
-    //
-    //     it('should add likes for several comments from different users', async () => {
-    //         if (!post) throw new Error('test cannot be performed.');
-    //
-    //         //создадим еще два коммента
-    //         const data2: CreateCommentInputModel = {content: generateString(20)}
-    //         const data3: CreateCommentInputModel = {content: generateString(20)}
-    //
-    //         const {createdComment: createdComment2} = await commentsTestManager.createComment(post.id, data2, HttpStatus.CREATED_201, authJWTHeader1)
-    //         comment2 = createdComment2;
-    //         const {createdComment: createdComment3} = await commentsTestManager.createComment(post.id, data3, HttpStatus.CREATED_201, authJWTHeader1)
-    //         comment3 = createdComment3;
-    //
-    //
-    //         // залогинимся под user_2
-    //         const user_2_authorizationResult: { accessToken: string; refreshToken: string } | null = await authTestManager.loginUser({loginOrEmail: user_2!.email, password});
-    //         authJWTHeader2 = {Authorization: `Bearer ${user_2_authorizationResult!.accessToken}`}
-    //
-    //         // залогинимся под user_3
-    //         const user_3_authorizationResult: { accessToken: string; refreshToken: string } | null = await authTestManager.loginUser({loginOrEmail: user_3!.email, password});
-    //         authJWTHeader3 = {Authorization: `Bearer ${user_3_authorizationResult!.accessToken}`}
-    //
-    //         // Проверка исключительно для тайпскрипта
-    //         if (!comment1) throw new Error('test cannot be performed.');
-    //         if (!comment2) throw new Error('test cannot be performed.');
-    //         if (!comment3) throw new Error('test cannot be performed.');
-    //
-    //         //проверим, что на данный момент у comment1 нет лайков
-    //         //await likeTestManager.checkLikeStatusForCommentById(comment1.id, 0, 0, LIKE_STATUS_ENUM.NONE);
-    //
-    //         // ставим 2 лайка  и один дизлайк от трех разных юзеров для comment1
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader2, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment1.id, authJWTHeader3, LIKE_STATUS_ENUM.DISLIKE);
-    //         // ставим 3 лайка  от трех разных юзеров для comment2
-    //         await likeTestManager.changeLikeStatusForComment(comment2.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment2.id, authJWTHeader2, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment2.id, authJWTHeader3, LIKE_STATUS_ENUM.LIKE);
-    //         // ставим 1 лайк, 1 дизлайк от двух разных юзеров для comment3. От user_3 не ставим.
-    //         await likeTestManager.changeLikeStatusForComment(comment3.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
-    //         await likeTestManager.changeLikeStatusForComment(comment3.id, authJWTHeader2, LIKE_STATUS_ENUM.DISLIKE);
-    //
-    //         // проверяем likesInfo comment1, включая статус текущего юзера
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 2, 1, LIKE_STATUS_ENUM.DISLIKE, authJWTHeader3);
-    //
-    //         // проверяем likesInfo коммента анонимно
-    //         await likeTestManager.checkLikeStatusForCommentById(comment1.id, 2, 1, LIKE_STATUS_ENUM.NONE);
-    //
-    //         //проверяем по всем комментам
-    //         const listOfComments: CommentWithLikeInfo[] = [
-    //             {
-    //                 comment_id: comment3.id,
-    //                 likesCount: 1,
-    //                 dislikesCount: 1,
-    //                 myStatus: LIKE_STATUS_ENUM.NONE
-    //             },
-    //             {
-    //                 comment_id: comment2.id,
-    //                 likesCount: 3,
-    //                 dislikesCount: 0,
-    //                 myStatus: LIKE_STATUS_ENUM.LIKE
-    //             },
-    //             {
-    //                 comment_id: comment1.id,
-    //                 likesCount: 2,
-    //                 dislikesCount: 1,
-    //                 myStatus: LIKE_STATUS_ENUM.DISLIKE
-    //             },
-    //
-    //         ]
-    //         await likeTestManager.checkLikesForCommentListByPostId(post.id, listOfComments, authJWTHeader3);
-    // });
+    //todo: добавить подобный тест для постов (проверка нескольких комментов с несколькими лайками от разных юзеров)
+    it('should add likes for post from different users', async () => {
+        if (!post) throw new Error('test cannot be performed.');
+
+        // залогинимся под user_2
+        const user_2_authorizationResult: { accessToken: string; refreshToken: string } | null =
+            await authTestManager.loginUser({ loginOrEmail: user_2!.email, password });
+        authJWTHeader2 = { Authorization: `Bearer ${user_2_authorizationResult!.accessToken}` };
+
+        // залогинимся под user_3
+        const user_3_authorizationResult: { accessToken: string; refreshToken: string } | null =
+            await authTestManager.loginUser({ loginOrEmail: user_3!.email, password });
+        authJWTHeader3 = { Authorization: `Bearer ${user_3_authorizationResult!.accessToken}` };
+
+        // Проверка исключительно для тайпскрипта
+        if (!post) throw new Error('test cannot be performed.');
+
+        //на данный момент у post 4 лайка - ??
+        // ставим 2 лайка и один дизлайк от трех разных юзеров для comment1
+        await likeTestManager.changeLikeStatusForPost(post.id, authJWTHeader1, LIKE_STATUS_ENUM.LIKE);
+        /*
+        // проверяем likesInfo comment1, включая статус текущего юзера
+        await likeTestManager.checkLikeStatusForCommentById(
+            comment1.id,
+            2,
+            1,
+            LIKE_STATUS_ENUM.DISLIKE,
+            authJWTHeader3,
+        );
+
+        // проверяем likesInfo коммента анонимно
+        await likeTestManager.checkLikeStatusForCommentById(comment1.id, 2, 1, LIKE_STATUS_ENUM.NONE);
+
+        //проверяем по всем комментам
+        const listOfComments: CommentWithLikeInfo[] = [
+            {
+                comment_id: comment3.id,
+                likesCount: 1,
+                dislikesCount: 1,
+                myStatus: LIKE_STATUS_ENUM.NONE,
+            },
+            {
+                comment_id: comment2.id,
+                likesCount: 3,
+                dislikesCount: 0,
+                myStatus: LIKE_STATUS_ENUM.LIKE,
+            },
+            {
+                comment_id: comment1.id,
+                likesCount: 2,
+                dislikesCount: 1,
+                myStatus: LIKE_STATUS_ENUM.DISLIKE,
+            },
+        ];
+        await likeTestManager.checkLikesForCommentListByPostId(post.id, listOfComments, authJWTHeader3);
+    */
+    });
 });

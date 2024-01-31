@@ -91,7 +91,6 @@ export class PostsController {
     }
 
     @Delete()
-    @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAllPosts() {
         return await this.postService.deleteAllPosts();
@@ -126,7 +125,7 @@ export class PostsController {
     }
 
     @Post('/:id/comments')
-    @UseGuards(BasicAuthGuard)
+    @UseGuards(AccessTokenGuard)
     async createCommentToPost(
         @Param('id') postId: string,
         @Body() input: CreateCommentInputModel,
@@ -138,7 +137,7 @@ export class PostsController {
     }
 
     @Put('/:id/like-status')
-    @UseGuards(BasicAuthGuard)
+    @UseGuards(AccessTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async changeLikeStatus(@Param('id') postId: string, @Body() input: LikeStatusUpdateDto, @Req() req: Request) {
         const result: ResultObject = await this.postService.CreateOrUpdateLike({

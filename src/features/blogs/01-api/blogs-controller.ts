@@ -29,6 +29,7 @@ import { UpdateBlogInputDto } from '../05-dto/UpdateBlogInputDto';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
 import { Request } from 'express';
 import { CreatePostFromBlogsEndPointInputDto } from '../../posts/05-dto/CreatePostFromBlogsEndPointInputDto';
+import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 
 @Controller('blogs')
 export class BlogsController {

@@ -109,15 +109,15 @@ export class PostService {
     async CreateOrUpdateLike(input: LikeForPostInputModel): Promise<ResultObject> {
         const result = new ResultObject();
 
-        const user: UserDocument | null = await this.usersRepository.findUserById(input.userId);
-        if (user == null) {
-            result.addError({ errorCode: PostServiceError.UNAUTHORIZED });
-            return result;
-        }
-
         const post: PostDocument | null = await this.postsRepository.findPostById(input.postId);
         if (post === null) {
             result.addError({ errorCode: PostServiceError.POST_NO_FOUND });
+            return result;
+        }
+
+        const user: UserDocument | null = await this.usersRepository.findUserById(input.userId);
+        if (user == null) {
+            result.addError({ errorCode: PostServiceError.UNAUTHORIZED });
             return result;
         }
 

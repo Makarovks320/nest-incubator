@@ -26,6 +26,10 @@ export class BlogsRepository {
         }
     }
 
+    async checkBlogExists(_id: string): Promise<any> {
+        const blog = await this.blogModel.findById(_id).lean();
+        return !!blog;
+    }
     async updateBlogById(id: string, blogNewData: UpdateBlogInputModel): Promise<boolean> {
         const res: UpdateResult = await this.blogModel.updateOne({ _id: id }, { $set: blogNewData }).exec();
         return res.modifiedCount > 0;
