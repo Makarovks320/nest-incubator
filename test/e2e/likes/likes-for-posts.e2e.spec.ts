@@ -1,5 +1,5 @@
 import { HttpStatus } from '../../../src/application/types/types';
-import { authBasicHeader, generateString } from '../../utils/test_utilities';
+import { authBasicHeader } from '../../utils/test_utilities';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { postsTestManager } from '../../utils/postsTestManager';

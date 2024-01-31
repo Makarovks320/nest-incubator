@@ -10,7 +10,6 @@ import {
     Put,
     Query,
     Req,
-    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
 import { HttpStatus, WithPagination } from '../../../application/types/types';
@@ -35,7 +34,7 @@ import { CommentQueryParams } from '../../comments/types/comment-query-params-ty
 import { LikeStatusUpdateDto } from '../../likes/05-dto/LikeStatusUpdateDto';
 import { ResultObject } from '../../../application/result-object/ResultObject';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
-import { ServiceErrorList } from '../../../application/result-object/ServiceErrorList';
+import { handleResultObject } from '../../../application/result-object/ServiceErrorList';
 
 @Controller('posts')
 export class PostsController {
@@ -74,9 +73,7 @@ export class PostsController {
     @HttpCode(HttpStatus.OK_200)
     async getPostById(@Param('id') postId: string, @Req() req: Request) {
         const result = await this.postService.getPostById(postId, req.userId);
-        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
-            throw new NotFoundException();
-        }
+        handleResultObject(result);
         return result.getData();
     }
 
@@ -101,9 +98,8 @@ export class PostsController {
     @UseGuards(BasicAuthGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deletePostById(@Param('id') postId: string) {
-        const result: boolean = await this.postService.deletePostById(postId);
-        if (!result) throw new NotFoundException();
-        return result;
+        const isDeleted: boolean = await this.postService.deletePostById(postId);
+        if (!isDeleted) throw new NotFoundException();
     }
 
     // комментарии
@@ -137,9 +133,8 @@ export class PostsController {
             input.content,
             req.userId,
         );
-        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
-            throw new NotFoundException();
-        }
+        handleResultObject(result);
+
         return result.getData();
     }
 
@@ -152,11 +147,6 @@ export class PostsController {
             userId: req.userId,
             status: input.likeStatus,
         });
-        if (result.hasErrorCode(ServiceErrorList.POST_NOT_FOUND)) {
-            throw new NotFoundException();
-        }
-        if (result.hasErrorCode(ServiceErrorList.UNAUTHORIZED)) {
-            throw new UnauthorizedException();
-        }
+        handleResultObject(result);
     }
 }

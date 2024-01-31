@@ -1,6 +1,6 @@
 import { ResultObjectError } from './ResultObjectError';
 
-type ResultErrorType = {
+export type ResultErrorType = {
     errorMessage?: string;
     errorCode: number | null;
 };
@@ -26,5 +26,8 @@ export class ResultObject<T = null> {
     }
     hasErrors(): boolean {
         return this.errors.length > 0;
+    }
+    getErrorCodes() {
+        return this.errors;
     }
 }

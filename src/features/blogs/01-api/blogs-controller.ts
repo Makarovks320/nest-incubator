@@ -22,14 +22,13 @@ import { PostInputQueryParams } from '../../posts/types/dto';
 import { PostViewModel } from '../../posts/types/post-view-model';
 import { PostQueryParams } from '../../posts/types/post-query-params-type';
 import { PostsQueryRepository } from '../../posts/04-repositories/posts-query-repository';
-import { CreatePostByBlogsRouterInputModel, CreatePostModel } from '../../posts/types/create-post-input-type';
+import { CreatePostModel } from '../../posts/types/create-post-input-type';
 import { PostService } from '../../posts/02-services/post-service';
 import { CreateBlogInputDto } from '../05-dto/CreateBlogInputDto';
 import { UpdateBlogInputDto } from '../05-dto/UpdateBlogInputDto';
 import { BasicAuthGuard } from '../../../application/guards/BasicAuthGuard';
 import { Request } from 'express';
 import { CreatePostFromBlogsEndPointInputDto } from '../../posts/05-dto/CreatePostFromBlogsEndPointInputDto';
-import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 
 @Controller('blogs')
 export class BlogsController {
