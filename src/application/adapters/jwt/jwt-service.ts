@@ -18,13 +18,16 @@ export type AuthTokenPair = {
 export class JwtService {
     secret: string = appConfig.JWT_SECRET;
     refreshSecret: string = appConfig.JWT_REFRESH_SECRET;
+    intervalsInSeconds = { accessTokenLifetime: 1, refreshTokenLifetime: 2 }; // в секундах '600s', '1200s'
 
     async createAccessToken(userId: string) {
-        return jwt.sign({ userId }, this.secret, { expiresIn: '600s' });
+        return jwt.sign({ userId }, this.secret, { expiresIn: this.intervalsInSeconds.accessTokenLifetime });
     }
 
     async createRefreshToken(userId: string, deviceId: string) {
-        return jwt.sign({ userId, deviceId }, this.refreshSecret, { expiresIn: '1200s' });
+        return jwt.sign({ userId, deviceId }, this.refreshSecret, {
+            expiresIn: this.intervalsInSeconds.refreshTokenLifetime,
+        });
     }
 
     async getUserIdByToken(token: string): Promise<string | null> {

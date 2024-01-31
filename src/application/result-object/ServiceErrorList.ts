@@ -15,7 +15,7 @@ export enum ServiceErrorList {
     COMMENT_DELETE_ERROR,
     UNAUTHORIZED,
 }
-// todo: обработчик
+
 export function handleResultObject(result: ResultObject<any>): void {
     if (!result.hasErrors()) return;
 

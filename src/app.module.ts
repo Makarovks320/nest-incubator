@@ -86,7 +86,7 @@ const helpers = [AuthHelper, CommentsDataMapper];
 
 @Module({
     imports: [
-        ThrottlerModule.forRoot([{ ttl: 5000, limit: 10 }]),
+        ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
         MongooseModule.forRoot(appConfig.mongoUrl, {
             dbName: appConfig.dbName,
         }),

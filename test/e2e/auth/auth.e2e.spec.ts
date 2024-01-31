@@ -17,7 +17,7 @@ import { authTestManager } from '../../utils/authTestManager';
 //     }
 // }
 
-describe('testing auth flow', () => {
+describe('testing authentication flow', () => {
     const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 
     // изначальные credentials
