@@ -9,7 +9,7 @@ export class AuthHelper {
     }
 
     getRefreshToken(req: Request): string {
-        return req.cookies.refreshToken;
+        return req.cookies[this.refreshTokenName];
     }
     getUserAgent(req: Request): string | null {
         return req.headers['user-agent'] || null;

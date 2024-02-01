@@ -18,7 +18,7 @@ export type AuthTokenPair = {
 export class JwtService {
     secret: string = appConfig.JWT_SECRET;
     refreshSecret: string = appConfig.JWT_REFRESH_SECRET;
-    intervalsInSeconds = { accessTokenLifetime: 1, refreshTokenLifetime: 2 }; // в секундах '600s', '1200s'
+    intervalsInSeconds = { accessTokenLifetime: 10, refreshTokenLifetime: 20 }; // в секундах '600s', '1200s'
 
     async createAccessToken(userId: string) {
         return jwt.sign({ userId }, this.secret, { expiresIn: this.intervalsInSeconds.accessTokenLifetime });

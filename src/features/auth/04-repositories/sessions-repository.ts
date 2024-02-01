@@ -26,12 +26,13 @@ export class SessionsRepository {
         }
     }
     async getSessionForDevice(deviceId: string): Promise<AuthSession | null> {
-        const session: AuthSession | null = await this.sessionModel.findOne({ deviceId });
+        const session: AuthSession | null = await this.sessionModel.findOne({ deviceId }).lean();
         return session;
     }
     async updateSession(deviceId: string, session: AuthSession): Promise<boolean> {
         const result = await this.sessionModel.updateOne({ deviceId }, session);
         return result.matchedCount === 1;
+        return result.modifiedCount === 1;
     }
     async deleteSessionByDeviceId(deviceId: string): Promise<boolean> {
         const result = await this.sessionModel.deleteOne({ deviceId });
