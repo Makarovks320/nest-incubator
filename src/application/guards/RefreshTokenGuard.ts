@@ -26,8 +26,13 @@ export class RefreshTokenGuard implements CanActivate {
         }
 
         const session: AuthSession | null = await this.sessionService.getSessionForDevice(refreshTokenInfo.deviceId);
-
         if (!session) {
+            throw new UnauthorizedException();
+        }
+
+        const inputRefreshTokenIAt = this.jwtService.lastActiveDate(refreshToken).getTime();
+        const receivedRefreshTokenIAt = session.refreshTokenIssuedAt.getTime();
+        if (inputRefreshTokenIAt !== receivedRefreshTokenIAt) {
             throw new UnauthorizedException();
         }
 

@@ -55,4 +55,9 @@ export class JwtService {
             return null;
         }
     }
+
+    lastActiveDate(token: string): Date {
+        const result: any = jwt.decode(token);
+        return new Date(result.iat * 1000);
+    }
 }
