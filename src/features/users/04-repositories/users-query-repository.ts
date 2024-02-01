@@ -50,4 +50,12 @@ export class UsersQueryRepository {
     async findUserByPassRecoveryCode(code: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ 'passwordRecovery.passwordRecoveryCode': code });
     }
+
+    async getUserById(userId: string): Promise<UserViewModel | null> {
+        const user = await this.userModel.findById(userId).lean();
+        if (user) {
+            return UsersDataMapper.getUserViewModel(user);
+        }
+        return null;
+    }
 }

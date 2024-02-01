@@ -30,4 +30,8 @@ export class AuthHelper {
         const token = authorization.split(' ')[1];
         return token;
     }
+
+    setBearerAuthToken(request: Request, token: string) {
+        request.headers.authorization = `Bearer ${token}`;
+    }
 }

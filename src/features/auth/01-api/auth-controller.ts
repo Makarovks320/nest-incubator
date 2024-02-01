@@ -14,11 +14,9 @@ import {
     UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../02-services/auth-service';
-import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from '../02-services/session-service';
 import { AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
-import { UserDocument } from '../../users/03-domain/user-db-model';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';
 import { RefreshTokenGuard } from '../../../application/guards/RefreshTokenGuard';
 import { CreateUserInputModel } from '../../users/05-dto/CreateUserInputModel';
@@ -29,14 +27,16 @@ import { EmailDto } from '../05-dto/EmailDto';
 import { ConfirmationCode } from '../05-dto/ConfirmationCode';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthHelper } from '../../../application/helpers/auth-helper';
+import { UsersQueryRepository } from '../../users/04-repositories/users-query-repository';
+import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private authHelper: AuthHelper,
         private authService: AuthService,
-        private userService: UserService,
         private sessionService: SessionService,
+        private usersQueryRepository: UsersQueryRepository,
     ) {}
 
     @Post('login')
@@ -90,17 +90,17 @@ export class AuthController {
     }
 
     @Get('me')
-    @UseGuards(RefreshTokenGuard)
+    @UseGuards(AccessTokenGuard)
     @HttpCode(HttpStatus.OK_200)
-    async getCurrentUserInfo(req: Request, res: Response) {
-        const user: UserDocument | null = await this.userService.findUserById(req.userId);
+    async getCurrentUserInfo(@Req() req: Request, @Res() res: Response) {
+        const user: UserViewModel | null = await this.usersQueryRepository.getUserById(req.userId);
         if (!user) {
             res.sendStatus(HttpStatus.UNAUTHORIZED_401);
         } else {
             const userAuthMeOutput: UserAuthMeViewModel = {
                 email: user.email,
                 login: user.login,
-                userId: user._id.toString(),
+                userId: user.id,
             };
             res.status(HttpStatus.OK_200).send(userAuthMeOutput);
         }

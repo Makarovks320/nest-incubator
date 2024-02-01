@@ -53,27 +53,41 @@ describe('testing auth tokens flow', () => {
     //     );
     //     await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
     // });
+    //
+    // it('refresh token should become invalid after "/auth/refresh-token" request', async () => {
+    //     const data: AuthLoginInputDto = {
+    //         loginOrEmail: login,
+    //         password: password,
+    //     };
+    //     const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
+    //     if (!tokenPair) throw new Error('Test can not be performed');
+    //     const rt = tokenPair.refreshToken;
+    //     // wait 1 second - чтобы issuedAt отличался
+    //     await new Promise(resolve => setTimeout(resolve, 1000));
+    //
+    //     await authTestManager.refreshToken(rt, HttpStatus.OK_200);
+    //     // после обновления старый токен не должен быть валидным
+    //     await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
+    // });
 
-    it('refresh token should become invalid after "/auth/refresh-token" request', async () => {
+    it('/auth/me: should check access token and return current user data; status 200; content: current user data;', async () => {
         const data: AuthLoginInputDto = {
             loginOrEmail: login,
             password: password,
         };
         const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
         if (!tokenPair) throw new Error('Test can not be performed');
-        const rt = tokenPair.refreshToken;
-        // wait 1 second - чтобы issuedAt отличался
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const accessToken = tokenPair.accessToken;
+        const response = await testingProvider
+            .getHttp()
+            .get(`/auth/me`)
+            .set({ Authorization: `Bearer ${accessToken}` })
+            .expect(HttpStatus.OK_200);
 
-        await authTestManager.refreshToken(rt, HttpStatus.OK_200);
-        // после обновления старый токен не должен быть валидным
-        await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
+        expect(response.body).toEqual({
+            email,
+            login,
+            userId: user?.id,
+        });
     });
-    // it('/auth/me: should check access token and return current user data; status 200; content: current user data;', async () => {
-    //     await testingProvider
-    //         .getHttp()
-    //         .post(`/auth/refresh-token`)
-    //         .set('cookie', 'refreshToken=' + rt)
-    //         .expect(HttpStatus.UNAUTHORIZED_401);
-    // });
 });
