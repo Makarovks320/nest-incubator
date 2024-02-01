@@ -4,6 +4,7 @@ import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
 import { RouterPaths } from '../../src/application/types/router-paths';
 import { AuthLoginInputDto } from '../../src/features/auth/05-dto/AuthLoginInputDto';
+import { AuthTokenPair } from '../../src/application/adapters/jwt/jwt-service';
 
 const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
 export const authTestManager = {
@@ -37,5 +38,41 @@ export const authTestManager = {
         }
 
         return null;
+    },
+
+    /*
+     * обновление токенов
+     * */
+    async refreshToken(
+        oldRefreshToken: string,
+        expectedStatusCode: HttpStatusType = HttpStatus.OK_200,
+    ): Promise<AuthTokenPair | null> {
+        const response: request.Response = await testingProvider
+            .getHttp()
+            .post(`${RouterPaths.auth}/refresh-token`)
+            .set('cookie', 'refreshToken=' + oldRefreshToken)
+            .expect(expectedStatusCode);
+
+        if (expectedStatusCode === 200) {
+            const tokenPair: AuthTokenPair = this.getTokensFromResponse(response);
+            return tokenPair;
+        }
+
+        return null;
+    },
+
+    getTokensFromResponse(response: request.Response): AuthTokenPair {
+        const accessToken = response.body.accessToken;
+        expect(accessToken).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+
+        const cookieHeader = response.headers['set-cookie'][0];
+        expect(cookieHeader.includes('HttpOnly')).toEqual(true);
+        expect(cookieHeader.includes('Secure')).toEqual(true);
+
+        const cookies = cookie.parse(cookieHeader);
+        const refreshToken = cookies.refreshToken;
+        expect(refreshToken).toMatch(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_.+/=]*$/);
+
+        return { accessToken, refreshToken };
     },
 };
