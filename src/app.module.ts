@@ -48,6 +48,8 @@ import { LikesRepository } from './features/likes/04-repositories/likes-reposito
 import { LikeService } from './features/likes/02-services/like-service';
 import { GetUserIdFromAccessToken } from './middlewares/GetUserIdFromAccessToken';
 import { IsBlogIdExistValidator } from './application/decorators/validation/IsBlogExist';
+import { SessionsQueryRepository } from './features/auth/04-repositories/sessions-query-repository';
+import { AuthSecurityController } from './features/auth/01-api/security-devices-controller';
 
 const services = [
     AppService,
@@ -65,6 +67,7 @@ const queryRepositories = [
     UsersQueryRepository,
     CommentsQueryRepository,
     LikesQueryRepository,
+    SessionsQueryRepository,
 ];
 const repositories = [
     BlogsRepository,
@@ -100,6 +103,7 @@ const helpers = [AuthHelper, CommentsDataMapper];
     controllers: [
         AppController,
         AuthController,
+        AuthSecurityController,
         BlogsController,
         PostsController,
         UsersController,

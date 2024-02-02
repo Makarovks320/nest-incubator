@@ -33,42 +33,42 @@ describe('testing auth tokens flow', () => {
         expect(user).not.toBeNull();
     });
 
-    // it('should return an error when the "refresh" token has expired or there is no one in the cookie; status 401;', async () => {
-    //     const data: AuthLoginInputDto = {
-    //         loginOrEmail: login,
-    //         password: password,
-    //     };
-    //     const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
-    //     if (!tokenPair) throw new Error('Test can not be performed');
-    //     const rt = tokenPair.refreshToken;
-    //
-    //     await testingProvider.getHttp().post(`/auth/refresh-token`).expect(HttpStatus.UNAUTHORIZED_401);
-    //
-    //     // wait > refresh token lifetime
-    //     await new Promise(resolve =>
-    //         setTimeout(
-    //             resolve,
-    //             testingProvider.getDaoUtils().jwtService.intervalsInSeconds.refreshTokenLifetime * 1000 + 1,
-    //         ),
-    //     );
-    //     await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
-    // });
-    //
-    // it('refresh token should become invalid after "/auth/refresh-token" request', async () => {
-    //     const data: AuthLoginInputDto = {
-    //         loginOrEmail: login,
-    //         password: password,
-    //     };
-    //     const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
-    //     if (!tokenPair) throw new Error('Test can not be performed');
-    //     const rt = tokenPair.refreshToken;
-    //     // wait 1 second - чтобы issuedAt отличался
-    //     await new Promise(resolve => setTimeout(resolve, 1000));
-    //
-    //     await authTestManager.refreshToken(rt, HttpStatus.OK_200);
-    //     // после обновления старый токен не должен быть валидным
-    //     await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
-    // });
+    it('should return an error when the "refresh" token has expired or there is no one in the cookie; status 401;', async () => {
+        const data: AuthLoginInputDto = {
+            loginOrEmail: login,
+            password: password,
+        };
+        const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
+        if (!tokenPair) throw new Error('Test can not be performed');
+        const rt = tokenPair.refreshToken;
+
+        await testingProvider.getHttp().post(`/auth/refresh-token`).expect(HttpStatus.UNAUTHORIZED_401);
+
+        // wait > refresh token lifetime
+        await new Promise(resolve =>
+            setTimeout(
+                resolve,
+                testingProvider.getDaoUtils().jwtService.intervalsInSeconds.refreshTokenLifetime * 1000 + 1,
+            ),
+        );
+        await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
+    });
+
+    it('refresh token should become invalid after "/auth/refresh-token" request', async () => {
+        const data: AuthLoginInputDto = {
+            loginOrEmail: login,
+            password: password,
+        };
+        const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
+        if (!tokenPair) throw new Error('Test can not be performed');
+        const rt = tokenPair.refreshToken;
+        // wait 1 second - чтобы issuedAt отличался
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        await authTestManager.refreshToken(rt, HttpStatus.OK_200);
+        // после обновления старый токен не должен быть валидным
+        await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
+    });
 
     it('/auth/me: should check access token and return current user data; status 200; content: current user data;', async () => {
         const data: AuthLoginInputDto = {
@@ -90,4 +90,6 @@ describe('testing auth tokens flow', () => {
             userId: user?.id,
         });
     });
+
+    // a
 });

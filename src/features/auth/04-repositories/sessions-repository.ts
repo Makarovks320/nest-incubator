@@ -1,12 +1,11 @@
-import { ObjectId } from 'mongodb';
-import { Model, MongooseError } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { AuthSession, SessionDocument } from '../03-domain/session-model';
+import { AuthSession, SessionModel } from '../03-domain/session-model';
 import { InjectModel } from '@nestjs/mongoose';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class SessionsRepository {
-    constructor(@InjectModel(AuthSession.name) private sessionModel: Model<SessionDocument>) {}
+    constructor(@InjectModel(AuthSession.name) private sessionModel: SessionModel) {}
     async addSession(session: AuthSession): Promise<AuthSession | null> {
         try {
             await this.sessionModel.insertMany(session);
@@ -14,19 +13,6 @@ export class SessionsRepository {
             console.log(e);
             return null;
         }
-        return session;
-    }
-    async getAllSessionsForUser(userId: ObjectId): Promise<AuthSession[] | string> {
-        try {
-            const sessions: AuthSession[] = await this.sessionModel.find({ userId }).lean();
-            return sessions;
-        } catch (e) {
-            if (e instanceof MongooseError) return e.message;
-            return 'Mongoose Error';
-        }
-    }
-    async getSessionForDevice(deviceId: string): Promise<AuthSession | null> {
-        const session: AuthSession | null = await this.sessionModel.findOne({ deviceId }).lean();
         return session;
     }
     async updateSession(deviceId: string, session: AuthSession): Promise<boolean> {
@@ -46,10 +32,11 @@ export class SessionsRepository {
         }
         return true;
     }
-    async deleteAllSessionsExcludeCurrent(currentUserId: ObjectId, currentDeviceId: string) {
+    async deleteAllSessionsExcludeCurrent(currentUserId: string, currentDeviceId: string): Promise<boolean> {
         // удалим все сессии для текущего юзера, кроме сессии с текущим deviceId
-        await this.sessionModel.deleteMany({
+        const result: DeleteResult = await this.sessionModel.deleteMany({
             $and: [{ userId: currentUserId }, { deviceId: { $not: { $eq: currentDeviceId } } }],
         });
+        return result.deletedCount > 0;
     }
 }

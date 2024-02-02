@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Blog } from '../../blogs/03-domain/blog-db-model';
+import { HydratedDocument, Model } from 'mongoose';
 
 export type SessionViewModel = {
     ip: string;
@@ -9,7 +8,8 @@ export type SessionViewModel = {
     deviceId: string;
 };
 
-export type SessionDocument = HydratedDocument<Blog>;
+export type SessionDocument = HydratedDocument<AuthSession>;
+export type SessionModel = Model<SessionDocument>;
 @Schema()
 export class AuthSession {
     @Prop({ required: true })

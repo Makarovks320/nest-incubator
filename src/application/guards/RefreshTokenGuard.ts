@@ -1,14 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService, RefreshTokenInfoType } from '../adapters/jwt/jwt-service';
 import { AuthHelper } from '../helpers/auth-helper';
-import { SessionService } from '../../features/auth/02-services/session-service';
-import { AuthSession } from '../../features/auth/03-domain/session-model';
+import { SessionsQueryRepository } from '../../features/auth/04-repositories/sessions-query-repository';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
     constructor(
         private authHelper: AuthHelper,
-        private sessionService: SessionService,
+        private sessionsQueryRepository: SessionsQueryRepository,
         private jwtService: JwtService,
     ) {}
 
@@ -25,7 +24,7 @@ export class RefreshTokenGuard implements CanActivate {
             throw new UnauthorizedException();
         }
 
-        const session: AuthSession | null = await this.sessionService.getSessionForDevice(refreshTokenInfo.deviceId);
+        const session = await this.sessionsQueryRepository.getAuthSessionForDevice(refreshTokenInfo.deviceId);
         if (!session) {
             throw new UnauthorizedException();
         }

@@ -1,13 +1,14 @@
-import { ObjectId } from 'mongodb';
 import { Injectable } from '@nestjs/common';
 import { SessionsRepository } from '../04-repositories/sessions-repository';
 import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { AuthSession } from '../03-domain/session-model';
+import { SessionsQueryRepository } from '../04-repositories/sessions-query-repository';
 
 @Injectable()
 export class SessionService {
     constructor(
         private sessionsRepository: SessionsRepository,
+        private sessionsQueryRepository: SessionsQueryRepository,
         private jwtService: JwtService,
     ) {}
 
@@ -36,14 +37,6 @@ export class SessionService {
         };
         await this.sessionsRepository.addSession(session);
         return session;
-    }
-
-    async getAllSessionsForUser(userId: ObjectId): Promise<AuthSession[] | string> {
-        return await this.sessionsRepository.getAllSessionsForUser(userId);
-    }
-
-    async getSessionForDevice(deviceId: string): Promise<AuthSession | null> {
-        return await this.sessionsRepository.getSessionForDevice(deviceId);
     }
 
     async updateSession(
@@ -75,12 +68,11 @@ export class SessionService {
     }
 
     async deleteSessionByDeviceId(deviceId: string): Promise<boolean> {
-        const result = await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
-        return result;
+        return await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
     }
 
-    async deleteAllSessionsExcludeCurrent(currentUserId: ObjectId, currentDeviceId: string) {
-        await this.sessionsRepository.deleteAllSessionsExcludeCurrent(currentUserId, currentDeviceId);
+    async deleteAllSessionsExcludeCurrent(currentUserId: string, currentDeviceId: string): Promise<boolean> {
+        return await this.sessionsRepository.deleteAllSessionsExcludeCurrent(currentUserId, currentDeviceId);
     }
 
     async deleteAllSessions(): Promise<void> {

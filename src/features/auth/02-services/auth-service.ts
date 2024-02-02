@@ -14,6 +14,7 @@ import { AuthLoginInputDto } from '../05-dto/AuthLoginInputDto';
 import { UserService } from '../../users/02-services/user-service';
 import { SessionService } from './session-service';
 import { AuthSession } from '../03-domain/session-model';
+import { SessionsQueryRepository } from '../04-repositories/sessions-query-repository';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
         private usersRepository: UsersRepository,
         private userService: UserService,
         private sessionService: SessionService,
+        private sessionsQueryRepository: SessionsQueryRepository,
         private jwtService: JwtService,
         private emailManager: EmailManager,
         private cryptoService: CryptoService,
@@ -126,7 +128,7 @@ export class AuthService {
         const newRefreshToken = await this.jwtService.createRefreshToken(userId, deviceId);
 
         // Получим информацию о текущей сессии:
-        const currentSession: AuthSession | null = await this.sessionService.getSessionForDevice(deviceId);
+        const currentSession: AuthSession | null = await this.sessionsQueryRepository.getAuthSessionForDevice(deviceId);
         if (!currentSession) {
             return null;
         }
