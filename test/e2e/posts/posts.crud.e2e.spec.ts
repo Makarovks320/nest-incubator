@@ -3,14 +3,14 @@ import { authBasicHeader } from '../../utils/test_utilities';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { ObjectId } from 'mongodb';
 import { RouterPaths } from '../../../src/application/types/router-paths';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { BlogViewModel, CreateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { PostViewModel } from '../../../src/features/posts/types/post-view-model';
 import { CreatePostInputModel } from '../../../src/features/posts/types/create-post-input-type';
 import { postsTestManager } from '../../utils/postsTestManager';
 
 describe('CRUD tests for /posts', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     it('should return an object with 0 totalCount', async () => {
         await testingProvider

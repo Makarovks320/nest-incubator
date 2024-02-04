@@ -1,12 +1,12 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { RouterPaths } from '../../../src/application/types/router-paths';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { authBasicHeader } from '../../utils/test_utilities';
 
 describe('/blogs tests', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
     /* todo: почему так не работает?
     const http: SuperAgentTest = testingProvider.getHttp();
     beforeAll(async () => {

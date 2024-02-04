@@ -2,11 +2,11 @@ import request from 'supertest';
 import * as supertest from 'supertest';
 import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { RouterPaths } from '../../src/application/types/router-paths';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from './get-testing-environment';
 import { UserViewModel } from '../../src/features/users/types/user-view-model';
 import { CreateUserInputModel } from '../../src/features/users/05-dto/CreateUserInputModel';
 
-const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 export const usersTestManager = {
     /*
      * метод создания юзера с ожидаемым в ответ кодом статуса (например, можно ожидать 201 или 400).

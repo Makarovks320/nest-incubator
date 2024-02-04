@@ -2,13 +2,13 @@ import { HttpStatus } from '../../../src/application/types/types';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { authBasicHeader } from '../../utils/test_utilities';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 import { authTestManager } from '../../utils/authTestManager';
 import { AuthLoginInputDto } from '../../../src/features/auth/05-dto/AuthLoginInputDto';
 
 describe('testing auth tokens flow', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     // изначальные credentials
     const email: string = 'email123@mail.com';
@@ -48,7 +48,7 @@ describe('testing auth tokens flow', () => {
         await new Promise(resolve =>
             setTimeout(
                 resolve,
-                testingProvider.getDaoUtils().jwtService.intervalsInSeconds.refreshTokenLifetime * 1000 + 1,
+                testingProvider.getRepositoriesAndUtils().jwtService.intervalsInSeconds.refreshTokenLifetime * 1000 + 1,
             ),
         );
         await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);

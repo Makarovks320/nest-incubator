@@ -4,10 +4,10 @@ import * as supertest from 'supertest';
 import { RouterPaths } from '../../src/application/types/router-paths';
 import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
 import { authBasicHeader } from './test_utilities';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from './get-testing-environment';
 import { UpdateBlogInputDto } from '../../src/features/blogs/05-dto/UpdateBlogInputDto';
 
-const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 export const blogsTestManager = {
     /*
      * метод создания блога с ожидаемым в ответ кодом статуса (например, можно ожидать 201 или 400).

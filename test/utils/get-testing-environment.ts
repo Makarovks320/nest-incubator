@@ -16,10 +16,10 @@ import { Like, LikeSchema } from '../../src/features/likes/03-domain/like-db-mod
 export type AppE2eTestingProvider = {
     getApp(): INestApplication;
     getHttp(): SuperAgentTest;
-    getDaoUtils(): { usersRepository: UsersRepository; jwtService: JwtService };
+    getRepositoriesAndUtils(): { usersRepository: UsersRepository; jwtService: JwtService };
 };
 
-export function arrangeTestingEnvironment(): AppE2eTestingProvider {
+export function getTestingEnvironment(): AppE2eTestingProvider {
     let app: INestApplication;
     let http: SuperAgentTest;
     let usersRepository: UsersRepository;
@@ -58,7 +58,7 @@ export function arrangeTestingEnvironment(): AppE2eTestingProvider {
         getHttp(): SuperAgentTest {
             return http;
         },
-        getDaoUtils(): any {
+        getRepositoriesAndUtils(): any {
             return {
                 usersRepository,
                 jwtService,

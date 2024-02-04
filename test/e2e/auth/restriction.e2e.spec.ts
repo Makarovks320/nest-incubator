@@ -1,9 +1,9 @@
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { HttpStatus } from '../../../src/application/types/types';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 
 describe('testing ip restriction for registration', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     it('should return 429 error ', async () => {
         await testingProvider

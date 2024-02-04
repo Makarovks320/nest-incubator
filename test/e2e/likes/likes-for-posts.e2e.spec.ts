@@ -11,10 +11,10 @@ import { UserViewModel } from '../../../src/features/users/types/user-view-model
 import { CreatePostInputModel } from '../../../src/features/posts/types/create-post-input-type';
 import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 import { LIKE_STATUS_ENUM } from '../../../src/features/likes/03-domain/types';
-import { arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { getTestingEnvironment } from '../../utils/get-testing-environment';
 
 describe('testing likes for posts', () => {
-    arrangeTestingEnvironment();
+    getTestingEnvironment();
 
     const email1: string = 'email-1@mail.com';
     const email2: string = 'email-2@mail.com';

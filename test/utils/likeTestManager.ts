@@ -1,5 +1,5 @@
 import { HttpStatus } from '../../src/application/types/types';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from './get-testing-environment';
 import { LIKE_STATUS_ENUM, LikeStatusType } from '../../src/features/likes/03-domain/types';
 import { HttpStatusType } from '../../src/application/types/types';
 import { RouterPaths } from '../../src/application/types/router-paths';
@@ -13,7 +13,7 @@ export type CommentWithLikeInfo = {
     myStatus: LikeStatusType;
 };
 
-const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 export const likeTestManager = {
     /*
     добавление/удаление лайка/дизлайка

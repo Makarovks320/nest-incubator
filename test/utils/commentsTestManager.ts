@@ -5,9 +5,9 @@ import { CreateCommentInputModel } from '../../src/features/comments/01-api/mode
 import { HttpStatusType } from '../../src/application/types/types';
 import { CommentViewModel } from '../../src/features/comments/01-api/models/output-models/CommentViewModel';
 import { RouterPaths } from '../../src/application/types/router-paths';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from './get-testing-environment';
 
-const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 export const commentsTestManager = {
     /*
      * метод создания комментария с ожидаемым в ответ кодом статуса (например, можно ожидать 201 или 400).

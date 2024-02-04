@@ -1,13 +1,13 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { authBasicHeader, generateString } from '../../utils/test_utilities';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { usersTestManager } from '../../utils/usersTestManager';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
 import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 
 describe('/Testing users', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     it('should return 401 without AUTH', async () => {
         await testingProvider.getHttp().get(RouterPaths.users).expect(HttpStatus.UNAUTHORIZED_401);

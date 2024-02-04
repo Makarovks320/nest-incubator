@@ -1,12 +1,12 @@
 import request from 'supertest';
 import cookie from 'cookie';
 import { HttpStatus, HttpStatusType } from '../../src/application/types/types';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from './arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from './get-testing-environment';
 import { RouterPaths } from '../../src/application/types/router-paths';
 import { AuthLoginInputDto } from '../../src/features/auth/05-dto/AuthLoginInputDto';
 import { AuthTokenPair } from '../../src/application/adapters/jwt/jwt-service';
 
-const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 export const authTestManager = {
     /*
      * логинизация юзера с ожидаемым в ответ кодом статуса (например, можно ожидать 200 или 401).

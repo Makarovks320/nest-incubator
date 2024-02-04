@@ -5,7 +5,7 @@ import { blogsTestManager } from '../../utils/blogsTestManager';
 import { postsTestManager } from '../../utils/postsTestManager';
 import { commentsTestManager } from '../../utils/commentsTestManager';
 import { authTestManager } from '../../utils/authTestManager';
-import { arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { getTestingEnvironment } from '../../utils/get-testing-environment';
 import { BlogViewModel, CreateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { PostViewModel } from '../../../src/features/posts/types/post-view-model';
 import { UserViewModel } from '../../../src/features/users/types/user-view-model';
@@ -17,7 +17,7 @@ import { LIKE_STATUS_ENUM } from '../../../src/features/likes/03-domain/types';
 import { CommentWithLikeInfo, likeTestManager } from '../../utils/likeTestManager';
 
 describe('/testing likes for comments', () => {
-    arrangeTestingEnvironment();
+    getTestingEnvironment();
 
     const email1: string = 'email-1@mail.com';
     const email2: string = 'email-2@mail.com';

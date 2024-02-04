@@ -1,10 +1,10 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { authBasicHeader, generateString } from '../../utils/test_utilities';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 
 describe(`blogs input data validation tests`, () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     describe(`websiteUrl input validation tests`, () => {
         it(`shouldn't create entity with incorrect input data (websiteUrl is empty)`, async () => {

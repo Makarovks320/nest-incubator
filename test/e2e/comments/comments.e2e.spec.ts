@@ -1,6 +1,6 @@
 import { HttpStatus } from '../../../src/application/types/types';
 import { RouterPaths } from '../../../src/application/types/router-paths';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { BlogViewModel, CreateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { authBasicHeader, generateString } from '../../utils/test_utilities';
@@ -16,7 +16,7 @@ import { commentsTestManager } from '../../utils/commentsTestManager';
 import { ObjectId } from 'mongodb';
 
 describe('/comments tests', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     let post: PostViewModel | null;
     let user1: UserViewModel | null;
@@ -65,7 +65,7 @@ describe('/comments tests', () => {
         user1 = createdUser1;
         if (!user1) throw new Error('test cannot be performed');
 
-        const AccessToken1 = await testingProvider.getDaoUtils().jwtService.createAccessToken(user1.id);
+        const AccessToken1 = await testingProvider.getRepositoriesAndUtils().jwtService.createAccessToken(user1.id);
         authJWTHeader1 = { Authorization: `Bearer ${AccessToken1}` };
 
         //Создаем юзера2, чтобы оставлять комменты
@@ -84,7 +84,7 @@ describe('/comments tests', () => {
         user2 = createdUser2;
         if (!user2) throw new Error('test cannot be performed');
 
-        const AccessToken2 = await testingProvider.getDaoUtils().jwtService.createAccessToken(user2.id);
+        const AccessToken2 = await testingProvider.getRepositoriesAndUtils().jwtService.createAccessToken(user2.id);
         authJWTHeader2 = { Authorization: `Bearer ${AccessToken2}` };
     });
 

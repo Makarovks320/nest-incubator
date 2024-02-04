@@ -4,7 +4,7 @@ import { PasswordRecoveryType, UserDocument } from '../../../src/features/users/
 import { usersTestManager } from '../../utils/usersTestManager';
 import { RouterPaths } from '../../../src/application/types/router-paths';
 import { authBasicHeader } from '../../utils/test_utilities';
-import { AppE2eTestingProvider, arrangeTestingEnvironment } from '../../utils/arrange-testing-environment';
+import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-testing-environment';
 import { CreateUserInputModel } from '../../../src/features/users/05-dto/CreateUserInputModel';
 import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
 import { ConfirmationCode } from '../../../src/features/auth/05-dto/ConfirmationCode';
@@ -18,7 +18,7 @@ import { authTestManager } from '../../utils/authTestManager';
 // }
 
 describe('testing authentication flow', () => {
-    const testingProvider: AppE2eTestingProvider = arrangeTestingEnvironment();
+    const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
 
     // изначальные credentials
     const email: string = 'email123@mail.com';
@@ -106,7 +106,7 @@ describe('testing authentication flow', () => {
     it('should confirm registration by email OR should return error if code is already confirmed', async () => {
         if (!user) throw new Error('test cannot be performed.');
         const userDB: UserDocument | null = await testingProvider
-            .getDaoUtils()
+            .getRepositoriesAndUtils()
             .usersRepository.findUserByLoginOrEmail(user.email);
 
         if (!userDB) throw new Error('test cannot be performed.');
@@ -136,7 +136,7 @@ describe('testing authentication flow', () => {
 
         if (!user) throw new Error('test cannot be performed.');
         const userDB: UserDocument | null = await testingProvider
-            .getDaoUtils()
+            .getRepositoriesAndUtils()
             .usersRepository.findUserByLoginOrEmail(user.email);
         if (!userDB) throw new Error('test cannot be performed.');
 
@@ -155,7 +155,7 @@ describe('testing authentication flow', () => {
 
         // Response получен, теперь проверим, что код сохранился верный.
         const userWithCreatedPasswordRecoveryCode: UserDocument | null = await testingProvider
-            .getDaoUtils()
+            .getRepositoriesAndUtils()
             .usersRepository.findUserByLoginOrEmail(data.email);
 
         if (!userWithCreatedPasswordRecoveryCode) throw new Error('test cannot be performed.');
@@ -165,7 +165,7 @@ describe('testing authentication flow', () => {
 
         // проверим код на корректность
         const restoredUserDb_id = await testingProvider
-            .getDaoUtils()
+            .getRepositoriesAndUtils()
             .jwtService.getUserIdByToken(passwordRecovery.passwordRecoveryCode);
         expect(userDB._id.toString()).toEqual(restoredUserDb_id);
         expect(passwordRecovery.active).toEqual(false);
