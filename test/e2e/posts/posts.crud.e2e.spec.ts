@@ -20,11 +20,12 @@ describe('CRUD tests for /posts', () => {
     });
 
     it(`shouldn't create post for unexisting blogId`, async () => {
+        const wrongIdNumber = new ObjectId().toString();
         await testingProvider.getHttp().post(RouterPaths.posts).set(authBasicHeader).send({
             title: 'title 1',
             content: 'content 1',
             shortDescription: 'some short description',
-            blogId: 'wrong blog id',
+            blogId: wrongIdNumber,
         });
         // .expect(HttpStatus.BAD_REQUEST_400,{
         //     errorsMessages: [ { message: 'blog is not found', field: 'blogId' } ]

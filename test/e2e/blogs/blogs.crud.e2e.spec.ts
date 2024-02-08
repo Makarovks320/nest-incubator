@@ -4,6 +4,7 @@ import { AppE2eTestingProvider, getTestingEnvironment } from '../../utils/get-te
 import { BlogViewModel, CreateBlogInputModel, UpdateBlogInputModel } from '../../../src/features/blogs/types/dto';
 import { blogsTestManager } from '../../utils/blogsTestManager';
 import { authBasicHeader } from '../../utils/test_utilities';
+import { ObjectId } from 'mongodb';
 
 describe('/blogs tests', () => {
     const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
@@ -84,12 +85,8 @@ describe('/blogs tests', () => {
 
     // read by id (wrong id):
     it(`shouldn't find entity by wrong id`, async () => {
-        await testingProvider
-            .getHttp()
-            // .get(`${RouterPaths.blogs}/41224d776a326fb40f000001`)
-            //todo: если неподходящий для формат, ошибка: Cast to ObjectId failed for value "wrong-id-number"
-            .get(`${RouterPaths.blogs}/wrong-id-number`)
-            .expect(HttpStatus.NOT_FOUND_404);
+        const wrongIdNumber = new ObjectId().toString();
+        await testingProvider.getHttp().get(`${RouterPaths.blogs}/${wrongIdNumber}`).expect(HttpStatus.NOT_FOUND_404);
     });
 
     // update:
