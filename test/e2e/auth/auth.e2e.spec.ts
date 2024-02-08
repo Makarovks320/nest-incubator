@@ -14,7 +14,7 @@ import { EmailAdapter } from '../../../src/application/adapters/email-adapter/em
 
 describe('testing authentication flow', () => {
     const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
-    let emailAdapter: any;
+    let emailAdapter: EmailAdapter;
 
     // изначальные credentials
     const email: string = 'email123@mail.com';
