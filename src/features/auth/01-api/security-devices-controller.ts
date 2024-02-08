@@ -30,7 +30,6 @@ export class AuthSecurityController {
     @Get()
     @UseGuards(RefreshTokenGuard)
     @HttpCode(HttpStatus.OK_200)
-    // чтобы достать userId, вместо миддлвара использую кастомный декоратор - так удобнее, чем в app.module
     async getAll(@GetUserId() userId: string) {
         // передадим маппер в query-repo
         return await this.sessionsQueryRepository.getAllSessionsForUser(

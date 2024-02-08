@@ -10,15 +10,11 @@ import { EmailDto } from '../../../src/features/auth/05-dto/EmailDto';
 import { ConfirmationCode } from '../../../src/features/auth/05-dto/ConfirmationCode';
 import { AuthLoginInputDto } from '../../../src/features/auth/05-dto/AuthLoginInputDto';
 import { authTestManager } from '../../utils/authTestManager';
-
-// const emailAdapter = {
-//     async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
-//         return true;
-//     }
-// }
+import { EmailAdapter } from '../../../src/application/adapters/email-adapter/email-adapter';
 
 describe('testing authentication flow', () => {
     const testingProvider: AppE2eTestingProvider = getTestingEnvironment();
+    let emailAdapter: any;
 
     // изначальные credentials
     const email: string = 'email123@mail.com';
@@ -32,6 +28,7 @@ describe('testing authentication flow', () => {
     const newPassword: string = 'goodNewPassword';
 
     beforeAll(async () => {
+        emailAdapter = (await testingProvider.getModuleFixture()).get<EmailAdapter>(EmailAdapter);
         // Создаем юзера
         const userData: CreateUserInputModel = {
             login: login,
@@ -101,6 +98,8 @@ describe('testing authentication flow', () => {
             .post(`${RouterPaths.auth}/registration-email-resending`)
             .send(emailData)
             .expect(HttpStatus.NO_CONTENT_204);
+
+        expect(emailAdapter.sendEmail).toHaveBeenCalled();
     });
 
     it('should confirm registration by email OR should return error if code is already confirmed', async () => {

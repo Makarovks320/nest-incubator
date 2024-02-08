@@ -12,21 +12,27 @@ import { JwtService } from '../../src/application/adapters/jwt/jwt-service';
 import { UsersRepository } from '../../src/features/users/04-repositories/users-repository';
 import { Comment, CommentSchema } from '../../src/features/comments/03-domain/comment-db-model';
 import { Like, LikeSchema } from '../../src/features/likes/03-domain/like-db-model';
+import { EmailAdapter } from '../../src/application/adapters/email-adapter/email-adapter';
 
 export type AppE2eTestingProvider = {
     getApp(): INestApplication;
     getHttp(): SuperAgentTest;
     getRepositoriesAndUtils(): { usersRepository: UsersRepository; jwtService: JwtService };
+    getModuleFixture(): Promise<TestingModule>;
 };
 
+export class EmailAdapterMock {
+    sendEmail = jest.fn(() => true);
+}
 export function getTestingEnvironment(): AppE2eTestingProvider {
     let app: INestApplication;
     let http: SuperAgentTest;
     let usersRepository: UsersRepository;
     let jwtService: JwtService;
+    let moduleFixture: TestingModule;
 
     beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
+        moduleFixture = await Test.createTestingModule({
             imports: [
                 AppModule,
                 MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
@@ -36,7 +42,10 @@ export function getTestingEnvironment(): AppE2eTestingProvider {
                 MongooseModule.forFeature([{ name: Like.name, schema: LikeSchema }]),
             ],
             providers: [JwtService, UsersRepository],
-        }).compile();
+        })
+            .overrideProvider(EmailAdapter)
+            .useClass(EmailAdapterMock)
+            .compile();
         app = moduleFixture.createNestApplication();
         useAppSettings(app);
         await app.init();
@@ -63,6 +72,9 @@ export function getTestingEnvironment(): AppE2eTestingProvider {
                 usersRepository,
                 jwtService,
             };
+        },
+        async getModuleFixture(): Promise<any> {
+            return moduleFixture;
         },
     };
 }
