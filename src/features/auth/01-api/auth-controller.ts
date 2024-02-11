@@ -13,8 +13,8 @@ import {
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
-import { AuthService } from '../02-services/auth-service';
-import { SessionService } from '../02-services/session-service';
+import { AuthService } from '../02-application/auth-service';
+import { SessionService } from '../02-application/session-service';
 import { AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
 import { UserAuthMeViewModel } from '../../users/types/user-auth-me-view-model';

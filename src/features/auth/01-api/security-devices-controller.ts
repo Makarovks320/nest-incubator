@@ -17,7 +17,7 @@ import { AuthSessionInfoType } from '../05-dto/AuthSessionInfoType';
 import { AuthDataMapper } from './AuthDataMapper';
 import { SessionsRepository } from '../04-repositories/sessions-repository';
 import { SessionsQueryRepository } from '../04-repositories/sessions-query-repository';
-import { SessionService } from '../02-services/session-service';
+import { SessionService } from '../02-application/session-service';
 
 @Controller('security/devices')
 export class AuthSecurityController {

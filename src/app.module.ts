@@ -20,8 +20,8 @@ import { UsersRepository } from './features/users/04-repositories/users-reposito
 import { UsersQueryRepository } from './features/users/04-repositories/users-query-repository';
 import { User, UserSchema } from './features/users/03-domain/user-db-model';
 import { AuthController } from './features/auth/01-api/auth-controller';
-import { AuthService } from './features/auth/02-services/auth-service';
-import { SessionService } from './features/auth/02-services/session-service';
+import { AuthService } from './features/auth/02-application/auth-service';
+import { SessionService } from './features/auth/02-application/session-service';
 import { JwtService } from './application/adapters/jwt/jwt-service';
 import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/session-model';
 import { EmailManager } from './application/adapters/email-adapter/emailManager';
