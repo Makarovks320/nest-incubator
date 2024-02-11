@@ -20,7 +20,6 @@ import { UsersRepository } from './features/users/04-repositories/users-reposito
 import { UsersQueryRepository } from './features/users/04-repositories/users-query-repository';
 import { User, UserSchema } from './features/users/03-domain/user-db-model';
 import { AuthController } from './features/auth/01-api/auth-controller';
-import { AuthService } from './features/auth/02-application/auth-service';
 import { SessionService } from './features/auth/02-application/session-service';
 import { JwtService } from './application/adapters/jwt/jwt-service';
 import { AuthSession, AuthSessionSchema } from './features/auth/03-domain/session-model';
@@ -50,17 +49,10 @@ import { GetUserIdFromAccessToken } from './middlewares/GetUserIdFromAccessToken
 import { IsBlogIdExistValidator } from './application/decorators/validation/IsBlogExist';
 import { SessionsQueryRepository } from './features/auth/04-repositories/sessions-query-repository';
 import { AuthSecurityController } from './features/auth/01-api/security-devices-controller';
+import { CqrsModule } from '@nestjs/cqrs';
+import { authUseCases } from './features/auth/02-application/use-cases';
 
-const services = [
-    AppService,
-    AuthService,
-    BlogService,
-    PostService,
-    SessionService,
-    UserService,
-    CommentService,
-    LikeService,
-];
+const services = [AppService, BlogService, PostService, SessionService, UserService, CommentService, LikeService];
 const queryRepositories = [
     BlogsQueryRepository,
     PostsQueryRepository,
@@ -89,6 +81,7 @@ const helpers = [AuthHelper, CommentsDataMapper];
 
 @Module({
     imports: [
+        CqrsModule,
         ThrottlerModule.forRoot([{ ttl: 10000, limit: 5 }]),
         MongooseModule.forRoot(appConfig.mongoUrl, {
             dbName: appConfig.dbName,
@@ -110,7 +103,15 @@ const helpers = [AuthHelper, CommentsDataMapper];
         CommentsController,
         TestingController,
     ],
-    providers: [...customValidators, ...services, ...queryRepositories, ...repositories, ...adapters, ...helpers],
+    providers: [
+        ...authUseCases,
+        ...customValidators,
+        ...services,
+        ...queryRepositories,
+        ...repositories,
+        ...adapters,
+        ...helpers,
+    ],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
