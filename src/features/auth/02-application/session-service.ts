@@ -2,13 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { SessionsRepository } from '../04-repositories/sessions-repository';
 import { JwtService, RefreshTokenInfoType } from '../../../application/adapters/jwt/jwt-service';
 import { AuthSession } from '../03-domain/session-model';
-import { SessionsQueryRepository } from '../04-repositories/sessions-query-repository';
 
 @Injectable()
 export class SessionService {
     constructor(
         private sessionsRepository: SessionsRepository,
-        private sessionsQueryRepository: SessionsQueryRepository,
         private jwtService: JwtService,
     ) {}
 
@@ -65,17 +63,5 @@ export class SessionService {
             return null;
         }
         return session;
-    }
-
-    async deleteSessionByDeviceId(deviceId: string): Promise<boolean> {
-        return await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
-    }
-
-    async deleteAllSessionsExcludeCurrent(currentUserId: string, currentDeviceId: string): Promise<boolean> {
-        return await this.sessionsRepository.deleteAllSessionsExcludeCurrent(currentUserId, currentDeviceId);
-    }
-
-    async deleteAllSessions(): Promise<void> {
-        await this.sessionsRepository.deleteAllSessions();
     }
 }
