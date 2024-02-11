@@ -13,7 +13,6 @@ import {
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common';
-import { AuthService } from '../02-application/auth-service';
 import { SessionService } from '../02-application/session-service';
 import { AuthTokenPair } from '../../../application/adapters/jwt/jwt-service';
 import { HttpStatus } from '../../../application/types/types';
@@ -29,14 +28,16 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { AuthHelper } from '../../../application/helpers/auth-helper';
 import { UsersQueryRepository } from '../../users/04-repositories/users-query-repository';
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
+import { CommandBus } from '@nestjs/cqrs';
+import { ConfirmEmailByCodeOrEmailCommand } from '../02-application/use-cases/ConfirmEmailByCodeOrEmailUseCase';
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private authHelper: AuthHelper,
-        private authService: AuthService,
         private sessionService: SessionService,
         private usersQueryRepository: UsersQueryRepository,
+        private commandBus: CommandBus,
     ) {}
 
     @Post('login')
@@ -119,7 +120,7 @@ export class AuthController {
     @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async confirmRegistration(@Body() confirmationData: ConfirmationCode) {
-        const result = await this.authService.confirmEmailByCodeOrEmail(confirmationData.code);
+        const result = await this.commandBus.execute(new ConfirmEmailByCodeOrEmailCommand(confirmationData.code));
         if (!result) {
             throw new InternalServerErrorException();
         }
