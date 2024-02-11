@@ -15,3 +15,12 @@ export function generateString(length: number): string {
 
     return result;
 }
+
+//функция задержки времени
+export function delay(milliseconds: number): Promise<any> {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(1);
+        }, milliseconds);
+    });
+}

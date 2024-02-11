@@ -16,6 +16,8 @@ describe('testing auth tokens flow', () => {
     const password: string = 'password123';
     // сюда сохраним юзера
     let user: UserViewModel | null = null;
+    // чтобы дождаться истечения срока годности рефреш-токена
+    let refreshTokenLifetimeInSeconds: any;
 
     beforeAll(async () => {
         // Создаем юзера
@@ -27,32 +29,33 @@ describe('testing auth tokens flow', () => {
 
         const { createdUser } = await usersTestManager.createUser(userData, HttpStatus.CREATED_201, authBasicHeader);
         user = createdUser;
+        refreshTokenLifetimeInSeconds =
+            testingProvider.getRepositoriesAndUtils().jwtService.intervalsInSeconds.refreshTokenLifetime;
     });
 
     it('Check that necessary support objects have been successfully created', async () => {
         expect(user).not.toBeNull();
     });
 
-    it('should return an error when the "refresh" token has expired or there is no one in the cookie; status 401;', async () => {
-        const data: AuthLoginInputDto = {
-            loginOrEmail: login,
-            password: password,
-        };
-        const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
-        if (!tokenPair) throw new Error('Test can not be performed');
-        const rt = tokenPair.refreshToken;
+    it(
+        'should return an error when the "refresh" token has expired or there is no one in the cookie; status 401;',
+        async () => {
+            const data: AuthLoginInputDto = {
+                loginOrEmail: login,
+                password: password,
+            };
+            const tokenPair = await authTestManager.loginUser(data, HttpStatus.OK_200);
+            if (!tokenPair) throw new Error('Test can not be performed');
+            const rt = tokenPair.refreshToken;
 
-        await testingProvider.getHttp().post(`/auth/refresh-token`).expect(HttpStatus.UNAUTHORIZED_401);
+            await testingProvider.getHttp().post(`/auth/refresh-token`).expect(HttpStatus.UNAUTHORIZED_401);
 
-        // wait > refresh token lifetime
-        await new Promise(resolve =>
-            setTimeout(
-                resolve,
-                testingProvider.getRepositoriesAndUtils().jwtService.intervalsInSeconds.refreshTokenLifetime * 1000 + 1,
-            ),
-        );
-        await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
-    });
+            // wait > refresh token lifetime
+            await new Promise(resolve => setTimeout(resolve, refreshTokenLifetimeInSeconds * 1000 + 1));
+            await authTestManager.refreshToken(rt, HttpStatus.UNAUTHORIZED_401);
+        },
+        refreshTokenLifetimeInSeconds * 1000 + 5000,
+    );
 
     it('refresh token should become invalid after "/auth/refresh-token" request', async () => {
         const data: AuthLoginInputDto = {
