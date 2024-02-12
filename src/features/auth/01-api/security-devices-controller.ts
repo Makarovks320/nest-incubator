@@ -17,14 +17,15 @@ import { AuthSessionInfoType } from '../05-dto/AuthSessionInfoType';
 import { AuthDataMapper } from './AuthDataMapper';
 import { SessionsRepository } from '../04-repositories/sessions-repository';
 import { SessionsQueryRepository } from '../04-repositories/sessions-query-repository';
-import { SessionService } from '../02-application/session-service';
+import { CommandBus } from '@nestjs/cqrs';
+import { DeleteAllSessionsExcludeCurrentCommand } from '../02-application/use-cases/DeleteAllSessionsExcludeCurrentUseCase';
 
 @Controller('security/devices')
 export class AuthSecurityController {
     constructor(
         private sessionsRepository: SessionsRepository,
         private sessionsQueryRepository: SessionsQueryRepository,
-        private sessionService: SessionService,
+        private commandBus: CommandBus,
     ) {}
 
     @Get()
@@ -42,9 +43,8 @@ export class AuthSecurityController {
     @UseGuards(RefreshTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async deleteAll(@GetAuthSessionInfo() sessionInfo: AuthSessionInfoType) {
-        const isDeleted: boolean = await this.sessionService.deleteAllSessionsExcludeCurrent(
-            sessionInfo.userId,
-            sessionInfo.deviceId,
+        const isDeleted: boolean = await this.commandBus.execute(
+            new DeleteAllSessionsExcludeCurrentCommand(sessionInfo.userId, sessionInfo.deviceId),
         );
 
         if (!isDeleted) {
