@@ -30,6 +30,13 @@ import { UsersQueryRepository } from '../../users/04-repositories/users-query-re
 import { AccessTokenGuard } from '../../../application/guards/AccessTokenGuard';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfirmEmailByCodeOrEmailCommand } from '../02-application/use-cases/ConfirmEmailByCodeOrEmailUseCase';
+import { CreateUserCommand } from '../02-application/use-cases/CreateUserUseCase';
+import { DeleteSessionByDeviceIdCommand } from '../02-application/use-cases/DeleteSessionByDeviceIdUseCase';
+import { LoginUserCommand } from '../02-application/use-cases/LoginUserUseCase';
+import { RefreshTokenCommand } from '../02-application/use-cases/RefreshTokenUseCase';
+import { SendEmailWithNewCodeCommand } from '../02-application/use-cases/SendEmailWithNewCodeUseCase';
+import { SendEmailWithRecoveryPasswordCodeCommand } from '../02-application/use-cases/SendEmailWithRecoveryPasswordCodeUseCase';
+import { UpdatePasswordCommand } from '../02-application/use-cases/UpdatePasswordUseCase';
 
 @Controller('auth')
 export class AuthController {
@@ -48,7 +55,9 @@ export class AuthController {
 
         const deviceName = this.authHelper.getUserAgent(req);
 
-        const authTokenPair: AuthTokenPair | null = await this.authService.loginUser(input, ip, deviceName);
+        const authTokenPair: AuthTokenPair | null = await this.commandBus.execute(
+            new LoginUserCommand(input, ip, deviceName),
+        );
         if (!authTokenPair) {
             throw new UnauthorizedException();
         } else {
@@ -61,7 +70,7 @@ export class AuthController {
     @UseGuards(RefreshTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async logoutUser(@Req() req: Request, @Res() res: Response) {
-        const result = await this.sessionService.deleteSessionByDeviceId(req.deviceId);
+        const result = await this.commandBus.execute(new DeleteSessionByDeviceIdCommand(req.deviceId));
         if (!result) {
             res.sendStatus(HttpStatus.SERVER_ERROR_500);
             return;
@@ -80,7 +89,9 @@ export class AuthController {
         const ip = this.authHelper.getIp(req);
         if (!ip) throw new BadRequestException('ip is not defined');
 
-        const authTokenPair = await this.authService.refreshToken(req.userId, ip, currentRefreshToken);
+        const authTokenPair = await this.commandBus.execute(
+            new RefreshTokenCommand(req.userId, ip, currentRefreshToken),
+        );
 
         if (!authTokenPair) {
             throw new InternalServerErrorException();
@@ -111,7 +122,7 @@ export class AuthController {
     @UseGuards(ThrottlerGuard, LoginOrEmailExistenceGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async registerNewUser(@Body() inputModel: CreateUserInputModel) {
-        const createdUser: UserViewModel | null = await this.authService.createUser(inputModel);
+        const createdUser: UserViewModel | null = await this.commandBus.execute(new CreateUserCommand(inputModel));
         if (!createdUser) throw new BadRequestException();
         return;
     }
@@ -131,7 +142,7 @@ export class AuthController {
     @UseGuards(ThrottlerGuard)
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async resendConfirmationCode(@Body() emailData: EmailDto) {
-        const result = await this.authService.sendEmailWithNewCode(emailData.email);
+        const result = await this.commandBus.execute(new SendEmailWithNewCodeCommand(emailData.email));
         if (!result) {
             throw new BadRequestException();
         } else {
@@ -142,8 +153,8 @@ export class AuthController {
     @Post('password-recovery')
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async recoverPassword(@Body() recoveryData: { email: string }) {
-        const isPasswordRecovered: boolean = await this.authService.sendEmailWithRecoveryPasswordCode(
-            recoveryData.email,
+        const isPasswordRecovered: boolean = await this.commandBus.execute(
+            new SendEmailWithRecoveryPasswordCodeCommand(recoveryData.email),
         );
         return isPasswordRecovered;
     }
@@ -153,7 +164,9 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT_204)
     async updatePassword(@Body() inputPasswordDto: SaveNewPasswordInputDto, @Req() req: Request, @Res() res: Response) {
         if (!req.userId) throw new InternalServerErrorException('userId is undefined');
-        const result = await this.authService.updatePassword(inputPasswordDto.newPassword, req.userId);
+        const result = await this.commandBus.execute(
+            new UpdatePasswordCommand(inputPasswordDto.newPassword, req.userId),
+        );
         if (!result) {
             res.status(HttpStatus.BAD_REQUEST_400).send();
         }

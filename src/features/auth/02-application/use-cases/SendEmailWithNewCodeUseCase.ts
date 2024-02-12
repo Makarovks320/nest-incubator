@@ -1,19 +1,21 @@
-import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../../users/04-repositories/users-repository';
 import { EmailManager } from '../../../../application/adapters/email-adapter/emailManager';
 import { EmailConfirmationType, UserDocument } from '../../../users/03-domain/user-db-model';
 import add from 'date-fns/add';
 import { v4 as uuidv4 } from 'uuid';
-
-@Injectable()
-export class SendEmailWithNewCodeUseCase {
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+export class SendEmailWithNewCodeCommand {
+    constructor(public email: string) {}
+}
+@CommandHandler(SendEmailWithNewCodeCommand)
+export class SendEmailWithNewCodeUseCase implements ICommandHandler<SendEmailWithNewCodeCommand> {
     constructor(
         private usersRepository: UsersRepository,
         private emailManager: EmailManager,
     ) {}
 
-    async execute(email: string): Promise<boolean> {
-        const user: UserDocument | null = await this.usersRepository.findUserByLoginOrEmail(email);
+    async execute(command: SendEmailWithNewCodeCommand): Promise<boolean> {
+        const user: UserDocument | null = await this.usersRepository.findUserByLoginOrEmail(command.email);
         if (!user) return false;
         if (user.emailConfirmation.isConfirmed) return false;
         const emailConfirmation: EmailConfirmationType = {

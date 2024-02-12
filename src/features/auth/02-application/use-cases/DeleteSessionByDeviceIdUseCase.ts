@@ -1,11 +1,14 @@
-import { Injectable } from '@nestjs/common';
 import { SessionsRepository } from '../../04-repositories/sessions-repository';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-@Injectable()
-export class DeleteSessionByDeviceIdUseCase {
+export class DeleteSessionByDeviceIdCommand {
+    constructor(public deviceId: string) {}
+}
+@CommandHandler(DeleteSessionByDeviceIdCommand)
+export class DeleteSessionByDeviceIdUseCase implements ICommandHandler<DeleteSessionByDeviceIdCommand> {
     constructor(private sessionsRepository: SessionsRepository) {}
 
-    async execute(deviceId: string): Promise<boolean> {
-        return await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
+    async execute(command: DeleteSessionByDeviceIdCommand): Promise<boolean> {
+        return await this.sessionsRepository.deleteSessionByDeviceId(command.deviceId);
     }
 }
